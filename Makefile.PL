@@ -1,0 +1,58 @@
+use ExtUtils::MakeMaker;
+use 5.008005;
+# See lib/ExtUtils/MakeMaker.pm for details of how to influence
+# the contents of the Makefile that is written.
+%mm_args = (
+    'NAME'          => 'Data::IEEE754::Tools',
+    'AUTHOR'        => 'Peter C. jones <petercj AT cpan.org>',
+    'VERSION_FROM'  => 'Tools.pm',
+    'ABSTRACT_FROM' => 'Tools.pm',
+    'PREREQ_PM'     => {
+        'Exporter'      => 0,
+        'version'       => 0.77,
+    },
+);
+
+{
+    no warnings;
+    if( $ExtUtils::MakeMaker::VERSION > '6.17' ) {
+        $mm_args{META_MERGE} = {
+            resources => {
+                bugtracker => 'http://rt.cpan.org/Public/Dist/Display.html?Name=Data-IEEE754-Tools',
+                repository => 'https://github.com/pryrt/Data-IEEE754-Tools',
+            },
+            keywords => [ 'IEEE-754', 'floating point representation', 'fraction' ],
+            provides => {
+                'Data::IEEE754::Tools' => {
+                    file => 'Tools.pm',
+                    version => 0.04,
+                },
+            },
+        },
+    }
+    if( $ExtUtils::MakeMaker::VERSION >= '6.31' ) {
+        $mm_args{LICENSE} = 'perl_5';
+    }
+    if( $ExtUtils::MakeMaker::VERSION >= '6.48' ) {
+        $mm_args{MIN_PERL_VERSION} = '5.8.5';
+    }
+    if( $ExtUtils::MakeMaker::VERSION >= '6.52' ) {
+        $mm_args{CONFIGURE_REQUIRES} = {
+            'ExtUtils::MakeMaker' => 0,
+        },
+    }
+#    if( $ExtUtils::MakeMaker::VERSION >= '6.5503' ) {
+#        $mm_args{BUILD_REQUIRES} = {
+#        },
+#    }
+    if( $ExtUtils::MakeMaker::VERSION >= '6.64' ) {
+        $mm_args{TEST_REQUIRES} = {
+            'warnings' => 0,
+            'strict' => 0,
+            'Test::More' => 0,
+            'constant' => 0,
+        };
+    }
+}
+
+WriteMakefile( %mm_args )
