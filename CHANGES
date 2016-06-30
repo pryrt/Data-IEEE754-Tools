@@ -1,0 +1,28 @@
+Revision history for Perl module Data::IEEE754::Tools.
+
+v0.007
+    - Start additional features
+    - #199: working on debug
+
+v0.006 Wed Jun 29
+    - Full POD; good estimated test coverage
+
+v0.005 Tue Jun 28
+    - Rework options processing
+    - Improve POD
+    - Improve test coverage
+    - Fix bugs found during test coverage debug
+
+v0.004 Tue Jun 21
+    - Rename to Data::IEEE754::Tools.pm
+
+v0.003 Tue Jun 21
+    - First "reasonably functional" version
+
+v0.002 Sat Jun 18
+    - Convert to Data::IEEE754::Expand.pm
+    - Add initial error handling
+
+v0.001 Thu May 26
+    Private (pryrt)
+    - Initial DataFormatIeee.pl proof-of-concept
