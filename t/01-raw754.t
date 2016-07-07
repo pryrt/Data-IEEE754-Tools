@@ -1,23 +1,24 @@
 ########################################################################
 # Verifies the following functions:
-#   hexstr754_from_double()
-#   binstr754_from_double()
-#   hexstr754_to_double()
-#   binstr754_to_double()
+#   :raw754
+#       hexstr754_from_double()
+#       binstr754_from_double()
+#       hexstr754_to_double()
+#       binstr754_to_double()
 ########################################################################
 # Subversion Info
 #   $Author: pryrtmx $
-#   $Date: 2016-06-28 12:59:14 -0700 (Tue, 28 Jun 2016) $
-#   $Revision: 196 $
-#   $URL: https://subversion.assembla.com/svn/pryrt/trunk/perl/Data-IEEE754-Tools/t/01-convert.t $
-#   $Header: https://subversion.assembla.com/svn/pryrt/trunk/perl/Data-IEEE754-Tools/t/01-convert.t 196 2016-06-28 19:59:14Z pryrtmx $
-#   $Id: 01-convert.t 196 2016-06-28 19:59:14Z pryrtmx $
+#   $Date: 2016-07-06 09:15:17 -0700 (Wed, 06 Jul 2016) $
+#   $Revision: 210 $
+#   $URL: https://subversion.assembla.com/svn/pryrt/trunk/perl/Data-IEEE754-Tools/t/01-raw754.t $
+#   $Header: https://subversion.assembla.com/svn/pryrt/trunk/perl/Data-IEEE754-Tools/t/01-raw754.t 210 2016-07-06 16:15:17Z pryrtmx $
+#   $Id: 01-raw754.t 210 2016-07-06 16:15:17Z pryrtmx $
 ########################################################################
 use 5.008005;
 use warnings;
 use strict;
 use Test::More tests => 4+22*2;
-use Data::IEEE754::Tools qw/%EXPAND_OPTS/;
+use Data::IEEE754::Tools qw/:raw754/;
 
 my ($src, $got, $expect_v, $expect_b, $expect_h);
 
@@ -26,19 +27,19 @@ $expect_h = 'BFC47AE147AE147B';
 $expect_v = -0.16;
 
 $src = $expect_v;
-$got = Data::IEEE754::Tools::hexstr754_from_double($src);
+$got = hexstr754_from_double($src);
 is( $got, $expect_h, "hexstr754_frpm_double($src)" );
 
 $src = $expect_h;
-$got = Data::IEEE754::Tools::hexstr754_to_double($src);
+$got = hexstr754_to_double($src);
 is( $got, $expect_v, "hexstr754_to_double($src)" );
 
 $src = $expect_v;
-$got = Data::IEEE754::Tools::binstr754_from_double($src);
+$got = binstr754_from_double($src);
 is( $got, $expect_b, "binstr754_from_double($src)" );
 
 $src = $expect_b;
-$got = Data::IEEE754::Tools::binstr754_to_double($src);
+$got = binstr754_to_double($src);
 is( $got, $expect_v, "binstr754_to_double($src)" );
 
 # http://perlmonks.org/?node_id=984255
@@ -99,12 +100,12 @@ foreach my $bits ( sort keys %cmpmap ) {
     $expect_v   = bitsToDouble( $bits );    # use BrowserUK's conversion to generated expected values
 
     $src        = $bits;
-    $got        = Data::IEEE754::Tools::binstr754_to_double($src);
+    $got        = binstr754_to_double($src);
     is( $got, $expect_v, "binstr754_to_double($bits)");
 
     $expect_b   = qr/$cmpmap{$bits}/;
     $src        = $expect_v;
-    $got        = Data::IEEE754::Tools::binstr754_from_double($src);
+    $got        = binstr754_from_double($src);
     like( $got, $expect_b, "binstr754_to_double($bits)");
 }
 

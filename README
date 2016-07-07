@@ -1,3 +1,36 @@
+NAME
+
+Data::IEEE754::Tools - Various tools for understanding and manipulating the underlying IEEE-754 representation of floating point values
+
+DESCRIPTION
+
+It appears that L<Data::Float> includes most of the functionality, but using IEEE 754
+standard function names... That may be a better choice, unless you've got a need
+for one of these specific implementations.
+
+The L<IEEE754|https://en.wikipedia.org/wiki/IEEE_floating_point> standard describes
+various floating-point encodings.  The double format (`binary64') is a 64-bit base-2
+encoding, and correpsonds to the usual Perl floating value (NV). The format  includes the
+sign (s), the power of 2 (q), and a coefficient (c): C<value = ((-1)**s) * (c) * (2**q)>.
+The C<(-1)**s> term evaluates to the SIGN of the number, where s=0 means the sign
+is +1 and s=1 means the sign is -1.
+The coefficient is internally encoded as an implied 1 plus an encoded FRACTION,
+which is itself encoded as a 52-bit integer divided by an implied 2**52.
+
+L<Data::IEEE754>, or the equivalent L<perlfunc/pack> recipe L<dE<gt>>, do a
+good job of converting a perl floating value (NV) into the big-endian bytes
+that encode that value, but they don't help you interpret the value.
+
+This B<Data::IEEE754::Tools> module takes it to the next step, and provideds
+the tools to expand the encoded floating point value into its component sign,
+fraction, and exponent, so you can see how it is encoded internally.
+
+There are also functions available to let you know what the
+L<ULP|https://en.wikipedia.org/wiki/Unit_in_the_last_place> ("Unit in the Last Place")
+is for a given value, and another that returns the original value, but modified
+by just one ULP (toggle the ULP bit).
+
+
 INSTALLATION
 
 To install this module type the following:
@@ -8,9 +41,11 @@ To install this module type the following:
    make install
 
 
-COPYRIGHT AND LICENCE
+COPYRIGHT
 
 Copyright (C) 2016 Peter C. Jones
+
+LICENCE
 
 This program is free software; you can redistribute it and/or modify it
 under the terms of either: the GNU General Public License as published
