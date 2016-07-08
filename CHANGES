@@ -1,47 +1,7 @@
 Revision history for Perl module Data::IEEE754::Tools.
 
-TODO: v0.010 initial release?
+v0.010 Fri Jul 08 16:50:00 PDT 2016
+    - Initial release
 
-v0.008 Thu Jul 07
-    - Start simplification of expand_ieee754() to to_hex/dec_floatingpoint(),
-      using BrowserUK's suggestion that simpler is better.  They utilize the
-      more standard "-0x1.0123456789abcp+0000" notation
-    - remove expand_ieee754
-    - rename val_toggle_ulp to toggle_ulp
-    - update test suite / names
-    - add nextup(), nextdown(), nextafter(), and tests
-    - bug fix ulp/next*.t: include IND in the list of NAN|INF|IND
-      to ensure that on systems that distinguish -1.#IND from -1.#NAN,
-      it will still use the text-eq instead of numeric-==.
-    - bug fix nextafter.t: for nextafter(*NAN, +NAN), need to expect
-      the value (*NAN), not the direction (+NAN).
-    - bug fix to_xxx_floatingpoint(-1.#IND) and associated floatingpoint.t:
-      comparing against wrong $mant for -1.#IND, and wrongly expecting -1.#QNAN
-
-v0.007 Thu Jun 30
-    - Add ulp() and val_toggle_ulp() functions
-    - Experimented with value_plus/minus_ulp(), but deleted after major bug,
-      and discovered Data::Float, which has working versions of
-
-v0.006 Wed Jun 29
-    - Full POD; good estimated test coverage
-
-v0.005 Tue Jun 28
-    - Rework options processing
-    - Improve POD
-    - Improve test coverage
-    - Fix bugs found during test coverage debug
-
-v0.004 Tue Jun 21
-    - Rename to Data::IEEE754::Tools.pm
-
-v0.003 Tue Jun 21
-    - First "reasonably functional" version
-
-v0.002 Sat Jun 18
-    - Convert to Data::IEEE754::Expand.pm
-    - Add initial error handling
-
-v0.001 Thu May 26
-    Private (pryrt)
-    - Initial DataFormatIeee.pl proof-of-concept
+v0.001 - v0.008
+    - Private development

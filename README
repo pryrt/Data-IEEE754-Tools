@@ -4,42 +4,35 @@ Data::IEEE754::Tools - Various tools for understanding and manipulating the unde
 
 DESCRIPTION
 
-It appears that L<Data::Float> includes most of the functionality, but using IEEE 754
-standard function names... That may be a better choice, unless you've got a need
-for one of these specific implementations.
-
-The L<IEEE754|https://en.wikipedia.org/wiki/IEEE_floating_point> standard describes
-various floating-point encodings.  The double format (`binary64') is a 64-bit base-2
-encoding, and correpsonds to the usual Perl floating value (NV). The format  includes the
-sign (s), the power of 2 (q), and a coefficient (c): C<value = ((-1)**s) * (c) * (2**q)>.
-The C<(-1)**s> term evaluates to the SIGN of the number, where s=0 means the sign
-is +1 and s=1 means the sign is -1.
-The coefficient is internally encoded as an implied 1 plus an encoded FRACTION,
-which is itself encoded as a 52-bit integer divided by an implied 2**52.
-
-L<Data::IEEE754>, or the equivalent L<perlfunc/pack> recipe L<dE<gt>>, do a
-good job of converting a perl floating value (NV) into the big-endian bytes
-that encode that value, but they don't help you interpret the value.
-
-This B<Data::IEEE754::Tools> module takes it to the next step, and provideds
-the tools to expand the encoded floating point value into its component sign,
-fraction, and exponent, so you can see how it is encoded internally.
-
-There are also functions available to let you know what the
-L<ULP|https://en.wikipedia.org/wiki/Unit_in_the_last_place> ("Unit in the Last Place")
-is for a given value, and another that returns the original value, but modified
-by just one ULP (toggle the ULP bit).
-
+These tools give access to the underlying IEEE 754 floating-point
+representation used by Perl (see perlguts). They include functions for
+converting from the 64bit internal representation to a string that shows
+those bits (either as hexadecimal or binary) and back, functions for
+converting that encoded value into a more human-readable format to give
+insight into the meaning of the encoded values, and functions to
+manipulate the smallest possible change for a given floating-point value
+(which is the ULP <https://en.wikipedia.org/wiki/Unit_in_the_last_place>
+or "Unit in the Last Place").
 
 INSTALLATION
 
-To install this module type the following:
+To install this module, use your favorite CPAN client.
 
-   perl Makefile.PL
-   make
-   make test
-   make install
+For a manual install, type the following:
 
+    perl Makefile.PL
+    make
+    make test
+    make install
+
+(On Windows machines, you may need to use "dmake" instead of "make".)
+
+AUTHOR
+
+Peter C. Jones <petercj AT cpan DOT org>
+
+Please report any bugs or feature requests emailing <bug-Data-IEEE754-Tools AT rt.cpan.org>
+or thru the web interface at <http://rt.cpan.org/NoAuth/ReportBug.html?Queue=Data-IEEE754-Tools>
 
 COPYRIGHT
 
@@ -51,4 +44,4 @@ This program is free software; you can redistribute it and/or modify it
 under the terms of either: the GNU General Public License as published
 by the Free Software Foundation; or the Artistic License.
 
-See L<http://dev.perl.org/licenses/> for more information.
+See <http://dev.perl.org/licenses/> for more information.

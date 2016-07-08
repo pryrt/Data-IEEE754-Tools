@@ -6,14 +6,6 @@
 #       hexstr754_to_double()
 #       binstr754_to_double()
 ########################################################################
-# Subversion Info
-#   $Author: pryrtmx $
-#   $Date: 2016-07-06 09:15:17 -0700 (Wed, 06 Jul 2016) $
-#   $Revision: 210 $
-#   $URL: https://subversion.assembla.com/svn/pryrt/trunk/perl/Data-IEEE754-Tools/t/01-raw754.t $
-#   $Header: https://subversion.assembla.com/svn/pryrt/trunk/perl/Data-IEEE754-Tools/t/01-raw754.t 210 2016-07-06 16:15:17Z pryrtmx $
-#   $Id: 01-raw754.t 210 2016-07-06 16:15:17Z pryrtmx $
-########################################################################
 use 5.008005;
 use warnings;
 use strict;

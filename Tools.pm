@@ -78,15 +78,6 @@ appropriate.
 
 =cut
 
-########################################################################
-# Subversion Info
-#   $Author: pryrtmx $
-#   $Date: 2016-07-07 06:57:25 -0700 (Thu, 07 Jul 2016) $
-#   $Revision: 216 $
-#   $URL: https://subversion.assembla.com/svn/pryrt/trunk/perl/Data-IEEE754-Tools/Tools.pm $
-#   $Header: https://subversion.assembla.com/svn/pryrt/trunk/perl/Data-IEEE754-Tools/Tools.pm 216 2016-07-07 13:57:25Z pryrtmx $
-#   $Id: Tools.pm 216 2016-07-07 13:57:25Z pryrtmx $
-########################################################################
 package Data::IEEE754::Tools;
 use 5.008005;
 use warnings;
@@ -94,7 +85,7 @@ use strict;
 use Carp;
 use Exporter 'import';  # just use the import() function, without the rest of the overhead of ISA
 
-use version 0.77; our $VERSION = version->declare('v0.008');
+use version 0.77; our $VERSION = version->declare('v0.010');
 
 =head1 EXPORTABLE FUNCTIONS AND VARIABLES
 
@@ -465,6 +456,19 @@ sub nextafter {
 =head2 :all
 
 Include all of the above.
+
+=head1 INSTALLATION
+
+To install this module, use your favorite CPAN client.
+
+For a manual install, type the following:
+
+    perl Makefile.PL
+    make
+    make test
+    make install
+
+(On Windows machines, you may need to use "dmake" instead of "make".)
 
 =head1 SEE ALSO
 

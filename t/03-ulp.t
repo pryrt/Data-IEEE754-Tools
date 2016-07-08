@@ -5,14 +5,6 @@
 #       toggle_ulp(v)
 #   remaining :ulp features in next test(s)
 ########################################################################
-# Subversion Info
-#   $Author: pryrtmx $
-#   $Date: 2016-07-07 13:37:19 -0700 (Thu, 07 Jul 2016) $
-#   $Revision: 222 $
-#   $URL: https://subversion.assembla.com/svn/pryrt/trunk/perl/Data-IEEE754-Tools/t/03-ulp.t $
-#   $Header: https://subversion.assembla.com/svn/pryrt/trunk/perl/Data-IEEE754-Tools/t/03-ulp.t 222 2016-07-07 20:37:19Z pryrtmx $
-#   $Id: 03-ulp.t 222 2016-07-07 20:37:19Z pryrtmx $
-########################################################################
 use 5.008005;
 use warnings;
 use strict;

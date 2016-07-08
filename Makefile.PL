@@ -10,24 +10,21 @@ use 5.008005;
     'PREREQ_PM'     => {
         'Exporter'      => 0,
         'version'       => 0.77,
+        'warnings'      => 0,
+        'strict'        => 0,
+        'Carp'          => 0,
     },
 );
 
 {
     no warnings;
-    if( $ExtUtils::MakeMaker::VERSION > '6.17' ) {
+    if( $ExtUtils::MakeMaker::VERSION >= '6.46' ) {
         $mm_args{META_MERGE} = {
             resources => {
                 bugtracker => 'http://rt.cpan.org/Public/Dist/Display.html?Name=Data-IEEE754-Tools',
                 repository => 'https://github.com/pryrt/Data-IEEE754-Tools',
             },
-            keywords => [ 'IEEE-754', 'floating point representation', 'fraction' ],
-            provides => {
-                'Data::IEEE754::Tools' => {
-                    file => 'Tools.pm',
-                    version => 0.04,
-                },
-            },
+            keywords => [ 'IEEE-754', 'floating point representation'],
         },
     }
     if( $ExtUtils::MakeMaker::VERSION >= '6.31' ) {
@@ -41,10 +38,6 @@ use 5.008005;
             'ExtUtils::MakeMaker' => 0,
         },
     }
-#    if( $ExtUtils::MakeMaker::VERSION >= '6.5503' ) {
-#        $mm_args{BUILD_REQUIRES} = {
-#        },
-#    }
     if( $ExtUtils::MakeMaker::VERSION >= '6.64' ) {
         $mm_args{TEST_REQUIRES} = {
             'warnings' => 0,
