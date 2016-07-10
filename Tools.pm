@@ -1,3 +1,12 @@
+package Data::IEEE754::Tools;
+use 5.008005;
+use warnings;
+use strict;
+use Carp;
+use Exporter 'import';  # just use the import() function, without the rest of the overhead of ISA
+
+use version 0.77; our $VERSION = version->declare('0.011_001'); # underscore should make it "alpha"/"developer" on CPAN, so it will go thru CPAN TESTERS, but not distribute to the world
+
 =pod
 
 =head1 NAME
@@ -22,6 +31,10 @@ Data::IEEE754::Tools - Various tools for understanding and manipulating the unde
     print $v16 = toggle_ulp( $t16 );    # 16.160000000000000
 
 =head1 DESCRIPTION
+
+*** ALPHA RELEASE v0.011_001: trying out a bugfix with CPAN Testers (since the bug
+doesn't show up in any of my machines or perl versions, but is all throughout
+CPAN Testers reports ***
 
 These tools give access to the underlying IEEE 754 floating-point representation
 used by Perl (see L<perlguts>).  They include functions for converting from the
@@ -75,17 +88,6 @@ access to the raw IEEE 754 encoding, or a stringification of the encoding which
 interprets the encoding as a sign and a coefficient and a power of 2, or access to
 the ULP and ULP-manipulating features, all using direct bit manipulation when
 appropriate.
-
-=cut
-
-package Data::IEEE754::Tools;
-use 5.008005;
-use warnings;
-use strict;
-use Carp;
-use Exporter 'import';  # just use the import() function, without the rest of the overhead of ISA
-
-use version 0.77; our $VERSION = version->declare('v0.010');
 
 =head1 EXPORTABLE FUNCTIONS AND VARIABLES
 
@@ -417,6 +419,8 @@ sub nextup {
     } elsif ($lsb == -1.0) {
         $msb += ($msb & 0x80000000) ? -1.0 : +1.0;
     }
+    $msb &= 0xFFFFFFFF;     # v0.011_001: potential bugfix: ensure 32bit MSB <https://rt.cpan.org/Public/Bug/Display.html?id=116006>
+    $lsb &= 0xFFFFFFFF;     # v0.011_001: potential bugfix: ensure 32bit MSB <https://rt.cpan.org/Public/Bug/Display.html?id=116006>
     return hexstr754_to_double( sprintf '%08X%08X', $msb, $lsb );
 }
 

@@ -1,5 +1,22 @@
 Revision history for Perl module Data::IEEE754::Tools.
 
+v0.011_001 In Progress
+    - nextup():
+        * Could not replicate <https://rt.cpan.org/Public/Bug/Display.html?id=116006>,
+          so adding diagnostics to nextupdown/nextafter test suite;
+        * by copying the nextup code, but with additional diagnostics, inside the test
+          wrapper, and forcing a fail for diagnostics, saw that when LSB underflows (goes to -1),
+          the hexification is too many F's; perhaps on some systems, that was being misinterpreted
+          when the two were being recombined.
+        * hopefully, my alpha _001 release to CPAN Testers will prove or disprove this theory
+    - Test suite for :floatingpoint now converts SNAN to expect /[SQ]NAN/,
+        because it doesn't really matter that much whether Perl silences a signaling NAN
+        * this should fix <https://rt.cpan.org/Public/Bug/Display.html?id=116005>
+    - Test suite for :raw754 now switches to '==' comparison for numeric arguments
+        * this should fix <https://rt.cpan.org/Public/Bug/Display.html?id=116004>
+    - Test suite now requires 64bit (8byte) NV during install
+        * I am curious whether this will fix <https://rt.cpan.org/Public/Bug/Display.html?id=116006>
+
 v0.010 Fri Jul 08 16:50:00 PDT 2016
     - Initial release
 

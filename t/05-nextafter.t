@@ -50,6 +50,69 @@ sub f2test {
         diag sprintf "EXPECT:   hex(%-30s) = %s", to_dec_floatingpoint($x), hexstr754_from_double($x);
         diag sprintf "ANSWER:   hex(%-30s) = %s", to_dec_floatingpoint($u), hexstr754_from_double($u);
         diag '';
+        SWITCHFUNCTION: foreach ($fn) {
+            my $val = $v;
+            if( $val != $val ) {    # NAN
+                diag( "DEBUG($fn): VAL IS NAN\t" . to_dec_floatingpoint($val) );
+                last SWITCHFUNCTION;
+            } else {
+                diag( "DEBUG($fn): VAL ISN'T NAN\t" . to_dec_floatingpoint($val) );
+            }
+            my $dir = $d;
+            if( $dir != $dir ) {    # NAN
+                diag( "DEBUG($fn): DIR IS NAN\t" . to_dec_floatingpoint($dir) );
+                last SWITCHFUNCTION;
+            } else {
+                diag( "DEBUG($fn): DIR ISN'T NAN\t" . to_dec_floatingpoint($dir) );
+            }
+            if( $dir == $val ) {    # equal
+                diag( "DEBUG($fn): DIR == VAL\t" . to_dec_floatingpoint($dir) . " == " . to_dec_floatingpoint($val));
+                last SWITCHFUNCTION;
+            } else {
+                diag( "DEBUG($fn): DIR != VAL\t" . to_dec_floatingpoint($dir) . " != " . to_dec_floatingpoint($val));
+            }
+            if( $dir > $val ) {    # greater
+                diag( "DEBUG($fn): DIR > VAL\t" . to_dec_floatingpoint($dir) . " > " . to_dec_floatingpoint($val));
+                $_ = 'nextup';
+            } else {
+                diag( "DEBUG($fn): DIR !> VAL\t" . to_dec_floatingpoint($dir) . " !> " . to_dec_floatingpoint($val));
+            }
+            if( $dir < $val ) {    # lesser
+                diag( "DEBUG($fn): DIR < VAL\t" . to_dec_floatingpoint($dir) . " < " . to_dec_floatingpoint($val));
+                $_ = 'nextdown';
+            } else {
+                diag( "DEBUG($fn): DIR !< VAL\t" . to_dec_floatingpoint($dir) . " !< " . to_dec_floatingpoint($val));
+            }
+            $val = /^nextdown$/ ? - $v : $v;     # choose nextup or nextdown
+            my $h754 = hexstr754_from_double($val);
+            diag( "DEBUG($fn): h754 = $h754" );
+            if($h754 eq '7FF0000000000000') { diag "DEBUG($fn): +INF => return +INF"; last SWITCHFUNCTION; }
+            if($h754 eq 'FFF0000000000000') { diag "DEBUG($fn): -INF => return -HUGE"; last SWITCHFUNCTION; }
+            if($h754 eq '8000000000000000') { diag "DEBUG($fn): +INF => return +DENORM_1"; last SWITCHFUNCTION; }
+            my ($msb,$lsb) = Data::IEEE754::Tools::arr2x32b_from_double($val);
+            diag( "DEBUG($fn): msb,lsb = $msb,$lsb" );
+            $lsb += ($msb & 0x80000000) ? -1.0 : +1.0;
+            diag( "DEBUG($fn): adjust lsb => $lsb" );
+            if($lsb == 4_294_967_296.0) {
+                $lsb = 0.0;
+                $msb += ($msb & 0x80000000) ? -1.0 : +1.0;
+                diag( "DEBUG($fn): LSB OVERFLOW => msb,lsb = $msb,$lsb" );
+            } elsif ($lsb == -1.0) {
+                $msb += ($msb & 0x80000000) ? -1.0 : +1.0;
+                diag( "DEBUG($fn): LSB==-1.0 => msb,lsb = $msb,$lsb" );
+            }
+            diag( "DEBUG($fn): ALMOST msb,lsb = $msb,$lsb" );
+            $msb &= 0xFFFFFFFF;     # v0.011_001: potential bugfix: ensure 32bit MSB <https://rt.cpan.org/Public/Bug/Display.html?id=116006>
+            $lsb &= 0xFFFFFFFF;     # v0.011_001: potential bugfix: ensure 32bit MSB <https://rt.cpan.org/Public/Bug/Display.html?id=116006>
+            diag( "DEBUG($fn): MASKED msb,lsb = $msb,$lsb" );
+            diag( "DEBUG($fn): FINAL HEXSTR = " .sprintf('%08X%08X', $msb, $lsb ));
+            diag( "DEBUG($fn): FINAL DOUBLE = " .to_dec_floatingpoint(hexstr754_to_double( sprintf '%08X%08X', $msb, $lsb )));
+            diag( "DEBUG($fn): FINAL NEG DOUBLE = " .to_dec_floatingpoint(-hexstr754_to_double( sprintf '%08X%08X', $msb, $lsb )))
+                if (/^nextdown$/);
+
+            last SWITCHFUNCTION;
+        }
+        diag '';
     }
     note '-'x80;
 }

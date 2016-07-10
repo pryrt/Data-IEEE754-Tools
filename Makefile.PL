@@ -44,6 +44,7 @@ use 5.008005;
             'strict' => 0,
             'Test::More' => 0,
             'constant' => 0,
+            'Config' => 0,
         };
     }
 }

@@ -14,10 +14,14 @@ sub fptest {
     local $\ = "\n";
     my $h = shift;
     my $val = hexstr754_to_double($h->{src});
-    my ($got, $name);
-    is( $got = to_hex_floatingpoint($val), $h->{exp_hex}, $name = sprintf('to_hex_floatingpoint(ieee754(%-16.16s) = %-+24.16e)', $h->{src}, $val) );
+    my ($got, $exp, $name);
+    $exp = quotemeta( $h->{exp_hex} );
+    $exp =~ s/SNAN/[SQ]NAN/;
+    like( $got = to_hex_floatingpoint($val), qr/$exp/, $name = sprintf('to_hex_floatingpoint(ieee754(%-16.16s) = %-+24.16e)', $h->{src}, $val) );
     print( "$name() = $got" );
-    is( $got = to_dec_floatingpoint($val), $h->{exp_dec}, $name = sprintf('to_dec_floatingpoint(ieee754(%-16.16s) = %-+24.16e)', $h->{src}, $val) );
+    $exp = quotemeta( $h->{exp_dec} );
+    $exp =~ s/SNAN/[SQ]NAN/;
+    like( $got = to_dec_floatingpoint($val), qr/$exp/, $name = sprintf('to_dec_floatingpoint(ieee754(%-16.16s) = %-+24.16e)', $h->{src}, $val) );
     print( "$name() = $got" );
 }
 
@@ -80,10 +84,10 @@ push @tests, { src => '7FEFFFFFFFFFFFFF', exp_hex => '+0x1.fffffffffffffp+1023',
 push @tests, { src => 'FFEFFFFFFFFFFFFF', exp_hex => '-0x1.fffffffffffffp+1023', exp_dec => '-0d1.9999999999999998p+1023' };
 push @tests, { src => '7FF0000000000000', exp_hex => '+0x1.#INF000000000p+0000', exp_dec => '+0d1.#INF000000000000p+0000' };
 push @tests, { src => 'FFF0000000000000', exp_hex => '-0x1.#INF000000000p+0000', exp_dec => '-0d1.#INF000000000000p+0000' };
-push @tests, { src => '7FF0000000000001', exp_hex => '+0x1.#QNAN00000000p+0000', exp_dec => '+0d1.#QNAN00000000000p+0000' };
-push @tests, { src => 'FFF0000000000001', exp_hex => '-0x1.#QNAN00000000p+0000', exp_dec => '-0d1.#QNAN00000000000p+0000' };
-push @tests, { src => '7FF7FFFFFFFFFFFF', exp_hex => '+0x1.#QNAN00000000p+0000', exp_dec => '+0d1.#QNAN00000000000p+0000' };
-push @tests, { src => 'FFF7FFFFFFFFFFFF', exp_hex => '-0x1.#QNAN00000000p+0000', exp_dec => '-0d1.#QNAN00000000000p+0000' };
+push @tests, { src => '7FF0000000000001', exp_hex => '+0x1.#SNAN00000000p+0000', exp_dec => '+0d1.#SNAN00000000000p+0000' };
+push @tests, { src => 'FFF0000000000001', exp_hex => '-0x1.#SNAN00000000p+0000', exp_dec => '-0d1.#SNAN00000000000p+0000' };
+push @tests, { src => '7FF7FFFFFFFFFFFF', exp_hex => '+0x1.#SNAN00000000p+0000', exp_dec => '+0d1.#SNAN00000000000p+0000' };
+push @tests, { src => 'FFF7FFFFFFFFFFFF', exp_hex => '-0x1.#SNAN00000000p+0000', exp_dec => '-0d1.#SNAN00000000000p+0000' };
 push @tests, { src => '7FF8000000000000', exp_hex => '+0x1.#QNAN00000000p+0000', exp_dec => '+0d1.#QNAN00000000000p+0000' };
 push @tests, { src => 'FFF8000000000000', exp_hex => '-0x1.#IND000000000p+0000', exp_dec => '-0d1.#IND000000000000p+0000' };
 push @tests, { src => '7FF8000000000001', exp_hex => '+0x1.#QNAN00000000p+0000', exp_dec => '+0d1.#QNAN00000000000p+0000' };

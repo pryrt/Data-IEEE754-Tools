@@ -20,19 +20,19 @@ $expect_v = -0.16;
 
 $src = $expect_v;
 $got = hexstr754_from_double($src);
-is( $got, $expect_h, "hexstr754_frpm_double($src)" );
+cmp_ok( $got, 'eq', $expect_h, "hexstr754_from_double($src)" );
 
 $src = $expect_h;
 $got = hexstr754_to_double($src);
-is( $got, $expect_v, "hexstr754_to_double($src)" );
+cmp_ok( $got, '==', $expect_v, "hexstr754_to_double($src)" );
 
 $src = $expect_v;
 $got = binstr754_from_double($src);
-is( $got, $expect_b, "binstr754_from_double($src)" );
+cmp_ok( $got, 'eq', $expect_b, "binstr754_from_double($src)" );
 
 $src = $expect_b;
 $got = binstr754_to_double($src);
-is( $got, $expect_v, "binstr754_to_double($src)" );
+cmp_ok( $got, '==', $expect_v, "binstr754_to_double($src)" );
 
 # http://perlmonks.org/?node_id=984255
 use constant {
@@ -93,7 +93,7 @@ foreach my $bits ( sort keys %cmpmap ) {
 
     $src        = $bits;
     $got        = binstr754_to_double($src);
-    is( $got, $expect_v, "binstr754_to_double($bits)");
+    cmp_ok( $got, ( '1'x11 eq substr $bits, 1, 11 ) ? 'eq' : '==', $expect_v, "binstr754_to_double($bits)");
 
     $expect_b   = qr/$cmpmap{$bits}/;
     $src        = $expect_v;
