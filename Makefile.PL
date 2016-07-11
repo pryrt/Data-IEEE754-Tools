@@ -42,7 +42,7 @@ use 5.008005;
         $mm_args{TEST_REQUIRES} = {
             'warnings' => 0,
             'strict' => 0,
-            'Test::More' => 0,
+            'Test::More' => 0.86,
             'constant' => 0,
             'Config' => 0,
         };

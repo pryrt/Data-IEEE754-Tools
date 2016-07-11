@@ -5,7 +5,7 @@
 #       nextdown(v)
 #   (other :ulp tests in other .t files)
 ########################################################################
-use 5.008005;
+use 5.006;
 use warnings;
 use strict;
 use Test::More;

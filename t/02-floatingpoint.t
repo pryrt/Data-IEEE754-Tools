@@ -4,7 +4,7 @@
 #       to_hex_floatingpoint(v)
 #       to_dec_floatingpoint(v)
 ########################################################################
-use 5.008005;
+use 5.006;
 use warnings;
 use strict;
 use Test::More;

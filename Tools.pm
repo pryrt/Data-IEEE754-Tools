@@ -1,11 +1,11 @@
 package Data::IEEE754::Tools;
-use 5.008005;
+use 5.006;
 use warnings;
 use strict;
 use Carp;
 use Exporter 'import';  # just use the import() function, without the rest of the overhead of ISA
 
-use version 0.77; our $VERSION = version->declare('0.011_001'); # underscore should make it "alpha"/"developer" on CPAN, so it will go thru CPAN TESTERS, but not distribute to the world
+use version 0.77; our $VERSION = version->declare('0.011_002'); # underscore should make it "alpha"/"developer" on CPAN, so it will go thru CPAN TESTERS, but not distribute to the world
 
 =pod
 

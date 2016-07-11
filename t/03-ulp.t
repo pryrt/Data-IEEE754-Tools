@@ -5,7 +5,7 @@
 #       toggle_ulp(v)
 #   remaining :ulp features in next test(s)
 ########################################################################
-use 5.008005;
+use 5.006;
 use warnings;
 use strict;
 use Test::More;
