@@ -1,23 +1,25 @@
 Revision history for Perl module Data::IEEE754::Tools.
 
-v0.011_002 In Progress
+v0.011_003 In Progress
     - use 5.8.5: perlver says that the only requirement for 5.8 is the constant hash
         - v0.011_002: attempt to lower to 5.6.0, and change from constant hash to multiple `use constant` lines
+        - v0.011_003: edit Makefile.PL to also 'use 5.6' instead of '5.8.5'
     - Test suite for :raw754 now switches to '==' comparison for numeric arguments, and check for 64bit NV
-        - bug @ <https://rt.cpan.org/Public/Bug/Display.html?id=116004>; still exists in v0.011_001
-        - v0.011_002: change test suite to use a '%+24.16e' got eq expect, rather than raw got == expect,
-          which should keep us successfully '-1.6000000000000000e-001', even when the 16byte version is
-          -0.160000000000000003.
+        * bug @ <https://rt.cpan.org/Public/Bug/Display.html?id=116004>; still exists in v0.011_001
+        * v0.011_002: change test suite to use a '%+24.16e' got eq expect, rather than raw got == expect
+        * v0.011_002: issue did not appear during CPAN Testers, so believed fixed
     - nextup():
         * bug @ <https://rt.cpan.org/Public/Bug/Display.html?id=116006>,
         * could not replicate; but adding diagnostics showed that when LSB underflows (goes to -1),
           the hexification is too many F's; perhaps on some systems, that was being misinterpreted
           when the two were being recombined, so masked the MSB and LSB before merging
         * v0.011_001: issue did not appear during CPAN Testers, so believed fixed
+        * v0.011_002: issue did not appear during CPAN Testers, so believed fixed
     - Test suite for :floatingpoint now converts SNAN to expect /[SQ]NAN/,
         because it doesn't really matter that much whether Perl silences a signaling NAN
         * bug @ <https://rt.cpan.org/Public/Bug/Display.html?id=116005>
         * v0.011_001: issue did not appear during CPAN Testers, so believed fixed
+        * v0.011_002: issue did not appear during CPAN Testers, so believed fixed
 
 v0.010 Fri Jul 08 16:50:00 PDT 2016
     - Initial release

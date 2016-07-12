@@ -5,7 +5,7 @@ use strict;
 use Carp;
 use Exporter 'import';  # just use the import() function, without the rest of the overhead of ISA
 
-use version 0.77; our $VERSION = version->declare('0.011_002'); # underscore should make it "alpha"/"developer" on CPAN, so it will go thru CPAN TESTERS, but not distribute to the world
+use version 0.77; our $VERSION = version->declare('0.011_003'); # underscore should make it "alpha"/"developer" on CPAN, so it will go thru CPAN TESTERS, but not distribute to the world
 
 =pod
 
