@@ -31,7 +31,7 @@ use 5.006;
         $mm_args{LICENSE} = 'perl_5';
     }
     if( $ExtUtils::MakeMaker::VERSION >= '6.48' ) {
-        $mm_args{MIN_PERL_VERSION} = '5.8.5';
+        $mm_args{MIN_PERL_VERSION} = '5.6.0';
     }
     if( $ExtUtils::MakeMaker::VERSION >= '6.52' ) {
         $mm_args{CONFIGURE_REQUIRES} = {

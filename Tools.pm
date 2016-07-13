@@ -5,7 +5,7 @@ use strict;
 use Carp;
 use Exporter 'import';  # just use the import() function, without the rest of the overhead of ISA
 
-use version 0.77; our $VERSION = version->declare('0.011_003'); # underscore should make it "alpha"/"developer" on CPAN, so it will go thru CPAN TESTERS, but not distribute to the world
+use version 0.77; our $VERSION = version->declare('0.011_004'); # underscore makes it "alpha"/"developer" on CPAN, so it will go thru CPAN TESTERS, but not distribute to the world
 
 =pod
 
@@ -32,13 +32,13 @@ Data::IEEE754::Tools - Various tools for understanding and manipulating the unde
 
 =head1 DESCRIPTION
 
-*** ALPHA RELEASE v0.011_001: trying out a bugfix with CPAN Testers (since the bug
+*** ALPHA RELEASE v0.011_004: trying out a bugfix with CPAN Testers (since the bug
 doesn't show up in any of my machines or perl versions, but is all throughout
 CPAN Testers reports ***
 
-These tools give access to the underlying IEEE 754 floating-point representation
-used by Perl (see L<perlguts>).  They include functions for converting from the
-64bit internal representation to a string that shows those bits (either as
+These tools give access to the underlying IEEE 754 floating-point 64bit representation
+used by many instances of Perl (see L<perlguts>).  They include functions for converting
+from the 64bit internal representation to a string that shows those bits (either as
 hexadecimal or binary) and back, functions for converting that encoded value
 into a more human-readable format to give insight into the meaning of the encoded
 values, and functions to manipulate the smallest possible change for a given
@@ -88,6 +88,21 @@ access to the raw IEEE 754 encoding, or a stringification of the encoding which
 interprets the encoding as a sign and a coefficient and a power of 2, or access to
 the ULP and ULP-manipulating features, all using direct bit manipulation when
 appropriate.
+
+=head2 Compatibility
+
+B<Data::IEEE754::Tools> works with 64bit floating-point representations.
+
+If you have a Perl setup which uses a larger representation (for example,
+C<use L<Config>; print $Config{nvsize}; # 16 =E<gt> 128bit>), values reported by
+this module will be reduced in precision to fit the 64bit representation.
+
+If you have a Perl setup which uses a smaller representation (for example,
+C<use L<Config>; print $Config{nvsize}; # 4 =E<gt> 32bit>), the installation
+will likely fail, because the unit tests were not set up for lower precision
+inputs.  However, forcing the installation I<might> still allow coercion
+from the smaller Perl NV into a true IEEE 754 double (64bit) floating-point,
+but there is no guarantee it will work.
 
 =head1 EXPORTABLE FUNCTIONS AND VARIABLES
 
@@ -359,7 +374,6 @@ sub ulp($) {
     # calculate normal ULP
     my $tog = toggle_ulp( $val );
     return abs($val - $tog);
-    return join "|", (caller(0))[3].'()', $val, $rawbin, $sign, $exp, $fract, __LINE__, '';
 }
 
 =head3 toggle_ulp( I<val> )

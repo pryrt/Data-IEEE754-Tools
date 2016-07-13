@@ -19,4 +19,4 @@ cmp_ok( $Config{nvsize}*8 , '>=', 8*8 , "Requires Perl NV with at least 64bit do
             $Config{nvsize}*8, 8*8
     );
 
-diag( "\nv0.011_002: trying out 'use 5.006' instead of 'use 5.008005'\n\n" );
+diag( "\nv0.011_004: trying out 'use 5.006' instead of 'use 5.008005'\n\n" );

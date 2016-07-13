@@ -1,9 +1,22 @@
 Revision history for Perl module Data::IEEE754::Tools.
 
-v0.011_003 In Progress
+v0.012 TODO
+    - uprev to 0.012
+    - make the 00-load.t bit-diag() only run on fail
+    - update POD to remove the ALPHA notification
+    - summarize the bugfixes from 0.011_alphas in final CHANGES
+
+v0.011_004 In Progress
+    - Ran Devel::Cover's cover() script:
+        - Tools.pm#248: (SNAN vs QNAN) only one of the two conditions is covered (because this machine cannot do SNAN) = no fix
+        - Tools.pm#269: (SNAN vs QNAN) only one of the two conditions is covered (because this machine cannot do SNAN) = no fix
+        - Tools.pm#362: (unreachable return) was a holdover from debugging; deleted. = deleted
+        - Tools.pm#418: (msb & 0x8000000) only tests one (only one sign in that direction) = no fix (yet)
+        - Tools.pm#420: (msb & 0x8000000) only tests one (only one sign in that direction) = no fix (yet)
     - use 5.8.5: perlver says that the only requirement for 5.8 is the constant hash
         - v0.011_002: attempt to lower to 5.6.0, and change from constant hash to multiple `use constant` lines
-        - v0.011_003: edit Makefile.PL to also 'use 5.6' instead of '5.8.5'
+        - v0.011_003: edit Makefile.PL to also 'use 5.006' instead of '5.008005'
+        - v0.011_004: edit Makefile.PL to use {MIN_PERL_VERSION} = '5.6.0' instead of '5.8.5'
     - Test suite for :raw754 now switches to '==' comparison for numeric arguments, and check for 64bit NV
         * bug @ <https://rt.cpan.org/Public/Bug/Display.html?id=116004>; still exists in v0.011_001
         * v0.011_002: change test suite to use a '%+24.16e' got eq expect, rather than raw got == expect
