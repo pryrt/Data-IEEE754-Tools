@@ -13,10 +13,8 @@ BEGIN {
     use_ok( 'Data::IEEE754::Tools' ) or diag "Couldn't even load Data::IEEE754::Tools";
 }
 
-cmp_ok( $Config{nvsize}*8 , '>=', 8*8 , "Requires Perl NV with at least 64bit double" );
-    0 or diag(
+cmp_ok( $Config{nvsize}*8 , '>=', 8*8 , "Requires Perl NV with at least 64bit double" )
+    or diag(
         sprintf "\n\nYour system uses a native floating-point with %d bits;\nData::IEEE754::Tools requires >= %d bits\n\n",
             $Config{nvsize}*8, 8*8
     );
-
-diag( "\nv0.011_004: trying out 'use 5.006' instead of 'use 5.008005'\n\n" );

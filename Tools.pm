@@ -5,7 +5,7 @@ use strict;
 use Carp;
 use Exporter 'import';  # just use the import() function, without the rest of the overhead of ISA
 
-use version 0.77; our $VERSION = version->declare('0.011_004'); # underscore makes it "alpha"/"developer" on CPAN, so it will go thru CPAN TESTERS, but not distribute to the world
+use version 0.77; our $VERSION = version->declare('0.012');
 
 =pod
 
@@ -31,10 +31,6 @@ Data::IEEE754::Tools - Various tools for understanding and manipulating the unde
     print $v16 = toggle_ulp( $t16 );    # 16.160000000000000
 
 =head1 DESCRIPTION
-
-*** ALPHA RELEASE v0.011_004: trying out a bugfix with CPAN Testers (since the bug
-doesn't show up in any of my machines or perl versions, but is all throughout
-CPAN Testers reports ***
 
 These tools give access to the underlying IEEE 754 floating-point 64bit representation
 used by many instances of Perl (see L<perlguts>).  They include functions for converting
@@ -260,7 +256,7 @@ sub to_hex_floatingpoint {
     if($exp == 1024) {
         return $sign . "0x1.#INF000000000p+0000"    if $mant eq '0000000000000';
         return $sign . "0x1.#IND000000000p+0000"    if $mant eq '8000000000000' and $sign eq '-';
-        return $sign . ( (($msb & 0x00080000) != 0x00080000) ? "0x1.#SNAN00000000p+0000" : "0x1.#QNAN00000000p+0000");
+        return $sign . ( (($msb & 0x00080000) != 0x00080000) ? "0x1.#SNAN00000000p+0000" : "0x1.#QNAN00000000p+0000");  # v0.012 coverage note: '!=' condition only triggered on systems with SNAN; ignore Devel::Cover failures on this line on systems which quiet all SNAN to QNAN
     }
     my $implied = 1;
     if( $exp == -1023 ) { # zero or denormal
@@ -281,7 +277,7 @@ sub to_dec_floatingpoint {
     if($exp == 1024) {
         return $sign . "0d1.#INF000000000000p+0000"    if $mant eq '0000000000000';
         return $sign . "0d1.#IND000000000000p+0000"    if $mant eq '8000000000000' and $sign eq '-';
-        return $sign . ( (($msb & 0x00080000) != 0x00080000) ? "0d1.#SNAN00000000000p+0000" : "0d1.#QNAN00000000000p+0000");
+        return $sign . ( (($msb & 0x00080000) != 0x00080000) ? "0d1.#SNAN00000000000p+0000" : "0d1.#QNAN00000000000p+0000");  # v0.012 coverage note: '!=' condition only triggered on systems with SNAN; ignore Devel::Cover failures on this line on systems which quiet all SNAN to QNAN
     }
     my $implied = 1;
     if( $exp == -1023 ) { # zero or denormal
@@ -428,13 +424,14 @@ sub nextup {
     my ($msb,$lsb) = arr2x32b_from_double($val);
     $lsb += ($msb & 0x80000000) ? -1.0 : +1.0;
     if($lsb == 4_294_967_296.0) {
-        $lsb = 0.0;
-        $msb += ($msb & 0x80000000) ? -1.0 : +1.0;
+        $lsb  = 0.0;
+        $msb += 1.0;    # v0.012: LSB==4e9 only happens if you add one to LSB = 0xFFFFFFFF, so only when +msb; thus, remove extra check for msb sign here
     } elsif ($lsb == -1.0) {
-        $msb += ($msb & 0x80000000) ? -1.0 : +1.0;
+        $lsb  = 0xFFFFFFFF;
+        $msb -= 1.0;    # v0.012: LSB==-1  only happens if you subtract one from LSB = 0x00000000, so only when -msb; thus, remove extra check for msb sign here
     }
-    $msb &= 0xFFFFFFFF;     # v0.011_001: potential bugfix: ensure 32bit MSB <https://rt.cpan.org/Public/Bug/Display.html?id=116006>
-    $lsb &= 0xFFFFFFFF;     # v0.011_001: potential bugfix: ensure 32bit MSB <https://rt.cpan.org/Public/Bug/Display.html?id=116006>
+    $msb &= 0xFFFFFFFF;     # v0.011_001: bugfix: ensure 32bit MSB <https://rt.cpan.org/Public/Bug/Display.html?id=116006>
+    $lsb &= 0xFFFFFFFF;     # v0.011_001: bugfix: ensure 32bit MSB <https://rt.cpan.org/Public/Bug/Display.html?id=116006>
     return hexstr754_to_double( sprintf '%08X%08X', $msb, $lsb );
 }
 
