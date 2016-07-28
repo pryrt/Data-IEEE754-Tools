@@ -1,5 +1,9 @@
 Revision history for Perl module Data::IEEE754::Tools.
 
+v0.013 Development Version
+    - v0.013_001: swap out old ulp() for ulp_by_div(), which benchmarks said ran
+        50-60% more effeciently; still passes existing tests.
+
 v0.012 2016-Jul-14
     - test coverage: Devel::Cover showed two conditionals which can only ever
         trigger one of the two (impossible to hit the opposite); remove the

@@ -5,7 +5,7 @@ use strict;
 use Carp;
 use Exporter 'import';  # just use the import() function, without the rest of the overhead of ISA
 
-use version 0.77; our $VERSION = version->declare('0.012');
+use version 0.77; our $VERSION = version->declare('0.013_001');
 
 =pod
 
@@ -353,23 +353,24 @@ comparison is meaningless on both).
 
 =cut
 
-sub ulp($) {
+{ my $local; sub POS_DENORM_1ST() { $local = hexstr754_to_double('000'.'0000000000001') unless defined $local; return $local; } }
+{ my $local; sub NEG_DENORM_1ST() { $local = hexstr754_to_double('800'.'0000000000001') unless defined $local; return $local; } }
+use constant TWONEG52       => 2.0**-52;
+use constant FIFTYTWOZEROES => '0'x52;
+
+sub ulp {   # ulp_by_div
     my $val = shift;
     my $rawbin = binstr754_from_double($val);
-    my ($sign, $exp, $fract) = ($rawbin =~ /(.)(.{11})(.{52})/);
+    my ($sgn, $exp, $frac) = ($rawbin =~ /(.)(.{11})(.{52})/);
 
-    # check for special conditions
-    if( $exp == '1'x11 ) {                          # return self for INF or NAN
-        return $val;
-    } elsif ( $exp == '0'x11 ) {                    # ZERO or DENORMAL: build (+)(exp:0)(fract:0...1)
-        $fract = '0'x51 . '1';
-        $rawbin = join '', '0', $exp, $fract;
-        return binstr754_to_double($rawbin);
-    }
+    return $val             if $exp eq '11111111111';   # return SELF for INF or NAN
+    return POS_DENORM_1ST   if $exp eq '00000000000';   # return first positive denorm for 0 or denorm
 
-    # calculate normal ULP
-    my $tog = toggle_ulp( $val );
-    return abs($val - $tog);
+    # this method will multiply by 2**-52 (as a constant) after
+    $sgn  = '0';
+    $frac = FIFTYTWOZEROES;
+    $val  = binstr754_to_double( $sgn . $exp . $frac );
+    $val *= TWONEG52;
 }
 
 =head3 toggle_ulp( I<val> )
