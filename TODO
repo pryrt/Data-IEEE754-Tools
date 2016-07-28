@@ -1,0 +1,54 @@
+TODO
+    - Replace ulp() with benchULP::ulp_by_div()
+      <https://rt.cpan.org/Ticket/Display.html?id=116153>
+      + It's 50-60% faster than ulp(), and still passes all the tests
+        I've thrown at it
+
+            cmpthese(-60):
+                     Rate  orig bysub bydiv
+            orig   7596/s    --  -31%  -39%
+            bysub 10935/s   44%    --  -12%
+            bydiv 12376/s   63%   13%    --
+
+            cmpthese(1000000):
+                     Rate  orig bysub bydiv
+            orig   8273/s    --  -22%  -33%
+            bysub 10595/s   28%    --  -14%
+            bydiv 12372/s   50%   17%    --
+
+    - add the constants, but with names more similar to IEEE754 standard,
+      and/or Data::Float
+      <https://rt.cpan.org/Ticket/Display.html?id=116154>
+
+    - add the "is_xxxx", sign-copy, and other similar functions from IEEE754/Data::Float
+      <https://rt.cpan.org/Ticket/Display.html?id=116155>
+      + IEEE754 5.4.2 => 5.12
+        <format>-convertFormat
+        <format>-convertFromDecimalCharacter
+        <format>-convertToDecimalCharacter
+      + IEEE754 5.4.3 => 5.12
+        <format>-convertFromHexCharacter
+        <format>-convertToHexCharacter
+      + IEEE754 5.5.1: sign bit operations
+        copy
+        negate
+        abs
+        copySign
+      + IEEE754 5.7.2
+        isSignMinus
+        isNormal
+        isFinite
+        isZero
+        isSubnormal
+        isInfinite
+        isNaN
+        isSignaling
+        isCanonical
+        radix { return 2; }
+        totalOrder (5.10)
+        totalOrderMag = totalOrder(abs(a),abs(b))
+
+    - long-term: add in _32bit and _128bit versions
+      - what's official name of 128bit long-double?  quad?  something else?  check IEEE754
+        doesn't give a name (mentions, but never defines, single and double)
+      - 128b = [1 sign][15 exp][112 frac], e=exp-16383
