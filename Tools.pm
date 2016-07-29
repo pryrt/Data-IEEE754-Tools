@@ -5,7 +5,7 @@ use strict;
 use Carp;
 use Exporter 'import';  # just use the import() function, without the rest of the overhead of ISA
 
-use version 0.77; our $VERSION = version->declare('0.013_001');
+use version 0.77; our $VERSION = version->declare('0.013_002');
 
 =pod
 
@@ -107,13 +107,38 @@ but there is no guarantee it will work.
 my  @EXPORT_RAW754 = qw(hexstr754_from_double binstr754_from_double hexstr754_to_double binstr754_to_double);
 my  @EXPORT_FLOATING = qw(to_hex_floatingpoint to_dec_floatingpoint);
 my  @EXPORT_ULP = qw(ulp toggle_ulp nextup nextdown nextafter);
+my  @EXPORT_CONST = qw(
+    POS_ZERO
+    POS_DENORM_SMALLEST
+    POS_DENORM_BIGGEST
+    POS_NORM_SMALLEST
+    POS_NORM_BIGGEST
+    POS_INF
+    POS_SNAN_FIRST
+    POS_SNAN_LAST
+    POS_IND
+    POS_QNAN_FIRST
+    POS_QNAN_LAST
+    NEG_ZERO
+    NEG_DENORM_SMALLEST
+    NEG_DENORM_BIGGEST
+    NEG_NORM_SMALLEST
+    NEG_NORM_BIGGEST
+    NEG_INF
+    NEG_SNAN_FIRST
+    NEG_SNAN_LAST
+    NEG_IND
+    NEG_QNAN_FIRST
+    NEG_QNAN_LAST
+);
 
-our @EXPORT_OK = (@EXPORT_FLOATING, @EXPORT_RAW754, @EXPORT_ULP);
+our @EXPORT_OK = (@EXPORT_FLOATING, @EXPORT_RAW754, @EXPORT_ULP, @EXPORT_CONST);
 our %EXPORT_TAGS = (
     floating        => [@EXPORT_FLOATING],
     floatingpoint   => [@EXPORT_FLOATING],
     raw754          => [@EXPORT_RAW754],
     ulp             => [@EXPORT_ULP],
+    'constants'     => [@EXPORT_CONST],
     all             => [@EXPORT_OK],
 );
 
@@ -335,6 +360,60 @@ they are really multiples of 2**-1022, not 2**-1023.
 
 =back
 
+=head2 :constants
+
+These can be useful as references for the specialty values, and include the positive and negative
+zeroes, infinities, a variety of signaling and quiet NAN values.
+
+    POS_ZERO             # +0x0.0000000000000p+0000  # signed zero (positive)
+    POS_DENORM_SMALLEST  # +0x0.0000000000001p-1022  # smallest positive value that requires denormal representation in 64bit floating-point
+    POS_DENORM_BIGGEST   # +0x0.fffffffffffffp-1022  # largest positive value that requires denormal representation in 64bit floating-point
+    POS_NORM_SMALLEST    # +0x1.0000000000000p-1022  # smallest positive value that allows for normal representation in 64bit floating-point
+    POS_NORM_BIGGEST     # +0x1.fffffffffffffp+1023  # largest positive value that allows for normal representation in 64bit floating-point
+    POS_INF              # +0x1.#INF000000000p+0000  # positive infinity: indicates that the answer is out of the range of a 64bit floating-point
+    POS_SNAN_FIRST       # +0x1.#SNAN00000000p+0000  # positive signaling NAN with "0x0000000000001" as the system-dependent information; note that many Perls will internally convert this to a Quiet NaN (QNAN)
+    POS_SNAN_LAST        # +0x1.#SNAN00000000p+0000  # positive signaling NAN with "0x7FFFFFFFFFFFF" as the system-dependent information; note that many Perls will internally convert this to a Quiet NaN (QNAN)
+    POS_IND              # +0x1.#QNAN00000000p+0000  # positive quiet NAN with "0x8000000000000" as the system-dependent information; some Perls define the NEG_IND as an "indeterminate" value (IND), and it wouldn't surprise me if some also defined this positive version as "indeterminate" as well
+    POS_QNAN_FIRST       # +0x1.#QNAN00000000p+0000  # positive quiet NAN with "0x8000000000001" as the system-dependent information
+    POS_QNAN_LAST        # +0x1.#QNAN00000000p+0000  # positive quiet NAN with "0xFFFFFFFFFFFFF" as the system-dependent information
+
+    NEG_ZERO             # -0x0.0000000000000p+0000  # signed zero (negative)
+    NEG_DENORM_SMALLEST  # -0x0.0000000000001p-1022  # smallest negative value that requires denormal representation in 64bit floating-point
+    NEG_DENORM_BIGGEST   # -0x0.fffffffffffffp-1022  # largest negative value that requires denormal representation in 64bit floating-point
+    NEG_NORM_SMALLEST    # -0x1.0000000000000p-1022  # smallest negative value that allows for normal representation in 64bit floating-point
+    NEG_NORM_BIGGEST     # -0x1.fffffffffffffp+1023  # largest negative value that allows for normal representation in 64bit floating-point
+    NEG_INF              # -0x1.#INF000000000p+0000  # negative infinity: indicates that the answer is out of the range of a 64bit floating-point
+    NEG_SNAN_FIRST       # -0x1.#SNAN00000000p+0000  # negative signaling NAN with "0x0000000000001" as the system-dependent information; note that many Perls will internally convert this to a Quiet NaN (QNAN)
+    NEG_SNAN_LAST        # -0x1.#SNAN00000000p+0000  # negative signaling NAN with "0x7FFFFFFFFFFFF" as the system-dependent information; note that many Perls will internally convert this to a Quiet NaN (QNAN)
+    NEG_IND              # -0x1.#IND000000000p+0000  # negative quiet NAN with "0x8000000000000" as the system-dependent information; some Perls define the NEG_IND as an "indeterminate" value (IND)
+    NEG_QNAN_FIRST       # -0x1.#QNAN00000000p+0000  # negative quiet NAN with "0x8000000000001" as the system-dependent information
+    NEG_QNAN_LAST        # -0x1.#QNAN00000000p+0000  # negative quiet NAN with "0xFFFFFFFFFFFFF" as the system-dependent information
+
+=cut
+
+{ my $local; sub POS_ZERO           () { $local = hexstr754_to_double('000'.'0000000000000') unless defined $local; return $local; } }
+{ my $local; sub POS_DENORM_SMALLEST() { $local = hexstr754_to_double('000'.'0000000000001') unless defined $local; return $local; } }
+{ my $local; sub POS_DENORM_BIGGEST () { $local = hexstr754_to_double('000'.'FFFFFFFFFFFFF') unless defined $local; return $local; } }
+{ my $local; sub POS_NORM_SMALLEST  () { $local = hexstr754_to_double('001'.'0000000000000') unless defined $local; return $local; } }
+{ my $local; sub POS_NORM_BIGGEST   () { $local = hexstr754_to_double('7FE'.'FFFFFFFFFFFFF') unless defined $local; return $local; } }
+{ my $local; sub POS_INF            () { $local = hexstr754_to_double('7FF'.'0000000000000') unless defined $local; return $local; } }
+{ my $local; sub POS_SNAN_FIRST     () { $local = hexstr754_to_double('7FF'.'0000000000001') unless defined $local; return $local; } }
+{ my $local; sub POS_SNAN_LAST      () { $local = hexstr754_to_double('7FF'.'7FFFFFFFFFFFF') unless defined $local; return $local; } }
+{ my $local; sub POS_IND            () { $local = hexstr754_to_double('7FF'.'8000000000000') unless defined $local; return $local; } }
+{ my $local; sub POS_QNAN_FIRST     () { $local = hexstr754_to_double('7FF'.'8000000000001') unless defined $local; return $local; } }
+{ my $local; sub POS_QNAN_LAST      () { $local = hexstr754_to_double('7FF'.'FFFFFFFFFFFFF') unless defined $local; return $local; } }
+{ my $local; sub NEG_ZERO           () { $local = hexstr754_to_double('800'.'0000000000000') unless defined $local; return $local; } }
+{ my $local; sub NEG_DENORM_SMALLEST() { $local = hexstr754_to_double('800'.'0000000000001') unless defined $local; return $local; } }
+{ my $local; sub NEG_DENORM_BIGGEST () { $local = hexstr754_to_double('800'.'FFFFFFFFFFFFF') unless defined $local; return $local; } }
+{ my $local; sub NEG_NORM_SMALLEST  () { $local = hexstr754_to_double('801'.'0000000000000') unless defined $local; return $local; } }
+{ my $local; sub NEG_NORM_BIGGEST   () { $local = hexstr754_to_double('FFE'.'FFFFFFFFFFFFF') unless defined $local; return $local; } }
+{ my $local; sub NEG_INF            () { $local = hexstr754_to_double('FFF'.'0000000000000') unless defined $local; return $local; } }
+{ my $local; sub NEG_SNAN_FIRST     () { $local = hexstr754_to_double('FFF'.'0000000000001') unless defined $local; return $local; } }
+{ my $local; sub NEG_SNAN_LAST      () { $local = hexstr754_to_double('FFF'.'7FFFFFFFFFFFF') unless defined $local; return $local; } }
+{ my $local; sub NEG_IND            () { $local = hexstr754_to_double('FFF'.'8000000000000') unless defined $local; return $local; } }
+{ my $local; sub NEG_QNAN_FIRST     () { $local = hexstr754_to_double('FFF'.'8000000000001') unless defined $local; return $local; } }
+{ my $local; sub NEG_QNAN_LAST      () { $local = hexstr754_to_double('FFF'.'FFFFFFFFFFFFF') unless defined $local; return $local; } }
+
 =head2 :ulp
 
 =head3 ulp( I<val> )
@@ -353,8 +432,6 @@ comparison is meaningless on both).
 
 =cut
 
-{ my $local; sub POS_DENORM_1ST() { $local = hexstr754_to_double('000'.'0000000000001') unless defined $local; return $local; } }
-{ my $local; sub NEG_DENORM_1ST() { $local = hexstr754_to_double('800'.'0000000000001') unless defined $local; return $local; } }
 use constant TWONEG52       => 2.0**-52;
 use constant FIFTYTWOZEROES => '0'x52;
 
@@ -364,7 +441,7 @@ sub ulp {   # ulp_by_div
     my ($sgn, $exp, $frac) = ($rawbin =~ /(.)(.{11})(.{52})/);
 
     return $val             if $exp eq '11111111111';   # return SELF for INF or NAN
-    return POS_DENORM_1ST   if $exp eq '00000000000';   # return first positive denorm for 0 or denorm
+    return POS_DENORM_SMALLEST   if $exp eq '00000000000';   # return first positive denorm for 0 or denorm
 
     # this method will multiply by 2**-52 (as a constant) after
     $sgn  = '0';
@@ -468,6 +545,8 @@ sub nextafter {
     return nextup($_[0])    if $_[1] > $_[0];       # return nextup if direction > value
     return nextdown($_[0]);                         # otherwise, return nextdown()
 }
+
+
 
 =head2 :all
 

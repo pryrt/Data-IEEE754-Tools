@@ -1,23 +1,5 @@
 TODO
-    - Replace ulp() with benchULP::ulp_by_div()
-      <https://rt.cpan.org/Ticket/Display.html?id=116153>
-      + It's 50-60% faster than ulp(), and still passes all the tests
-        I've thrown at it
-
-            cmpthese(-60):
-                     Rate  orig bysub bydiv
-            orig   7596/s    --  -31%  -39%
-            bysub 10935/s   44%    --  -12%
-            bydiv 12376/s   63%   13%    --
-
-            cmpthese(1000000):
-                     Rate  orig bysub bydiv
-            orig   8273/s    --  -22%  -33%
-            bysub 10595/s   28%    --  -14%
-            bydiv 12372/s   50%   17%    --
-
-    - add the constants, but with names more similar to IEEE754 standard,
-      and/or Data::Float
+    - add true test coverage for the constants
       <https://rt.cpan.org/Ticket/Display.html?id=116154>
 
     - add the "is_xxxx", sign-copy, and other similar functions from IEEE754/Data::Float
