@@ -1,7 +1,11 @@
 Revision history for Perl module Data::IEEE754::Tools.
 
 v0.013 Development Version
+    - v0.013_003: working on adding 5.7.2 general operations, including t/07*.t coverage;
+        so far, isSignMinus .. isNaN; TODO = continue
+        IN PROGRES = <https://rt.cpan.org/Ticket/Display.html?id=116155>
     - v0.013_002: add the constants; add test coverage for :constants
+        FIXED = <https://rt.cpan.org/Ticket/Display.html?id=116154>
     - v0.013_001: swap out old ulp() for ulp_by_div(), which benchmarks said ran
         50-60% more effeciently; still passes existing tests.
         FIXED = <https://rt.cpan.org/Ticket/Display.html?id=116153>

@@ -5,7 +5,7 @@ use strict;
 use Carp;
 use Exporter 'import';  # just use the import() function, without the rest of the overhead of ISA
 
-use version 0.77; our $VERSION = version->declare('0.013_002');
+use version 0.77; our $VERSION = version->declare('0.013_003');
 
 =pod
 
@@ -131,14 +131,16 @@ my  @EXPORT_CONST = qw(
     NEG_QNAN_FIRST
     NEG_QNAN_LAST
 );
+my @EXPORT_GENERAL = qw(isSignMinus isNormal isFinite isZero isSubnormal isInfinite isNaN isSignaling isCanonical class radix totalOrder totalOrderMag);
 
-our @EXPORT_OK = (@EXPORT_FLOATING, @EXPORT_RAW754, @EXPORT_ULP, @EXPORT_CONST);
+our @EXPORT_OK = (@EXPORT_FLOATING, @EXPORT_RAW754, @EXPORT_ULP, @EXPORT_CONST, @EXPORT_GENERAL);
 our %EXPORT_TAGS = (
     floating        => [@EXPORT_FLOATING],
     floatingpoint   => [@EXPORT_FLOATING],
     raw754          => [@EXPORT_RAW754],
     ulp             => [@EXPORT_ULP],
     'constants'     => [@EXPORT_CONST],
+    general         => [@EXPORT_GENERAL],
     all             => [@EXPORT_OK],
 );
 
@@ -487,7 +489,7 @@ Returns infinite when I<value> is the highest normal floating-point value.
 Returns I<value> when I<value> is positive-infinite or NAN; returns the largest negative normal
 floating-point value when I<value> is negative-infinite.
 
-C<nextup> is an IEEE 754r standard function.
+C<nextup> is an IEEE 754r standard function (754-2008 #5.3.1).
 
 =cut
 
@@ -520,7 +522,7 @@ Returns -infinity when I<value> is the largest negative normal floating-point va
 Returns I<value> when I<value> is negative-infinite or NAN; returns the largest positive normal
 floating-point value when I<value> is positive-infinite.
 
-C<nextdown> is an IEEE 754r standard function.
+C<nextdown> is an IEEE 754r standard function (754-2008 #5.3.1).
 
 =cut
 
@@ -534,8 +536,6 @@ Returns the next floating point value after I<value> in the direction of I<direc
 two are identical, return I<direction>; if I<direction> is numerically above I<float>, return
 C<nextup(I<value>)>; if I<direction> is numerically below I<float>, return C<nextdown(I<value>)>.
 
-C<nextafter> is an IEEE 754r standard function.
-
 =cut
 
 sub nextafter {
@@ -546,7 +546,107 @@ sub nextafter {
     return nextdown($_[0]);                         # otherwise, return nextdown()
 }
 
+=head2 :general
 
+The general functions include various operations (defined in 754-2008 #5.7.2) that provide general
+information about the floating-point value: most define whether a value is a special condition of
+floating-point or not (such as normal, finite, zero, ...).
+
+=head3 isSignMinus( I<value> )
+
+I<value> has negative sign.  (Even applies to zeroes and NaNs.)
+
+=cut
+
+sub isSignMinus {
+    # look at leftmost nibble, and determine whether it has the 8-bit or not (which is the sign bit)
+    return (hex(substr(hexstr754_from_double(shift),0,1)) & 8) >> 3;
+}
+
+=head3 isNormal( I<value> )
+
+I<value> is a normal number (not zero, subnormal, infinite, or NaN).
+
+=cut
+
+sub isNormal {
+    # it's normal if the leftmost three nibbles (excluding sign bit) are not 000 or 7FF
+    my $exp = hex(substr(hexstr754_from_double(shift),0,3)) & 0x7FF;
+    return (0 < $exp) && ($exp < 0x7FF) || 0;
+}
+
+=head3 isFinite( I<value> )
+
+I<value> is a finite number (zero, subnormal, or normal; not infinite or NaN).
+
+=cut
+
+sub isFinite {
+    # it's finite if the leftmost three nibbles (excluding sign bit) are not 7FF
+    my $exp = hex(substr(hexstr754_from_double(shift),0,3)) & 0x7FF;
+    return ($exp < 0x7FF) || 0;
+}
+
+=head3 isZero( I<value> )
+
+I<value> is positive or negative zero.
+
+=cut
+
+sub isZero {
+    # it's zero if it's 0x[80]000000000000000
+    my $str = substr(hexstr754_from_double(shift),1,15);
+    return ($str eq '0'x15) || 0;
+}
+
+=head3 isSubnormal( I<value> )
+
+I<value> is subnormal (not zero, normal, infinite, nor NaN).
+
+=cut
+
+sub isSubnormal {
+    # it's subnormal if it's 0x[80]00___ and the last 13 digits are not all zero
+    my $h   = hexstr754_from_double(shift);
+    my $exp = substr($h,0,3);
+    my $frc = substr($h,3,13);
+    return ($exp eq '000' || $exp eq '800') && ($frc ne '0'x13) || 0;
+}
+
+=head3 isInfinite( I<value> )
+
+I<value> is positive or negative infinity (not zero, subnormal, normal, nor NaN).
+
+=cut
+
+sub isInfinite {
+    # it's infinite if it's 0x[F7]FF_0000000000000
+    my $h   = hexstr754_from_double(shift);
+    my $exp = substr($h,0,3);
+    my $frc = substr($h,3,13);
+    return ($exp eq '7FF' || $exp eq 'FFF') && ($frc eq '0'x13) || 0;
+}
+
+=head3 isNaN( I<value> )
+
+I<value> is NaN (not zero, subnormal, normal, nor infinite).
+
+=cut
+
+sub isNaN {
+    # it's infinite if it's 0x[F7]FF_0000000000000
+    my $h   = hexstr754_from_double(shift);
+    my $exp = substr($h,0,3);
+    my $frc = substr($h,3,13);
+    return ($exp eq '7FF' || $exp eq 'FFF') && ($frc ne '0'x13) || 0;
+}
+
+sub isSignaling { 0 }
+sub isCanonical { 0 }
+sub class { 0 }
+sub radix { 0 }
+sub totalOrder { 0 }
+sub totalOrderMag { 0 }
 
 =head2 :all
 
