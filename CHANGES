@@ -1,7 +1,7 @@
 Revision history for Perl module Data::IEEE754::Tools.
 
 v0.013 Development Version
-    - v0.013_002: add the constants; TODO = add test coverage
+    - v0.013_002: add the constants; add test coverage for :constants
     - v0.013_001: swap out old ulp() for ulp_by_div(), which benchmarks said ran
         50-60% more effeciently; still passes existing tests.
         FIXED = <https://rt.cpan.org/Ticket/Display.html?id=116153>

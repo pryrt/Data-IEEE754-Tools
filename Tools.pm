@@ -371,9 +371,9 @@ zeroes, infinities, a variety of signaling and quiet NAN values.
     POS_NORM_SMALLEST    # +0x1.0000000000000p-1022  # smallest positive value that allows for normal representation in 64bit floating-point
     POS_NORM_BIGGEST     # +0x1.fffffffffffffp+1023  # largest positive value that allows for normal representation in 64bit floating-point
     POS_INF              # +0x1.#INF000000000p+0000  # positive infinity: indicates that the answer is out of the range of a 64bit floating-point
-    POS_SNAN_FIRST       # +0x1.#SNAN00000000p+0000  # positive signaling NAN with "0x0000000000001" as the system-dependent information; note that many Perls will internally convert this to a Quiet NaN (QNAN)
-    POS_SNAN_LAST        # +0x1.#SNAN00000000p+0000  # positive signaling NAN with "0x7FFFFFFFFFFFF" as the system-dependent information; note that many Perls will internally convert this to a Quiet NaN (QNAN)
-    POS_IND              # +0x1.#QNAN00000000p+0000  # positive quiet NAN with "0x8000000000000" as the system-dependent information; some Perls define the NEG_IND as an "indeterminate" value (IND), and it wouldn't surprise me if some also defined this positive version as "indeterminate" as well
+    POS_SNAN_FIRST       # +0x1.#SNAN00000000p+0000  # positive signaling NAN with "0x0000000000001" as the system-dependent information; note that many perl interpreters will internally convert this to a Quiet NaN (QNAN)
+    POS_SNAN_LAST        # +0x1.#SNAN00000000p+0000  # positive signaling NAN with "0x7FFFFFFFFFFFF" as the system-dependent information; note that many perl interpreters will internally convert this to a Quiet NaN (QNAN)
+    POS_IND              # +0x1.#QNAN00000000p+0000  # positive quiet NAN with "0x8000000000000" as the system-dependent information; some perl interpreters define the NEG_IND as an "indeterminate" value (IND), and it wouldn't surprise me if some also defined this positive version as "indeterminate" as well
     POS_QNAN_FIRST       # +0x1.#QNAN00000000p+0000  # positive quiet NAN with "0x8000000000001" as the system-dependent information
     POS_QNAN_LAST        # +0x1.#QNAN00000000p+0000  # positive quiet NAN with "0xFFFFFFFFFFFFF" as the system-dependent information
 
@@ -383,9 +383,9 @@ zeroes, infinities, a variety of signaling and quiet NAN values.
     NEG_NORM_SMALLEST    # -0x1.0000000000000p-1022  # smallest negative value that allows for normal representation in 64bit floating-point
     NEG_NORM_BIGGEST     # -0x1.fffffffffffffp+1023  # largest negative value that allows for normal representation in 64bit floating-point
     NEG_INF              # -0x1.#INF000000000p+0000  # negative infinity: indicates that the answer is out of the range of a 64bit floating-point
-    NEG_SNAN_FIRST       # -0x1.#SNAN00000000p+0000  # negative signaling NAN with "0x0000000000001" as the system-dependent information; note that many Perls will internally convert this to a Quiet NaN (QNAN)
-    NEG_SNAN_LAST        # -0x1.#SNAN00000000p+0000  # negative signaling NAN with "0x7FFFFFFFFFFFF" as the system-dependent information; note that many Perls will internally convert this to a Quiet NaN (QNAN)
-    NEG_IND              # -0x1.#IND000000000p+0000  # negative quiet NAN with "0x8000000000000" as the system-dependent information; some Perls define the NEG_IND as an "indeterminate" value (IND)
+    NEG_SNAN_FIRST       # -0x1.#SNAN00000000p+0000  # negative signaling NAN with "0x0000000000001" as the system-dependent information; note that many perl interpreters will internally convert this to a Quiet NaN (QNAN)
+    NEG_SNAN_LAST        # -0x1.#SNAN00000000p+0000  # negative signaling NAN with "0x7FFFFFFFFFFFF" as the system-dependent information; note that many perl interpreters will internally convert this to a Quiet NaN (QNAN)
+    NEG_IND              # -0x1.#IND000000000p+0000  # negative quiet NAN with "0x8000000000000" as the system-dependent information; some perl interpreters define the NEG_IND as an "indeterminate" value (IND)
     NEG_QNAN_FIRST       # -0x1.#QNAN00000000p+0000  # negative quiet NAN with "0x8000000000001" as the system-dependent information
     NEG_QNAN_LAST        # -0x1.#QNAN00000000p+0000  # negative quiet NAN with "0xFFFFFFFFFFFFF" as the system-dependent information
 
@@ -432,8 +432,8 @@ comparison is meaningless on both).
 
 =cut
 
-use constant TWONEG52       => 2.0**-52;
-use constant FIFTYTWOZEROES => '0'x52;
+my $TWONEG52        = sub { 2.0**-52 };
+my $FIFTYTWOZEROES  = sub { '0'x52 };
 
 sub ulp {   # ulp_by_div
     my $val = shift;
@@ -445,9 +445,9 @@ sub ulp {   # ulp_by_div
 
     # this method will multiply by 2**-52 (as a constant) after
     $sgn  = '0';
-    $frac = FIFTYTWOZEROES;
+    $frac = $FIFTYTWOZEROES->();
     $val  = binstr754_to_double( $sgn . $exp . $frac );
-    $val *= TWONEG52;
+    $val *= $TWONEG52->();
 }
 
 =head3 toggle_ulp( I<val> )
