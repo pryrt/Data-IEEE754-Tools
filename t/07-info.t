@@ -1,13 +1,17 @@
 ########################################################################
 # Verifies the following functions:
-#   :general
+#   :info
 #       isXXXX(v)
+#       class(v)
+#       radix(v)
+#       totalOrder(v)
+#       totalOrderMag(v)
 ########################################################################
 use 5.006;
 use warnings;
 use strict;
 use Test::More;
-use Data::IEEE754::Tools qw/:raw754 :floatingpoint :constants :general/;
+use Data::IEEE754::Tools qw/:raw754 :floatingpoint :constants :info/;
 
 my @tests = ();
 #            [CONSTANT           , 'NAME               ', -, N, F, Z, s, I, !, S, 'C', 'class', 'radix', 'totalOrder', 'totalOrderMag'];
@@ -37,17 +41,17 @@ push @tests, [NEG_QNAN_LAST      , 'NEG_QNAN_LAST      ', 1, 0, 0, 0, 0, 0, 1, 0
 
 my @flist = qw(isSignMinus isNormal isFinite isZero isSubnormal isInfinite isNaN isSignaling isCanonical class radix totalOrder totalOrderMag);
 
-plan tests => scalar(@tests) * 7; #scalar(@flist);
+plan tests => scalar(@tests) * 8; #scalar(@flist);
 
 foreach my $t ( @tests ) {
     my ($c, $name, @x) = @$t;
     my $mi = (@flist >= @x) ? $#flist : $#x;
-$mi = 6; # ignore beyond isNaN for now
+$mi = 7; # ignore beyond isNaN for now
     foreach my $i ( 0 .. $mi ) {
         my $fn = $flist[$i];
         my $xi = $x[$i];
         my $f = \&{$fn};
-        cmp_ok( $f->($c), 'eq', $xi, sprintf('%-20.20s(%-20.20s)', $fn, $name) );
+        cmp_ok( $f->($c), 'eq', $xi, sprintf('%-20.20s(%-20.20s) = %s', $fn, $name, $f->($c) ) );
     }
 }
 

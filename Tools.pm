@@ -100,47 +100,61 @@ inputs.  However, forcing the installation I<might> still allow coercion
 from the smaller Perl NV into a true IEEE 754 double (64bit) floating-point,
 but there is no guarantee it will work.
 
+=head1 INTERFACE NOT YET STABLE
+
+Please note: the interface to this module is not yet stable.  There may be changes
+to function naming conventions (under_scores vs. camelCase, argument order, etc).
+Once B<Data::IEEE754::Tools> hits v1.000, the interface should be stable for all
+sub-versions of v1: existing functions should keep the same calling conventions,
+though new functions may be added; significant changes to the interface will cause
+a transition to v2.
+
+=over
+
+=item v0.013_003: C<nextup()> renamed to C<nextUp()>
+
+=item v0.013_003: C<nextdown()> renamed to C<nextDown()>
+
+=item v0.013_003: C<nextafter()> renamed to C<nextAfter()>
+
+=back
+
 =head1 EXPORTABLE FUNCTIONS AND VARIABLES
 
 =cut
 
-my  @EXPORT_RAW754 = qw(hexstr754_from_double binstr754_from_double hexstr754_to_double binstr754_to_double);
+my  @EXPORT_RAW754 = qw(
+    hexstr754_from_double binstr754_from_double
+    hexstr754_to_double binstr754_to_double
+);
 my  @EXPORT_FLOATING = qw(to_hex_floatingpoint to_dec_floatingpoint);
-my  @EXPORT_ULP = qw(ulp toggle_ulp nextup nextdown nextafter);
+my  @EXPORT_ULP = qw(ulp toggle_ulp nextUp nextDown nextAfter);
 my  @EXPORT_CONST = qw(
     POS_ZERO
-    POS_DENORM_SMALLEST
-    POS_DENORM_BIGGEST
-    POS_NORM_SMALLEST
-    POS_NORM_BIGGEST
+    POS_DENORM_SMALLEST POS_DENORM_BIGGEST
+    POS_NORM_SMALLEST POS_NORM_BIGGEST
     POS_INF
-    POS_SNAN_FIRST
-    POS_SNAN_LAST
-    POS_IND
-    POS_QNAN_FIRST
-    POS_QNAN_LAST
+    POS_SNAN_FIRST POS_SNAN_LAST
+    POS_IND POS_QNAN_FIRST POS_QNAN_LAST
     NEG_ZERO
-    NEG_DENORM_SMALLEST
-    NEG_DENORM_BIGGEST
-    NEG_NORM_SMALLEST
-    NEG_NORM_BIGGEST
+    NEG_DENORM_SMALLEST NEG_DENORM_BIGGEST
+    NEG_NORM_SMALLEST NEG_NORM_BIGGEST
     NEG_INF
-    NEG_SNAN_FIRST
-    NEG_SNAN_LAST
-    NEG_IND
-    NEG_QNAN_FIRST
-    NEG_QNAN_LAST
+    NEG_SNAN_FIRST NEG_SNAN_LAST
+    NEG_IND NEG_QNAN_FIRST NEG_QNAN_LAST
 );
-my @EXPORT_GENERAL = qw(isSignMinus isNormal isFinite isZero isSubnormal isInfinite isNaN isSignaling isCanonical class radix totalOrder totalOrderMag);
+my @EXPORT_INFO = qw(isSignMinus isNormal isFinite isZero isSubnormal
+    isInfinite isNaN isSignaling isCanonical
+    class radix totalOrder totalOrderMag);
 
-our @EXPORT_OK = (@EXPORT_FLOATING, @EXPORT_RAW754, @EXPORT_ULP, @EXPORT_CONST, @EXPORT_GENERAL);
+our @EXPORT_OK = (@EXPORT_FLOATING, @EXPORT_RAW754, @EXPORT_ULP, @EXPORT_CONST, @EXPORT_INFO);
 our %EXPORT_TAGS = (
     floating        => [@EXPORT_FLOATING],
     floatingpoint   => [@EXPORT_FLOATING],
     raw754          => [@EXPORT_RAW754],
     ulp             => [@EXPORT_ULP],
     'constants'     => [@EXPORT_CONST],
-    general         => [@EXPORT_GENERAL],
+    info            => [@EXPORT_INFO],
     all             => [@EXPORT_OK],
 );
 
@@ -149,9 +163,9 @@ our %EXPORT_TAGS = (
 These are the functions to do raw conversion from a floating-point value to a hexadecimal or binary
 string of the underlying IEEE754 encoded value, and back.
 
-=head3 hexstr754_from_double( I<val> )
+=head3 hexstr754_from_double( I<value> )
 
-Converts the floating-point I<val> into a big-endian hexadecimal representation of the underlying
+Converts the floating-point I<value> into a big-endian hexadecimal representation of the underlying
 IEEE754 encoding.
 
     hexstr754_from_double(12.875);      #  4029C00000000000
@@ -184,9 +198,9 @@ the sign, fraction, and exponent for you.  (See below for more details.)
                                         # :
                                         # `- sign
 
-=head3 binstr754_from_double( I<val> )
+=head3 binstr754_from_double( I<value> )
 
-Converts the floating-point I<val> into a big-endian binary representation of the underlying
+Converts the floating-point I<value> into a big-endian binary representation of the underlying
 IEEE754 encoding.
 
     binstr754_from_double(12.875);      # 0100000000101001110000000000000000000000000000000000000000000000
@@ -201,7 +215,7 @@ The first bit is the sign, the next 11 are the exponent's encoding
 
 =head3 hexstr754_to_double( I<str> )
 
-The inverse of I<hexstr754_from_double()>: it takes a string representing the 16 nibbles
+The inverse of C<hexstr754_from_double()>: it takes a string representing the 16 nibbles
 of the IEEE754 double value, and converts it back to a perl floating-point value.
 
     print hexstr754_to_double('4029C00000000000');
@@ -209,7 +223,7 @@ of the IEEE754 double value, and converts it back to a perl floating-point value
 
 =head3 binstr754_to_double( I<str> )
 
-The inverse of I<binstr754_from_double()>: it takes a string representing the 64 bits
+The inverse of C<binstr754_from_double()>: it takes a string representing the 64 bits
 of the IEEE754 double value, and converts it back to a perl floating-point value.
 
     print binstr754_to_double('0100000000101001110000000000000000000000000000000000000000000000');
@@ -238,11 +252,11 @@ if( $] lt '5.010' ) {
         *arr2x32b_from_double   = sub { return    unpack('N2' =>         pack 'd'  => shift); };
     } else {
         # I don't handle middle-endian / mixed-endian; sorry
-        *hexstr754_from_double = sub { undef };
-        *binstr754_from_double = sub { undef };
+        *hexstr754_from_double  = sub { undef };
+        *binstr754_from_double  = sub { undef };
 
-        *hexstr754_to_double     = sub { undef };
-        *binstr754_to_double     = sub { undef };
+        *hexstr754_to_double    = sub { undef };
+        *binstr754_to_double    = sub { undef };
     }
 } else {
         *hexstr754_from_double  = sub { return uc unpack('H*' =>         pack 'd>' => shift); };
@@ -356,7 +370,7 @@ The I<exponent> is the power of 2.  Is is always a decimal number, whether the c
 The I<exponent> can range from -1022 to +1023.
 
 Internally, the IEEE 754 representation uses the encoding of -1023 for zero and denormals; to
-aid in understanding the actual number, the I<to_..._floatingpoint()> conversions represent
+aid in understanding the actual number, the C<to_..._floatingpoint()> conversions represent
 them as +0000 for zero, and -1022 for denormals: since denormals are C<(0+fraction)*(2**min_exp)>,
 they are really multiples of 2**-1022, not 2**-1023.
 
@@ -418,16 +432,16 @@ zeroes, infinities, a variety of signaling and quiet NAN values.
 
 =head2 :ulp
 
-=head3 ulp( I<val> )
+=head3 ulp( I<value> )
 
-Returns the ULP ("Unit in the Last Place") for the given I<val>, which is the smallest number
-that you can add to or subtract from I<val> and still be able to discern a difference between
+Returns the ULP ("Unit in the Last Place") for the given I<value>, which is the smallest number
+that you can add to or subtract from I<value> and still be able to discern a difference between
 the original and modified.  Under normal (or denormal) circumstances, C<ulp($val) + $val E<gt> $val>
 is true.
 
-If the I<val> is a zero or a denormal, C<ulp()> will return the smallest possible denormal.
+If the I<value> is a zero or a denormal, C<ulp()> will return the smallest possible denormal.
 
-Since INF and NAN are not really numbers, C<ulp()> will just return the same I<val>.  Because
+Since INF and NAN are not really numbers, C<ulp()> will just return the same I<value>.  Because
 of the way they are handled, C<ulp($val) + $val E<gt> $val> no longer makes sense (infinity plus
 anything is still infinity, and adding NAN to NAN is not numerically defined, so a numerical
 comparison is meaningless on both).
@@ -452,15 +466,15 @@ sub ulp {   # ulp_by_div
     $val *= $TWONEG52->();
 }
 
-=head3 toggle_ulp( I<val> )
+=head3 toggle_ulp( I<value> )
 
-Returns the orginal I<val>, but with the ULP toggled.  In other words, if the ULP bit
+Returns the orginal I<value>, but with the ULP toggled.  In other words, if the ULP bit
 was a 0, it will return a value with the ULP of 1 (equivalent to adding one ULP to a positive
-I<val>); if the ULP bit was a 1, it will return a value with the ULP of 0 (equivalent to
-subtracting one ULP from a positive I<val>).  Under normal (or denormal) circumstances,
+I<value>); if the ULP bit was a 1, it will return a value with the ULP of 0 (equivalent to
+subtracting one ULP from a positive I<value>).  Under normal (or denormal) circumstances,
 C<toggle_ulp($val) != $val> is true.
 
-Since INF and NAN are not really numbers, C<ulp()> will just return the same I<val>.  Because
+Since INF and NAN are not really numbers, C<ulp()> will just return the same I<value>.  Because
 of the way they are handled, C<toggle_ulp($val) != $val> no longer makes sense.
 
 =cut
@@ -482,18 +496,18 @@ sub toggle_ulp {
     return binstr754_to_double($rawbin);
 }
 
-=head3 nextup( I<value> )
+=head3 nextUp( I<value> )
 
 Returns the next floating point value numerically greater than I<value>; that is, it adds one ULP.
 Returns infinite when I<value> is the highest normal floating-point value.
 Returns I<value> when I<value> is positive-infinite or NAN; returns the largest negative normal
 floating-point value when I<value> is negative-infinite.
 
-C<nextup> is an IEEE 754r standard function (754-2008 #5.3.1).
+C<nextUp> is an IEEE 754r standard function (754-2008 #5.3.1).
 
 =cut
 
-sub nextup {
+sub nextUp {
     # thanks again to BrowserUK: http://perlmonks.org/?node_id=1167146
     my $val = shift;
     return $val                                     if $val != $val;                # interestingly, NAN != NAN
@@ -515,46 +529,46 @@ sub nextup {
     return hexstr754_to_double( sprintf '%08X%08X', $msb, $lsb );
 }
 
-=head3 nextdown( I<value> )
+=head3 nextDown( I<value> )
 
 Returns the next floating point value numerically lower than I<value>; that is, it subtracts one ULP.
 Returns -infinity when I<value> is the largest negative normal floating-point value.
 Returns I<value> when I<value> is negative-infinite or NAN; returns the largest positive normal
 floating-point value when I<value> is positive-infinite.
 
-C<nextdown> is an IEEE 754r standard function (754-2008 #5.3.1).
+C<nextDown> is an IEEE 754r standard function (754-2008 #5.3.1).
 
 =cut
 
-sub nextdown {
-    return - nextup( - $_[0] );
+sub nextDown {
+    return - nextUp( - $_[0] );
 }
 
-=head3 nextafter( I<value>, I<direction> )
+=head3 nextAfter( I<value>, I<direction> )
 
 Returns the next floating point value after I<value> in the direction of I<direction>.  If the
 two are identical, return I<direction>; if I<direction> is numerically above I<float>, return
-C<nextup(I<value>)>; if I<direction> is numerically below I<float>, return C<nextdown(I<value>)>.
+C<nextUp(I<value>)>; if I<direction> is numerically below I<float>, return C<nextDown(I<value>)>.
 
 =cut
 
-sub nextafter {
+sub nextAfter {
     return $_[0]            if $_[0] != $_[0];      # return value when value is NaN
     return $_[1]            if $_[1] != $_[1];      # return direction when direction is NaN
     return $_[1]            if $_[1] == $_[0];      # return direction when the two are equal
-    return nextup($_[0])    if $_[1] > $_[0];       # return nextup if direction > value
-    return nextdown($_[0]);                         # otherwise, return nextdown()
+    return nextUp($_[0])    if $_[1] > $_[0];       # return nextUp if direction > value
+    return nextDown($_[0]);                         # otherwise, return nextDown()
 }
 
-=head2 :general
+=head2 :info
 
-The general functions include various operations (defined in 754-2008 #5.7.2) that provide general
+The informational functions include various operations (defined in 754-2008 #5.7.2) that provide general
 information about the floating-point value: most define whether a value is a special condition of
 floating-point or not (such as normal, finite, zero, ...).
 
 =head3 isSignMinus( I<value> )
 
-I<value> has negative sign.  (Even applies to zeroes and NaNs.)
+Returns 1 if I<value> has negative sign (even applies to zeroes and NaNs); otherwise, returns 0.
 
 =cut
 
@@ -565,7 +579,7 @@ sub isSignMinus {
 
 =head3 isNormal( I<value> )
 
-I<value> is a normal number (not zero, subnormal, infinite, or NaN).
+Returns 1 if I<value> is a normal number (not zero, subnormal, infinite, or NaN); otherwise, returns 0.
 
 =cut
 
@@ -577,7 +591,7 @@ sub isNormal {
 
 =head3 isFinite( I<value> )
 
-I<value> is a finite number (zero, subnormal, or normal; not infinite or NaN).
+Returns 1 if I<value> is a finite number (zero, subnormal, or normal; not infinite or NaN); otherwise, returns 0.
 
 =cut
 
@@ -589,7 +603,7 @@ sub isFinite {
 
 =head3 isZero( I<value> )
 
-I<value> is positive or negative zero.
+Returns 1 if I<value> is positive or negative zero; otherwise, returns 0.
 
 =cut
 
@@ -601,7 +615,7 @@ sub isZero {
 
 =head3 isSubnormal( I<value> )
 
-I<value> is subnormal (not zero, normal, infinite, nor NaN).
+Returns 1 if I<value> is subnormal (not zero, normal, infinite, nor NaN); otherwise, returns 0.
 
 =cut
 
@@ -615,7 +629,7 @@ sub isSubnormal {
 
 =head3 isInfinite( I<value> )
 
-I<value> is positive or negative infinity (not zero, subnormal, normal, nor NaN).
+Returns 1 if I<value> is positive or negative infinity (not zero, subnormal, normal, nor NaN); otherwise, returns 0.
 
 =cut
 
@@ -629,7 +643,7 @@ sub isInfinite {
 
 =head3 isNaN( I<value> )
 
-I<value> is NaN (not zero, subnormal, normal, nor infinite).
+Returns 1 if I<value> is NaN (not zero, subnormal, normal, nor infinite); otherwise, returns 0.
 
 =cut
 
@@ -641,11 +655,75 @@ sub isNaN {
     return ($exp eq '7FF' || $exp eq 'FFF') && ($frc ne '0'x13) || 0;
 }
 
-sub isSignaling { 0 }
-sub isCanonical { 0 }
+=head3 isSignaling( I<value> )
+
+Returns 1 if I<value> is a signaling NaN (not zero, subnormal, normal, nor infinite), otherwise, returns 0.
+
+Note that some perl implementations convert some or all signaling NaNs to quiet NaNs, in which case,
+C<isSignaling> might return only 0.
+
+=cut
+
+sub isSignaling {
+    # it's signalling if isNaN and MSB of fractional portion is 1
+    my $h   = hexstr754_from_double(shift);
+    my $exp = substr($h,0,3);
+    my $frc = substr($h,3,13);
+    my $qbit = (0x8 && hex(substr($h,3,1))) >> 3;   # 1: quiet, 0: signalling
+    return ($exp eq '7FF' || $exp eq 'FFF') && ($frc ne '0'x13)  && (!$qbit) || 0;
+}
+
+# TODO = add a function that will determine what level of "signaling" your implementation
+#   of perl will handle: return doesSignalingTranslate(does?2:0) || isSignaling( POS_SNAN_FIRST )
+
+=head3 isCanonical( I<value> )
+
+Returns 1 to indicate that I<value> is Canonical.
+
+Per IEEE Std 754-2008, "Canonical" is the "preferred" encoding.  Based on the
+B<Data::IEEE754::Tools>'s author's reading of the standard, non-canonical
+applies to decimal floating-point encodings, not the binary floating-point
+encodings that B<Data::IEEE754::Tools> handles.  Since there are not multiple
+choicesfor the representation of a binary-encoded floating-point, all
+I<value>s seem canonical, and thus return 1.
+
+=cut
+
+sub isCanonical { 1 }
+
+=head3 class( I<value> )
+
+Returns the "class" of the I<value>.
+
+TODO = figure out what class means.
+
+=cut
+
 sub class { 0 }
-sub radix { 0 }
+
+=head3 radix( I<value> )
+
+Returns the base (radix) of the internal floating point representation.
+This module works with the binary floating-point representations, so will always return 2.
+
+=cut
+
+sub radix { 2 }
+
+=head3 totalOrder( I<value> )
+
+TODO = figure out what totalOrder does.
+
+=cut
+
 sub totalOrder { 0 }
+
+=head3 totalOrderMag( I<value> )
+
+TODO = figure out what totalOrderMag does.
+
+=cut
+
 sub totalOrderMag { 0 }
 
 =head2 :all
