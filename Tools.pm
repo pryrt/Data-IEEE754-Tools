@@ -693,13 +693,33 @@ sub isCanonical { 1 }
 
 =head3 class( I<value> )
 
-Returns the "class" of the I<value>.
+Returns the "class" of the I<value>:
 
-TODO = figure out what class means.
+    signalingNaN
+    quietNaN
+    negativeInfinity
+    negativeNormal
+    negativeSubnormal
+    negativeZero
+    positiveZero
+    positiveSubnormal
+    positiveNormal
+    positiveInfinity
 
 =cut
 
-sub class { 0 }
+sub class {
+    return 'signalingNaN'       if isSignaling($_[0]);
+    return 'quietNaN'           if isNaN($_[0]);
+    return 'negativeInfinity'   if isInfinite($_[0])    && isSignMinus($_[0]);
+    return 'negativeNormal'     if isNormal($_[0])      && isSignMinus($_[0]);
+    return 'negativeSubnormal'  if isSubnormal($_[0])   && isSignMinus($_[0]);
+    return 'negativeZero'       if isZero($_[0])        && isSignMinus($_[0]);
+    return 'positiveZero'       if isZero($_[0])        && !isSignMinus($_[0]);
+    return 'positiveSubnormal'  if isSubnormal($_[0])   && !isSignMinus($_[0]);
+    return 'positiveNormal'     if isNormal($_[0])      && !isSignMinus($_[0]);
+    return 'positiveInfinity'   if isInfinite($_[0])    && !isSignMinus($_[0]);
+}
 
 =head3 radix( I<value> )
 
@@ -725,6 +745,8 @@ TODO = figure out what totalOrderMag does.
 =cut
 
 sub totalOrderMag { 0 }
+
+# TODO = spaceship() and spaceshipMag() using totalOrder and totalOrderMag
 
 =head2 :all
 
