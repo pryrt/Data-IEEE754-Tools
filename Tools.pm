@@ -5,7 +5,7 @@ use strict;
 use Carp;
 use Exporter 'import';  # just use the import() function, without the rest of the overhead of ISA
 
-use version 0.77; our $VERSION = version->declare('0.013_004');
+use version 0.77; our $VERSION = version->declare('0.013_005');
 
 =pod
 
@@ -146,8 +146,9 @@ my  @EXPORT_CONST = qw(
 my @EXPORT_INFO = qw(isSignMinus isNormal isFinite isZero isSubnormal
     isInfinite isNaN isSignaling isCanonical
     class radix totalOrder totalOrderMag);
+my @EXPORT_SIGNBIT = qw(negate absolute copySign isSignMinus);
 
-our @EXPORT_OK = (@EXPORT_FLOATING, @EXPORT_RAW754, @EXPORT_ULP, @EXPORT_CONST, @EXPORT_INFO);
+our @EXPORT_OK = (@EXPORT_FLOATING, @EXPORT_RAW754, @EXPORT_ULP, @EXPORT_CONST, @EXPORT_INFO, @EXPORT_SIGNBIT);
 our %EXPORT_TAGS = (
     floating        => [@EXPORT_FLOATING],
     floatingpoint   => [@EXPORT_FLOATING],
@@ -155,6 +156,7 @@ our %EXPORT_TAGS = (
     ulp             => [@EXPORT_ULP],
     'constants'     => [@EXPORT_CONST],
     info            => [@EXPORT_INFO],
+    signbit         => [@EXPORT_SIGNBIT],
     all             => [@EXPORT_OK],
 );
 
@@ -789,6 +791,58 @@ sub totalOrderMag {
 }
 
 # TODO = spaceship() and spaceshipMag() similar to totalOrder and totalOrderMag, but with '<' => -1, '==' => 0, '>' => +1
+
+=head2 :signbit
+
+These functions, from IEEE Std 754-2008, manipulate the sign bits
+of the argument(s)set P.
+
+=head3 negate( I<value> )
+
+Reverses the sign bit of I<value>.  (If the sign bit is set on I<value>,
+it will not be set on the output, and vice versa; this will work on
+signed zeroes, on infinities, and on NaNs.)
+
+=cut
+
+sub negate {
+    my $b = binstr754_from_double(shift);                                               # convert to binary string
+    my $s = 1 - substr $b, 0, 1;                                                        # toggle sign
+    substr $b, 0, 1, $s;                                                                # replace sign
+    return binstr754_to_double($b);                                                     # convert to floating-point
+}
+
+=head3 CORE::abs( I<value> )
+=head3 absolute( I<value> )
+
+The C<CORE::abs()> function behaves properly (per the IEEE 754 description)
+for all classes of I<value> (including signed zeroes, infinities, and NaNs),
+per the installation test suite.
+
+However, C<absolute()> is provided as a module-based alternative.
+
+The test suite runs the expected input/output pairs thru both C<CORE::abs()> and
+C<Data::IEEE754::Tools::absolute()>, so if any of those fail on your system, or
+if you find an untested edge case where C<CORE::abs()> (or C<Data::IEEE754::Tools::absolute()>)
+do not behave as expected, please file a bug report.
+
+=cut
+
+sub absolute {
+    my $b = binstr754_from_double(shift);                                               # convert to binary string
+    substr $b, 0, 1, '0';                                                               # replace sign
+    return binstr754_to_double($b);                                                     # convert to floating-point
+}
+
+=head3 copySign( I<x>, I<y> )
+
+Copies the sign from I<y>, but uses the value from I<x>.  For example,
+
+    $new = copySign( 1.25, -5.5);   # $new is -1.25: the value of x, but the sign of y
+
+=head3 also exports C<isSignMinus(> I<value> C<)> (see :info)
+
+(:signbit also exports the C<isSignMinus()> function, described in :info, above)
 
 =head2 :all
 

@@ -9,23 +9,9 @@ TODO
         <format>-convertFromHexCharacter
         <format>-convertToHexCharacter
       + IEEE754 5.5.1: sign bit operations
-        copy
         negate
         abs
         copySign
-      + IEEE754 5.7.2
-        isSignMinus
-        isNormal
-        isFinite
-        isZero
-        isSubnormal
-        isInfinite
-        isNaN
-        isSignaling
-        isCanonical
-        radix { return 2; }
-        totalOrder (5.10)
-        totalOrderMag = totalOrder(abs(a),abs(b))
 
     - long-term: add in _32bit and _128bit versions
       - what's official name of 128bit long-double?  quad?  something else?  check IEEE754

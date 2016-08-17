@@ -51,7 +51,7 @@ foreach my $t ( @tests ) {
         my $fn = $flist[$i];
         my $xi = $x[$i];
         my $f = \&{$fn};
-        cmp_ok( $f->($c), 'eq', $xi, sprintf('%-20.20s(%-20.20s) = %s', $fn, $name, $f->($c) ) );
+        cmp_ok( $f->($c), 'eq', $xi, sprintf('%-20.20s(%-20.20s)', $fn, $name ) );
     }
 }
 

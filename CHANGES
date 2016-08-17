@@ -1,6 +1,12 @@
 Revision history for Perl module Data::IEEE754::Tools.
 
 v0.013 Development Version
+    - v0.013_005: adding negate(), abs(), copySign()
+        + negate(), absolute() working and tested
+        + CORE::abs() confirmed to be equivalent to absolute(); documented as such
+          (and still remains in the test suite)
+        + TODO = implement copySign and test suite
+        IN PROGRESS = <https://rt.cpan.org/Ticket/Display.html?id=116155>
     - v0.013_004: adding totalOrder, totalOrderMag()
         IN PROGRESS = <https://rt.cpan.org/Ticket/Display.html?id=116155>
         + totalOrder() working as I expect: use the trick for both-NaN to convert
