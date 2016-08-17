@@ -6,7 +6,7 @@ v0.013 Development Version
         + totalOrder() working as I expect: use the trick for both-NaN to convert
           them to a real number by changing the exponents to the same value, and doing
           a numerical comparison
-        + totalOrderMag() = TODO
+        + totalOrderMag() = flip the sign bit, then call totalOrder
     - v0.013_003: adding 5.7.2 informational operations, adding coverage in t/07*.t;
         IN PROGRESS = <https://rt.cpan.org/Ticket/Display.html?id=116155>
         + nextup(), nextdown(), nextafter() => renamed to nextUp(), nextDown(), nextAfter()
