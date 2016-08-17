@@ -745,27 +745,25 @@ Special cases are ordered as below:
 
 sub totalOrder {
     my ($x, $y) = @_[0,1];
-    my ($bx,$by) = map { binstr754_from_double($_) } $x, $y;
-    my @xsegs = ($bx =~ /(.)(.{11})(.{20})(.{32})/);
-    my @ysegs = ($by =~ /(.)(.{11})(.{20})(.{32})/);
-    my ($xin, $yin) = map { isNaN($_) } $x, $y;     # used twice each, so save the values
+    my ($bx,$by) = map { binstr754_from_double($_) } $x, $y;        # convert to binary strings
+    my @xsegs = ($bx =~ /(.)(.{11})(.{20})(.{32})/);                # split into sign, exponent, MSB, LSB
+    my @ysegs = ($by =~ /(.)(.{11})(.{20})(.{32})/);                # split into sign, exponent, MSB, LSB
+    my ($xin, $yin) = map { isNaN($_) } $x, $y;                     # determine if NaN: used twice each, so save the values rather than running twice each during if-switch
 
-    if( $xin && $yin ) {
+    if( $xin && $yin ) {                                            # BOTH NaN
         # use a trick: the rules for both-NaN treat it as if it's just another floating point,
         #  so lie about the exponent and do a normal comparison
         ($bx, $by) = map { $_->[1] = '1' . '0'x10; join '', @$_ } \@xsegs, \@ysegs;
         ($x, $y) = map { binstr754_to_double($_) } $bx, $by;
         return (($x <= $y) || 0);
-    } elsif ( $xin ) {
-        # TRUE if x is NEG
+    } elsif ( $xin ) {                                              # just x NaN: TRUE if x is NEG
         return ( ($xsegs[0]) || 0 );
-    } elsif ( $yin ) {
-        # TRUE if y is not NEG
+    } elsif ( $yin ) {                                              # just y NaN: TRUE if y is not NEG
         return ( (!$ysegs[0]) || 0 );
-    } elsif ( isZero($x) && isZero($y) ) {
-        # TRUE if x NEG, or if x==y: -signbit(x) <= -signbit(y)
+    } elsif ( isZero($x) && isZero($y) ) {                          # both zero: TRUE if x NEG, or if x==y
+        # trick = -signbit(x) <= -signbit(y), since signbit is 1 for negative, -signbit = -1 for negative
         return ( (-$xsegs[0] <= -$ysegs[0]) || 0 );
-    } else {
+    } else {                                                        # numeric comparison (works for inf, normal, subnormal, or only one +/-zero)
         return( ($x <= $y) || 0 );
     }
 }
@@ -783,7 +781,12 @@ Special cases are ordered as below:
 
 =cut
 
-sub totalOrderMag { 0 }
+sub totalOrderMag {
+    my ($x, $y)     = @_[0,1];
+    my ($bx,$by)    = map { binstr754_from_double($_) } $x, $y;                         # convert to binary strings
+    ($x,  $y)       = map { substr $_, 0, 1, '0'; binstr754_to_double($_) } $bx, $by;   # set sign bit to 0, and convert back to number
+    return totalOrder( $x, $y );                                                        # compare normally
+}
 
 # TODO = spaceship() and spaceshipMag() similar to totalOrder and totalOrderMag, but with '<' => -1, '==' => 0, '>' => +1
 
