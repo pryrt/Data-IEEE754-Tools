@@ -730,15 +730,21 @@ This module works with the binary floating-point representations, so will always
 
 sub radix { 2 }
 
-=head3 totalOrder( I<value> )
+=head3 totalOrder( I<x>, I<y>  )
 
-TODO = figure out what totalOrder does.
+Returns TRUE if I<x> E<le> I<y>, FALSE if I<x> E<gt> I<y>.
 
 =cut
 
-sub totalOrder { 0 }
+sub totalOrder {
+    my ($x, $y) = @_[0,1];
+    my @xsegs = (binstr754_from_double($x) =~ /(.)(.{11})(.{52})/);
+    if( isNaN($x) && isNaN($y) ) {
 
-=head3 totalOrderMag( I<value> )
+    }
+}
+
+=head3 totalOrderMag( I<x>, I<y> )
 
 TODO = figure out what totalOrderMag does.
 
@@ -746,7 +752,7 @@ TODO = figure out what totalOrderMag does.
 
 sub totalOrderMag { 0 }
 
-# TODO = spaceship() and spaceshipMag() using totalOrder and totalOrderMag
+# TODO = spaceship() and spaceshipMag() similar to totalOrder and totalOrderMag, but with '<' => -1, '==' => 0, '>' => +1
 
 =head2 :all
 

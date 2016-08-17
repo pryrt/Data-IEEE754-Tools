@@ -1,18 +1,70 @@
 ########################################################################
 # Verifies the following functions:
 #   :info
-#       isXXXX(v)
-#       class(v)
-#       radix(v)
-# Will require separate test procedure:
 #       totalOrder(v)
 #       totalOrderMag(v)
+#   other functions from info in other test files
 ########################################################################
 use 5.006;
 use warnings;
 use strict;
 use Test::More;
 use Data::IEEE754::Tools qw/:raw754 :floatingpoint :constants :info/;
+
+plan skip_all => 'not yet implemented';
+__END__
+my @constants = (
+    NEG_QNAN_LAST      ,
+    NEG_QNAN_FIRST     ,
+    NEG_IND            ,
+    NEG_SNAN_LAST      ,
+    NEG_SNAN_FIRST     ,
+    NEG_INF            ,
+    NEG_NORM_BIGGEST   ,
+    NEG_NORM_SMALLEST  ,
+    NEG_DENORM_BIGGEST ,
+    NEG_DENORM_SMALLEST,
+    NEG_ZERO           ,
+    POS_ZERO           ,
+    POS_DENORM_SMALLEST,
+    POS_DENORM_BIGGEST ,
+    POS_NORM_SMALLEST  ,
+    POS_NORM_BIGGEST   ,
+    POS_INF            ,
+    POS_SNAN_FIRST     ,
+    POS_SNAN_LAST      ,
+    POS_IND            ,
+    POS_QNAN_FIRST     ,
+    POS_QNAN_LAST
+);
+
+plan tests => (scalar @constants)**2 * 2;
+
+# TODO rework the test suite: i = each @constants, j = each @constants; run totalOrder and totalOrderMag on all N**2 ordered pairs
+sub habs($) {
+    my $h = shift;
+    my $s = substr $h, 0, 1;
+    $s = sprintf '%1.1X', (hex($s)|0x8);
+    substr $h, 0, 1, $s;
+    return $h;
+}
+foreach my $i (0 .. $#constants) {
+    my $x = $constants[$i];
+    my $hx = hexstr754_from_double($x);
+    my $hax = habs($hx);
+    my $ax = hexstr754_to_double($hax);
+    foreach my $j (0 .. $#constants) {
+        my $y = $constants[$j];
+        my $hy = hexstr754_from_double($y);
+        my $hay = habs($hy);
+        my $ay = hexstr754_to_double($hay);
+        local $, = ", ";
+        local $\ = "\n";
+        print STDERR $hx, $hy, $hax, $hay;
+    }
+}
+
+__END__
 
 my @tests = ();
 #            [CONSTANT           , 'NAME               ', -, N, F, Z, s, I, !, S, C, 'class'            , R];
