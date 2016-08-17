@@ -1,12 +1,19 @@
 Revision history for Perl module Data::IEEE754::Tools.
 
 v0.013 Development Version
+    - v0.013_004: adding totalOrder, totalOrderMag()
+        IN PROGRESS = <https://rt.cpan.org/Ticket/Display.html?id=116155>
+        + totalOrder() working as I expect: use the trick for both-NaN to convert
+          them to a real number by changing the exponents to the same value, and doing
+          a numerical comparison
+        + totalOrderMag() = TODO
     - v0.013_003: adding 5.7.2 informational operations, adding coverage in t/07*.t;
-        IN PROGRES = <https://rt.cpan.org/Ticket/Display.html?id=116155>
+        IN PROGRESS = <https://rt.cpan.org/Ticket/Display.html?id=116155>
         + nextup(), nextdown(), nextafter() => renamed to nextUp(), nextDown(), nextAfter()
           to agree with IEEE Std 754-2008 nomenclature.
         + finished the isXxx(): isSignMinus .. isCanonical;
-        + finished class(), radix(); TODO = totalOrder(), totalOrderMag();
+        + finished: class(), radix()
+        - TODO: totalOrder(), totalOrderMag()
     - v0.013_002: add the constants; add test coverage for :constants
         FIXED = <https://rt.cpan.org/Ticket/Display.html?id=116154>
     - v0.013_001: swap out old ulp() for ulp_by_div(), which benchmarks said ran

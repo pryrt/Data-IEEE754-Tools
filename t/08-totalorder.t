@@ -11,8 +11,6 @@ use strict;
 use Test::More;
 use Data::IEEE754::Tools qw/:raw754 :floatingpoint :constants :info/;
 
-plan skip_all => 'not yet implemented';
-__END__
 my @constants = (
     NEG_QNAN_LAST      ,
     NEG_QNAN_FIRST     ,
@@ -44,7 +42,7 @@ plan tests => (scalar @constants)**2 * 2;
 sub habs($) {
     my $h = shift;
     my $s = substr $h, 0, 1;
-    $s = sprintf '%1.1X', (hex($s)|0x8);
+    $s = sprintf '%1.1X', (hex($s)&0x7);        # mask OUT sign bit
     substr $h, 0, 1, $s;
     return $h;
 }
@@ -60,7 +58,13 @@ foreach my $i (0 .. $#constants) {
         my $ay = hexstr754_to_double($hay);
         local $, = ", ";
         local $\ = "\n";
-        print STDERR $hx, $hy, $hax, $hay;
+        my $got = totalOrder( $x, $y );
+        my $exp = ($i <= $j) || 0;
+        is( $got, $exp, sprintf('totalOrder   (%s,%s) = %s vs %s', $hx, $hy, $got, $exp) );
+
+        $got = '?'; #totalOrderMag( $x, $y );
+        $exp = '?';
+        is( $got, $exp, sprintf('totalOrderMag(%s,%s) = %s vs %s', $hax, $hay, $got, $exp) );
     }
 }
 

@@ -5,7 +5,7 @@ use strict;
 use Carp;
 use Exporter 'import';  # just use the import() function, without the rest of the overhead of ISA
 
-use version 0.77; our $VERSION = version->declare('0.013_003');
+use version 0.77; our $VERSION = version->declare('0.013_004');
 
 =pod
 
@@ -734,19 +734,52 @@ sub radix { 2 }
 
 Returns TRUE if I<x> E<le> I<y>, FALSE if I<x> E<gt> I<y>.
 
+Special cases are ordered as below:
+
+    -quietNaN < -signalingNaN < -infinity < ...
+    ... < -normal < -subnormal < -zero < ...
+    ... < +zero < +subnormal < +normal < ...
+    ... < +infinity < +signalingNaN < +quietNaN
+
 =cut
 
 sub totalOrder {
     my ($x, $y) = @_[0,1];
-    my @xsegs = (binstr754_from_double($x) =~ /(.)(.{11})(.{52})/);
-    if( isNaN($x) && isNaN($y) ) {
+    my ($bx,$by) = map { binstr754_from_double($_) } $x, $y;
+    my @xsegs = ($bx =~ /(.)(.{11})(.{20})(.{32})/);
+    my @ysegs = ($by =~ /(.)(.{11})(.{20})(.{32})/);
+    my ($xin, $yin) = map { isNaN($_) } $x, $y;     # used twice each, so save the values
 
+    if( $xin && $yin ) {
+        # use a trick: the rules for both-NaN treat it as if it's just another floating point,
+        #  so lie about the exponent and do a normal comparison
+        ($bx, $by) = map { $_->[1] = '1' . '0'x10; join '', @$_ } \@xsegs, \@ysegs;
+        ($x, $y) = map { binstr754_to_double($_) } $bx, $by;
+        return (($x <= $y) || 0);
+    } elsif ( $xin ) {
+        # TRUE if x is NEG
+        return ( ($xsegs[0]) || 0 );
+    } elsif ( $yin ) {
+        # TRUE if y is not NEG
+        return ( (!$ysegs[0]) || 0 );
+    } elsif ( isZero($x) && isZero($y) ) {
+        # TRUE if x NEG, or if x==y: -signbit(x) <= -signbit(y)
+        return ( (-$xsegs[0] <= -$ysegs[0]) || 0 );
+    } else {
+        return( ($x <= $y) || 0 );
     }
 }
 
 =head3 totalOrderMag( I<x>, I<y> )
 
-TODO = figure out what totalOrderMag does.
+Returns TRUE if I<abs(x)> E<le> I<abs(y)>, otherwise FALSE.
+Equivalent to
+
+    totalOrder( abs(x), abs(y) )
+
+Special cases are ordered as below:
+
+    zero < subnormal < normal < infinity < signalingNaN < quietNaN
 
 =cut
 
