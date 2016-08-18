@@ -1,7 +1,4 @@
 TODO
-    - bug: to_hex/dec_floatingpoint contains \slash before #INF, #SNAN, #QNAN
-      <https://rt.cpan.org/Ticket/Display.html?id=117040>
-
     - bug: isSignaling() and class() don't test properly for SNAN on all implementations
       <https://rt.cpan.org/Ticket/Display.html?id=117041>
 
