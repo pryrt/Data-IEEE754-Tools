@@ -40,7 +40,7 @@ push @tests, [NEG_QNAN_LAST      , 'NEG_QNAN_LAST      ', POS_QNAN_LAST      , P
 
 my @flist = qw(negate absolute CORE::abs);
 
-plan tests => scalar(@tests) * scalar(@flist);
+plan tests => scalar(@tests) * (scalar(@flist)+1);
 
 foreach my $t ( @tests ) {
     my ($c, $name, @x) = @$t;
@@ -49,8 +49,9 @@ foreach my $t ( @tests ) {
         my $fn = $flist[$i];
         my $xi = $x[$i];
         my $f = \&{$fn};
-        cmp_ok( $f->($c), 'eq', $xi, sprintf('%-20.20s(%-20.20s)', $fn, $name ) );
+        is( $f->($c), $xi, sprintf('%-20.20s(%-20.20s)', $fn, $name ) );
     }
+    is( absolute($c), CORE::abs($c), sprintf('%-20.20s(%-20.20s) for CORE::abs(x) vs Data::IEEE754::Tools::absolute(x)', 'compare', $name) );
 }
 
 exit;

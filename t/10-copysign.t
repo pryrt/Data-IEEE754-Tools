@@ -35,37 +35,18 @@ my @constants = (
     POS_QNAN_LAST
 );
 
-plan skip_all => 'tests to be developed';
-
-#### originally t\08; need to convert to copySign functionality
 plan tests => (scalar @constants)**2 * 2;
 
-sub habs($) {
-    my $h = shift;
-    my $s = substr $h, 0, 1;
-    $s = sprintf '%1.1X', (hex($s)&0x7);        # mask OUT sign bit
-    substr $h, 0, 1, $s;
-    return $h;
-}
-foreach my $i (0 .. $#constants) {
-    my $x = $constants[$i];
-    my $hx = hexstr754_from_double($x);
-    my $hax = habs($hx);
-    my $ax = hexstr754_to_double($hax);
-    foreach my $j (0 .. $#constants) {
-        my $y = $constants[$j];
-        my $hy = hexstr754_from_double($y);
-        my $hay = habs($hy);
-        my $ay = hexstr754_to_double($hay);
-        local $, = ", ";
-        local $\ = "\n";
-        my $got = totalOrder( $x, $y );
-        my $exp = ($i <= $j) || 0;
-        is( $got, $exp, sprintf('totalOrder   (%s,%s) = %s vs %s', $hx, $hy, $got, $exp) );
+foreach my $x (@constants) {
+    my $xsign = isSignMinus($x);
+    foreach my $y (@constants) {
+        my $ysign = isSignMinus($y);
 
-        $got = totalOrderMag( $x, $y );
-        $exp = ( ($i<11 ? 21-$i : $i) <= ($j<11 ? 21-$j : $j) ) || 0;
-        is( $got, $exp, sprintf('totalOrderMag(%s,%s) = %s vs %s', $hax, $hay, $got, $exp) );
+        my $z = copySign($x, $y);
+        my $zsign = isSignMinus($z);
+
+        is( $zsign , $ysign , sprintf('copySign(%-24.24s,%-24.24s): sign compare', to_hex_floatingpoint($x), to_hex_floatingpoint($y)) );
+        is( abs($z), abs($x), sprintf('copySign(%-24.24s,%-24.24s): abs compare',  to_hex_floatingpoint($x), to_hex_floatingpoint($y)) );
     }
 }
 

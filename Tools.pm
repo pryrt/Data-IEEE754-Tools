@@ -840,6 +840,15 @@ Copies the sign from I<y>, but uses the value from I<x>.  For example,
 
     $new = copySign( 1.25, -5.5);   # $new is -1.25: the value of x, but the sign of y
 
+=cut
+
+sub copySign {
+    my ($x, $y)         = @_[0,1];
+    my ($bx,$by)        = map { binstr754_from_double($_) } $x, $y;                     # convert to binary strings
+    substr($bx, 0, 1)   = substr($by, 0, 1);                                            # copy the sign bit from y to x
+    return binstr754_to_double($bx);                                                    # convert binary-x (with modified sign) back to double
+}
+
 =head3 also exports C<isSignMinus(> I<value> C<)> (see :info)
 
 (:signbit also exports the C<isSignMinus()> function, described in :info, above)

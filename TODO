@@ -1,17 +1,25 @@
 TODO
+    - bug fix
+      <https://rt.cpan.org/Ticket/Display.html?id=117040>
+
     - add the "is_xxxx", sign-copy, and other similar functions from IEEE754/Data::Float
       <https://rt.cpan.org/Ticket/Display.html?id=116155>
       + IEEE754 5.4.2 => 5.12
         <format>-convertFormat
         <format>-convertFromDecimalCharacter
         <format>-convertToDecimalCharacter
+            # alias for to_dec_floatingpoint()
+            # conversionSpecification is supposed to indicate formatting
+            #       might want to use an optional integer which indicates how many places
+            #       after the fractional-point to display (default to 16 => %16.16s for to_dec_floatingpoint)
       + IEEE754 5.4.3 => 5.12
         <format>-convertFromHexCharacter
-        <format>-convertToHexCharacter
-      + IEEE754 5.5.1: sign bit operations
-        negate
-        abs
-        copySign
+        <format>-convertToHexCharacter(source, conversionSpecification)
+            # alias for to_hex_floatingpoint()
+            #       I originally thought these were aliases for my rawhex754 functions... but no
+            # conversionSpecification is supposed to indicate formatting
+            #       might want to use an optional integer which indicates how many places
+            #       after the fractional-point to display (default to 16 => %16.16s for to_dec_floatingpoint)
 
     - long-term: add in _32bit and _128bit versions
       - what's official name of 128bit long-double?  quad?  something else?  check IEEE754
