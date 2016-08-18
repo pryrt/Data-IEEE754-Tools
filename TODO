@@ -1,6 +1,9 @@
 TODO
-    - bug fix
+    - bug: to_hex/dec_floatingpoint contains \slash before #INF, #SNAN, #QNAN
       <https://rt.cpan.org/Ticket/Display.html?id=117040>
+
+    - bug: isSignaling() and class() don't test properly for SNAN on all implementations
+      <https://rt.cpan.org/Ticket/Display.html?id=117041>
 
     - add the "is_xxxx", sign-copy, and other similar functions from IEEE754/Data::Float
       <https://rt.cpan.org/Ticket/Display.html?id=116155>
@@ -25,3 +28,7 @@ TODO
       - what's official name of 128bit long-double?  quad?  something else?  check IEEE754
         doesn't give a name (mentions, but never defines, single and double)
       - 128b = [1 sign][15 exp][112 frac], e=exp-16383
+
+    - ALWAYS: look for new bug reports:
+      <https://rt.cpan.org/Dist/Display.html?Queue=Data-IEEE754-Tools>
+      <https://github.com/pryrt/Data-IEEE754-Tools/issues>
