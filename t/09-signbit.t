@@ -12,6 +12,8 @@ use strict;
 use Test::More;
 use Data::IEEE754::Tools qw/:raw754 :floatingpoint :constants :signbit/;
 
+sub core_abs($) { abs(shift) }
+
 my @tests = ();
 #            [CONSTANT           , 'NAME               ', negate()           , absolute()         , CORE::abs()        ];
 push @tests, [POS_ZERO           , 'POS_ZERO           ', NEG_ZERO           , POS_ZERO           , POS_ZERO           ];
@@ -38,7 +40,7 @@ push @tests, [NEG_IND            , 'NEG_IND            ', POS_IND            , P
 push @tests, [NEG_QNAN_FIRST     , 'NEG_QNAN_FIRST     ', POS_QNAN_FIRST     , POS_QNAN_FIRST     , POS_QNAN_FIRST     ];
 push @tests, [NEG_QNAN_LAST      , 'NEG_QNAN_LAST      ', POS_QNAN_LAST      , POS_QNAN_LAST      , POS_QNAN_LAST      ];
 
-my @flist = qw(negate absolute CORE::abs);
+my @flist = qw(negate absolute core_abs);
 
 plan tests => scalar(@tests) * (scalar(@flist)+1);
 
