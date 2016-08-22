@@ -1,6 +1,8 @@
 Revision history for Perl module Data::IEEE754::Tools.
 
 v0.013 Development Version
+    - v0.013_006: fixing isSignaling bug in test suite
+        IN PROGRESS = <https://rt.cpan.org/Ticket/Display.html?id=117041>
     - v0.013_005: adding negate(), abs(), copySign()
         IN PROGRESS = <https://rt.cpan.org/Ticket/Display.html?id=116155>
         + negate(), absolute(), copySign() working and tested

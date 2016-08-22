@@ -51,7 +51,15 @@ foreach my $t ( @tests ) {
         my $fn = $flist[$i];
         my $xi = $x[$i];
         my $f = \&{$fn};
-        cmp_ok( $f->($c), 'eq', $xi, sprintf('%-20.20s(%-20.20s)', $fn, $name ) );
+        SKIP: { # allows for skipping isSignaling() tests.
+            if( ($fn eq 'isSignaling') && isSignalingConvertedToQuiet() ) {
+                my $err = sprintf 'Signaling NaN are converted to QuietNaN by your perl: v%vd', $^V;
+                eval { require 'Config' };
+                $err .= " for $Config::Config{myuname}" unless ($@);
+                skip $err, 1;
+            }
+            cmp_ok( $f->($c), 'eq', $xi, sprintf('%-20.20s(%-20.20s)', $fn, $name ) );
+        }
     }
 }
 

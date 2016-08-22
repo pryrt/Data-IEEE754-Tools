@@ -5,7 +5,7 @@ use strict;
 use Carp;
 use Exporter 'import';  # just use the import() function, without the rest of the overhead of ISA
 
-use version 0.77; our $VERSION = version->declare('0.013_005');
+use version 0.77; our $VERSION = version->declare('0.013_006');
 
 =pod
 
@@ -144,7 +144,7 @@ my  @EXPORT_CONST = qw(
     NEG_IND NEG_QNAN_FIRST NEG_QNAN_LAST
 );
 my @EXPORT_INFO = qw(isSignMinus isNormal isFinite isZero isSubnormal
-    isInfinite isNaN isSignaling isCanonical
+    isInfinite isNaN isSignaling isSignalingConvertedToQuiet isCanonical
     class radix totalOrder totalOrderMag);
 my @EXPORT_SIGNBIT = qw(negate absolute copySign isSignMinus);
 
@@ -154,7 +154,7 @@ our %EXPORT_TAGS = (
     floatingpoint   => [@EXPORT_FLOATING],
     raw754          => [@EXPORT_RAW754],
     ulp             => [@EXPORT_ULP],
-    'constants'     => [@EXPORT_CONST],
+    constants       => [@EXPORT_CONST],
     info            => [@EXPORT_INFO],
     signbit         => [@EXPORT_SIGNBIT],
     all             => [@EXPORT_OK],
@@ -667,16 +667,26 @@ C<isSignaling> might return only 0.
 =cut
 
 sub isSignaling {
-    # it's signalling if isNaN and MSB of fractional portion is 1
+    # it's signaling if isNaN and MSB of fractional portion is 1
     my $h   = hexstr754_from_double(shift);
     my $exp = substr($h,0,3);
     my $frc = substr($h,3,13);
-    my $qbit = (0x8 && hex(substr($h,3,1))) >> 3;   # 1: quiet, 0: signalling
+    my $qbit = (0x8 && hex(substr($h,3,1))) >> 3;   # 1: quiet, 0: signaling
     return ($exp eq '7FF' || $exp eq 'FFF') && ($frc ne '0'x13)  && (!$qbit) || 0;
 }
 
-# TODO = add a function that will determine what level of "signaling" your implementation
-#   of perl will handle: return doesSignalingTranslate(does?2:0) || isSignaling( POS_SNAN_FIRST )
+=head4 isSignalingConvertedToQuiet()
+
+Returns 1 if your implementation of perl converts a SignalingNaN to a QuietNaN, otherwise returns 0.
+
+This is I<not> a standard IEEE 754 function; but this is used to determine if the C<isSignaling()>
+function is meaningful in your implementation of perl.
+
+=cut
+
+sub isSignalingConvertedToQuiet {
+    !isSignaling( POS_SNAN_FIRST ) || 0
+}
 
 =head3 isCanonical( I<value> )
 
