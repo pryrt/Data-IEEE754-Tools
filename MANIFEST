@@ -9,4 +9,10 @@ t/02-floatingpoint.t
 t/03-ulp.t
 t/04-nextupdown.t
 t/05-nextafter.t
+t/06-constants.t
+t/07-info.t
+t/08-totalorder.t
+t/09-signbit.t
+t/10-copysign.t
+TODO
 Tools.pm
