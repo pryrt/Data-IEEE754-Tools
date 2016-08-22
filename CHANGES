@@ -2,7 +2,10 @@ Revision history for Perl module Data::IEEE754::Tools.
 
 v0.013 Development Version
     - v0.013_006: fixing isSignaling bug in test suite
-        IN PROGRESS = <https://rt.cpan.org/Ticket/Display.html?id=117041>
+        FIXED BUG = <https://rt.cpan.org/Ticket/Display.html?id=117041>
+	+ add isSignalingConvertedToQuiet() to indicate implementations that make it quiet
+        + Test::More::skip() t/07 iff isSignalingConvertedToQuiet and (isSignaling or class eq signalingNaN)
+        + Test::More::skip() t/08 iff isSignalingConvertedToQuiet and (one signaling other quiet)
     - v0.013_005: adding negate(), abs(), copySign()
         IN PROGRESS = <https://rt.cpan.org/Ticket/Display.html?id=116155>
         + negate(), absolute(), copySign() working and tested

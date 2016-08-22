@@ -1,7 +1,4 @@
 TODO
-    - bug: isSignaling() and class() don't test properly for SNAN on all implementations
-      <https://rt.cpan.org/Ticket/Display.html?id=117041>
-
     - add the "is_xxxx", sign-copy, and other similar functions from IEEE754/Data::Float
       <https://rt.cpan.org/Ticket/Display.html?id=116155>
       + IEEE754 5.4.2 => 5.12
