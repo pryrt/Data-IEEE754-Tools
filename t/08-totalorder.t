@@ -38,6 +38,13 @@ my @constants = (
 
 plan tests => (scalar @constants)**2 * 2;
 
+my $skip_reason = '';
+if( isSignalingConvertedToQuiet() ) {
+    $skip_reason = sprintf 'Signaling NaN are converted to QuietNaN by your perl: v%vd', $^V;
+    eval { require 'Config' };
+    $skip_reason .= " for $Config::Config{myuname}" unless ($@);
+}
+
 sub habs($) {
     my $h = shift;
     my $s = substr $h, 0, 1;
@@ -59,11 +66,11 @@ foreach my $i (0 .. $#constants) {
         local $\ = "\n";
         my $got = totalOrder( $x, $y );
         my $exp = ($i <= $j) || 0;
-        is( $got, $exp, sprintf('totalOrder   (%s,%s) = %s vs %s', $hx, $hy, $got, $exp) );
+        is( $got, $exp, sprintf('totalOrder   (%s,%s) = %s vs %s [i,j=$i,$j]', $hx, $hy, $got, $exp) );
 
         $got = totalOrderMag( $x, $y );
         $exp = ( ($i<11 ? 21-$i : $i) <= ($j<11 ? 21-$j : $j) ) || 0;
-        is( $got, $exp, sprintf('totalOrderMag(%s,%s) = %s vs %s', $hax, $hay, $got, $exp) );
+        is( $got, $exp, sprintf('totalOrderMag(%s,%s) = %s vs %s [i,j=$i,$j]', $hax, $hay, $got, $exp) );
     }
 }
 

@@ -44,6 +44,13 @@ my @flist = qw(isSignMinus isNormal isFinite isZero isSubnormal isInfinite isNaN
 
 plan tests => scalar(@tests) * scalar(@flist);
 
+my $skip_reason = '';
+if( isSignalingConvertedToQuiet() ) {
+    $skip_reason = sprintf 'Signaling NaN are converted to QuietNaN by your perl: v%vd', $^V;
+    eval { require 'Config' };
+    $skip_reason .= " for $Config::Config{myuname}" unless ($@);
+}
+
 foreach my $t ( @tests ) {
     my ($c, $name, @x) = @$t;
     my $mi = (@flist >= @x) ? $#flist : $#x;
@@ -52,13 +59,7 @@ foreach my $t ( @tests ) {
         my $xi = $x[$i];
         my $f = \&{$fn};
         SKIP: { # allows for skipping isSignaling() tests.
-            if( ( ($fn eq 'isSignaling') || ($xi eq 'signalingNaN') ) && isSignalingConvertedToQuiet() ) {
-                my $err = sprintf 'Signaling NaN are converted to QuietNaN by your perl: v%vd', $^V;
-                eval { require 'Config' };
-                $err .= " for $Config::Config{myuname}" unless ($@);
-                $err .= " ($@)" if $@;
-                skip $err, 1;
-            }
+            skip $skip_reason, 1   if( ( ($fn eq 'isSignaling') || ($xi eq 'signalingNaN') ) && isSignalingConvertedToQuiet() );
             cmp_ok( $f->($c), 'eq', $xi, sprintf('%-20.20s(%-20.20s)', $fn, $name ) );
         }
     }
