@@ -5,7 +5,7 @@ use strict;
 use Carp;
 use Exporter 'import';  # just use the import() function, without the rest of the overhead of ISA
 
-use version 0.77; our $VERSION = version->declare('0.013_006');
+use version 0.77; our $VERSION = version->declare('0.013_007');
 
 =pod
 
