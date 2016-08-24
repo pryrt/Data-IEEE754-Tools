@@ -853,7 +853,8 @@ sub absolute {
 
 =head4 isCoreAbsWrongForNegNaN()
 
-Returns 1 if C<abs(NEG_SNAN_LAST) != abs(POS_SNAN_LAST)>, otherwise 0.
+Returns 1 if the builtin C<CORE::abs()> function gets the sign wrong
+for a signed NaN, else returns 0.
 
 Some Perl implementations do not properly handle signed NaN.  One place
 that it shows up is whether C<CORE::abs(NEG_SNAN_LAST)> is still negative,
@@ -862,7 +863,8 @@ or whether it's properly converted to a positive NaN.
 If the sign of your NaN is important, then you can use
 C<isCoreAbsWrongForNegNaN()> to determine whether you should choose
 to use the builtin C<abs()> function, or whether you should switch to
-using this module's C<absolute()> function.
+using this module's C<absolute()> function.  The C<make test> will also
+indicate whether you should rely on the C<CORE::abs()> function or not.
 
 =cut
 
