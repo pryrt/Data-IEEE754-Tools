@@ -55,9 +55,9 @@ foreach my $t ( @tests ) {
         SKIP: {
             skip 'CORE::abs() gives wrong value for abs(-NaN)', 1 if $isCoreAbsWrongForNegNaN;
             is( $f->($c), $xi, sprintf('%-20.20s(%-20.20s)', $fn, $name ) );
-            diag( sprintf("%-20.20s(%-20.20s): inp[s:%-27.27s, h:%-27.27s, f:%-27.27s]", $fn, $name, $c, hexstr754_from_double($c), to_hex_floatingpoint($c)) );
-            diag( sprintf("%-20.20s(%-20.20s): exp[s:%-27.27s, h:%-27.27s, f:%-27.27s]", $fn, $name, $xi, hexstr754_from_double($xi), to_hex_floatingpoint($xi)) );
-            diag( sprintf("%-20.20s(%-20.20s): got[s:%-27.27s, h:%-27.27s, f:%-27.27s]", $fn, $name, $f->($c), hexstr754_from_double($f->($c)), to_hex_floatingpoint($f->($c))) );
+            #diag( sprintf("%-20.20s(%-20.20s): inp[s:%-27.27s, h:%-27.27s, f:%-27.27s]", $fn, $name, $c, hexstr754_from_double($c), to_hex_floatingpoint($c)) );
+            #diag( sprintf("%-20.20s(%-20.20s): exp[s:%-27.27s, h:%-27.27s, f:%-27.27s]", $fn, $name, $xi, hexstr754_from_double($xi), to_hex_floatingpoint($xi)) );
+            #diag( sprintf("%-20.20s(%-20.20s): got[s:%-27.27s, h:%-27.27s, f:%-27.27s]", $fn, $name, $f->($c), hexstr754_from_double($f->($c)), to_hex_floatingpoint($f->($c))) );
         }
     }
     SKIP: {
