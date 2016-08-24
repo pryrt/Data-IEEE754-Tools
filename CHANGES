@@ -3,7 +3,9 @@ Revision history for Perl module Data::IEEE754::Tools.
 v0.013 Development Version
     - v0.013_007: submitted _006 to CPAN Testers, and came back with slew of errors
         IN PROGRESS = <https://rt.cpan.org/Ticket/Display.html?id=117163>
-        - BUG: in some configs, the 09-signbit and 10-copysign expected values have wrong sign
+        - BUG: in some configs, the 09-signbit and 10-copysign values have wrong sign
+        + added isCoreAbsWrongForNegNaN() to indicate systems for which CORE::abs() has the wrong
+          sign.  Use that to skip the NaN tests relying on CORE::abs().
         - probably also need to test to_hex_floatingpoint() versions as the got and expected output,
           rather than relying on builtin stringification, which may or may not do what I want.
     - v0.013_006: fixing isSignaling bug in test suite

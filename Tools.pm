@@ -146,7 +146,7 @@ my  @EXPORT_CONST = qw(
 my @EXPORT_INFO = qw(isSignMinus isNormal isFinite isZero isSubnormal
     isInfinite isNaN isSignaling isSignalingConvertedToQuiet isCanonical
     class radix totalOrder totalOrderMag);
-my @EXPORT_SIGNBIT = qw(negate absolute copySign isSignMinus);
+my @EXPORT_SIGNBIT = qw(negate absolute isCoreAbsWrongForNegNaN copySign isSignMinus);
 
 our @EXPORT_OK = (@EXPORT_FLOATING, @EXPORT_RAW754, @EXPORT_ULP, @EXPORT_CONST, @EXPORT_INFO, @EXPORT_SIGNBIT);
 our %EXPORT_TAGS = (
@@ -807,6 +807,10 @@ sub totalOrderMag {
 These functions, from IEEE Std 754-2008, manipulate the sign bits
 of the argument(s)set P.
 
+See IEEE Std 754-2008 #5.5.1 "Sign bit operations": This section asserts
+that the sign bit operations (including C<negate>, C<abs>, and C<copySign>)
+should only affect the sign bit, and should treat numbers and NaNs alike.
+
 =head3 negate( I<value> )
 
 Reverses the sign bit of I<value>.  (If the sign bit is set on I<value>,
@@ -826,15 +830,18 @@ sub negate {
 =head3 absolute( I<value> )
 
 The C<CORE::abs()> function behaves properly (per the IEEE 754 description)
-for all classes of I<value> (including signed zeroes, infinities, and NaNs),
-per the installation test suite.
+for all classes of I<value> under many implementations.  However,
+there are implementations which incorrectly return a negative NaN, when
+the specification requires that it return a positive NaN.
 
-However, C<absolute()> is provided as a module-based alternative.
+C<absolute()> is provided as a module-based alternative which correctly handles
+the absolute value of a signed NaN.
 
 The test suite runs the expected input/output pairs thru both C<CORE::abs()> and
-C<Data::IEEE754::Tools::absolute()>, so if any of those fail on your system, or
-if you find an untested edge case where C<CORE::abs()> (or C<Data::IEEE754::Tools::absolute()>)
-do not behave as expected, please file a bug report.
+C<Data::IEEE754::Tools::absolute()>, but will skip the C<CORE::abs()> NaN's if
+C<isCoreAbsWrongForNegNaN()> returns TRUE, and will leave a message indicating
+that condition, and that you should use C<Data::IEEE754::Tools::absolute()> if
+the sign of your NaN is important to you.
 
 =cut
 
@@ -842,6 +849,25 @@ sub absolute {
     my $b = binstr754_from_double(shift);                                               # convert to binary string
     substr $b, 0, 1, '0';                                                               # replace sign
     return binstr754_to_double($b);                                                     # convert to floating-point
+}
+
+=head4 isCoreAbsWrongForNegNaN()
+
+Returns 1 if C<abs(NEG_SNAN_LAST) != abs(POS_SNAN_LAST)>, otherwise 0.
+
+Some Perl implementations do not properly handle signed NaN.  One place
+that it shows up is whether C<CORE::abs(NEG_SNAN_LAST)> is still negative,
+or whether it's properly converted to a positive NaN.
+
+If the sign of your NaN is important, then you can use
+C<isCoreAbsWrongForNegNaN()> to determine whether you should choose
+to use the builtin C<abs()> function, or whether you should switch to
+using this module's C<absolute()> function.
+
+=cut
+
+sub isCoreAbsWrongForNegNaN {
+    ( hexstr754_from_double(CORE::abs(NEG_QNAN_LAST)) ne hexstr754_from_double(CORE::abs(POS_QNAN_LAST)) ) || 0;
 }
 
 =head3 copySign( I<x>, I<y> )
