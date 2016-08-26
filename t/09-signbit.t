@@ -67,6 +67,17 @@ foreach my $t ( @tests ) {
 }
 
 if( $isCoreAbsWrongForNegNaN ) {
+    # set the environment variable to a TRUE value to see the extra proof
+    if( exists $ENV{PROVE_CORE_ABS_WRONG} && $ENV{PROVE_CORE_ABS_WRONG} ) {
+        foreach my $c ( qw(NEG_QNAN_LAST POS_QNAN_LAST NEG_INF POS_INF) ) {
+    	    my $f = \&{$c};
+            my $x = $f->();
+            my $y = abs($x);
+            diag("\n");
+            foreach($x,$y) { diag( join "\t", $c,$_,isSignMinus($_),hexstr754_from_double($_)); };
+        }
+    }
+
     diag( "\n" );
     diag( "\n" );
     diag( "*"x80 );
