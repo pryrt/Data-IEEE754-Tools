@@ -1,8 +1,8 @@
 ########################################################################
 # Verifies the following functions:
 #   :ulp
-#       nextup(v)
-#       nextdown(v)
+#       nextUp(v)
+#       nextDown(v)
 #   (other :ulp tests in other .t files)
 ########################################################################
 use 5.006;
@@ -50,7 +50,7 @@ sub fntest {
         diag sprintf "ANSWER:   hex(%-30s) = %s", to_dec_floatingpoint($u), hexstr754_from_double($u);
         diag '';
         SWITCHFUNCTION: foreach ($fn) {
-            my $val = /^nextdown$/ ? - $v : $v;     # choose nextup or nextdown
+            my $val = /^nextDown$/ ? - $v : $v;     # choose nextUp or nextDown
             if( $val != $val ) {    # NAN
                 diag( "DEBUG($fn): IS NAN\t" . to_dec_floatingpoint($val) );
                 last SWITCHFUNCTION;
@@ -81,7 +81,7 @@ sub fntest {
             diag( "DEBUG($fn): FINAL HEXSTR = " .sprintf('%08X%08X', $msb, $lsb ));
             diag( "DEBUG($fn): FINAL DOUBLE = " .to_dec_floatingpoint(hexstr754_to_double( sprintf '%08X%08X', $msb, $lsb )));
             diag( "DEBUG($fn): FINAL NEG DOUBLE = " .to_dec_floatingpoint(-hexstr754_to_double( sprintf '%08X%08X', $msb, $lsb )))
-                if (/^nextdown$/);
+                if (/^nextDown$/);
             last SWITCHFUNCTION;
         }
         diag '';
@@ -91,73 +91,73 @@ sub fntest {
 
 my @tests = ();
 
-# now test all the nextup()
-push @tests, { func => 'nextup', arg => '0000000000000000', expect => hexstr754_to_double('0000000000000001'),    name => "nextup(POS_ZERO)" };
-push @tests, { func => 'nextup', arg => '8000000000000000', expect => hexstr754_to_double('0000000000000001'),    name => "nextup(NEG_ZERO)" };
-push @tests, { func => 'nextup', arg => '0000000000000001', expect => hexstr754_to_double('0000000000000002'),    name => "nextup(POS_DENORM_1)" };
-push @tests, { func => 'nextup', arg => '8000000000000001', expect => hexstr754_to_double('8000000000000000'),    name => "nextup(NEG_DENORM_1)" };
-push @tests, { func => 'nextup', arg => '000FFFFFFFFFFFFF', expect => hexstr754_to_double('0010000000000000'),    name => "nextup(POS_DENORM_F)" };
-push @tests, { func => 'nextup', arg => '800FFFFFFFFFFFFF', expect => hexstr754_to_double('800FFFFFFFFFFFFE'),    name => "nextup(NEG_DENORM_F)" };
-push @tests, { func => 'nextup', arg => '0010000000000000', expect => hexstr754_to_double('0010000000000001'),    name => "nextup(POS_NORM_x1x0)" };
-push @tests, { func => 'nextup', arg => '8010000000000000', expect => hexstr754_to_double('800FFFFFFFFFFFFF'),    name => "nextup(NEG_NORM_x1x0)" };
-push @tests, { func => 'nextup', arg => '001FFFFFFFFFFFFE', expect => hexstr754_to_double('001FFFFFFFFFFFFF'),    name => "nextup(POS_NORM_x1xE)" };
-push @tests, { func => 'nextup', arg => '801FFFFFFFFFFFFE', expect => hexstr754_to_double('801FFFFFFFFFFFFD'),    name => "nextup(NEG_NORM_x1xE)" };
-push @tests, { func => 'nextup', arg => '001FFFFFFFFFFFFF', expect => hexstr754_to_double('0020000000000000'),    name => "nextup(POS_NORM_x1xF)" };
-push @tests, { func => 'nextup', arg => '801FFFFFFFFFFFFF', expect => hexstr754_to_double('801FFFFFFFFFFFFE'),    name => "nextup(NEG_NORM_x1xF)" };
-push @tests, { func => 'nextup', arg => '034FFFFFFFFFFFFF', expect => hexstr754_to_double('0350000000000000'),    name => "nextup(POS_NORM_x34F)" };
-push @tests, { func => 'nextup', arg => '834FFFFFFFFFFFFF', expect => hexstr754_to_double('834FFFFFFFFFFFFE'),    name => "nextup(NEG_NORM_x34F)" };
-push @tests, { func => 'nextup', arg => '0350000000000000', expect => hexstr754_to_double('0350000000000001'),    name => "nextup(POS_NORM_x350)" };
-push @tests, { func => 'nextup', arg => '8350000000000000', expect => hexstr754_to_double('834FFFFFFFFFFFFF'),    name => "nextup(NEG_NORM_x350)" };
-push @tests, { func => 'nextup', arg => '7FE0000000000000', expect => hexstr754_to_double('7FE0000000000001'),    name => "nextup(POS_NORM_xFx0)" };
-push @tests, { func => 'nextup', arg => 'FFE0000000000000', expect => hexstr754_to_double('FFDFFFFFFFFFFFFF'),    name => "nextup(NEG_NORM_xFx0)" };
-push @tests, { func => 'nextup', arg => '7FEFFFFFFFFFFFFF', expect => hexstr754_to_double('7FF0000000000000'),    name => "nextup(POS_NORM_xFxF)" };
-push @tests, { func => 'nextup', arg => 'FFEFFFFFFFFFFFFF', expect => hexstr754_to_double('FFEFFFFFFFFFFFFE'),    name => "nextup(NEG_NORM_xFxF)" };
-push @tests, { func => 'nextup', arg => '7FF0000000000000', expect => hexstr754_to_double('7FF0000000000000'),    name => "nextup(POS_INF)" };
-push @tests, { func => 'nextup', arg => 'FFF0000000000000', expect => hexstr754_to_double('FFEFFFFFFFFFFFFF'),    name => "nextup(NEG_INF)" };
-push @tests, { func => 'nextup', arg => '7FF0000000000001', expect => hexstr754_to_double('7FF0000000000001'),    name => "nextup(POS_SNAN_01)" };
-push @tests, { func => 'nextup', arg => 'FFF0000000000001', expect => hexstr754_to_double('FFF0000000000001'),    name => "nextup(NEG_SNAN_01)" };
-push @tests, { func => 'nextup', arg => '7FF7FFFFFFFFFFFF', expect => hexstr754_to_double('7FF7FFFFFFFFFFFF'),    name => "nextup(POS_SNAN_7F)" };
-push @tests, { func => 'nextup', arg => 'FFF7FFFFFFFFFFFF', expect => hexstr754_to_double('FFF7FFFFFFFFFFFF'),    name => "nextup(NEG_SNAN_7F)" };
-push @tests, { func => 'nextup', arg => '7FF8000000000000', expect => hexstr754_to_double('7FF8000000000000'),    name => "nextup(POS_IND_80)" };
-push @tests, { func => 'nextup', arg => 'FFF8000000000000', expect => hexstr754_to_double('FFF8000000000000'),    name => "nextup(NEG_IND_80)" };
-push @tests, { func => 'nextup', arg => '7FF8000000000001', expect => hexstr754_to_double('7FF8000000000001'),    name => "nextup(POS_QNAN_81)" };
-push @tests, { func => 'nextup', arg => 'FFF8000000000001', expect => hexstr754_to_double('FFF8000000000001'),    name => "nextup(NEG_QNAN_81)" };
-push @tests, { func => 'nextup', arg => '7FFFFFFFFFFFFFFF', expect => hexstr754_to_double('7FFFFFFFFFFFFFFF'),    name => "nextup(POS_QNAN_FF)" };
-push @tests, { func => 'nextup', arg => 'FFFFFFFFFFFFFFFF', expect => hexstr754_to_double('FFFFFFFFFFFFFFFF'),    name => "nextup(NEG_QNAN_FF)" };
+# now test all the nextUp()
+push @tests, { func => 'nextUp', arg => '0000000000000000', expect => hexstr754_to_double('0000000000000001'),    name => "nextUp(POS_ZERO)" };
+push @tests, { func => 'nextUp', arg => '8000000000000000', expect => hexstr754_to_double('0000000000000001'),    name => "nextUp(NEG_ZERO)" };
+push @tests, { func => 'nextUp', arg => '0000000000000001', expect => hexstr754_to_double('0000000000000002'),    name => "nextUp(POS_DENORM_1)" };
+push @tests, { func => 'nextUp', arg => '8000000000000001', expect => hexstr754_to_double('8000000000000000'),    name => "nextUp(NEG_DENORM_1)" };
+push @tests, { func => 'nextUp', arg => '000FFFFFFFFFFFFF', expect => hexstr754_to_double('0010000000000000'),    name => "nextUp(POS_DENORM_F)" };
+push @tests, { func => 'nextUp', arg => '800FFFFFFFFFFFFF', expect => hexstr754_to_double('800FFFFFFFFFFFFE'),    name => "nextUp(NEG_DENORM_F)" };
+push @tests, { func => 'nextUp', arg => '0010000000000000', expect => hexstr754_to_double('0010000000000001'),    name => "nextUp(POS_NORM_x1x0)" };
+push @tests, { func => 'nextUp', arg => '8010000000000000', expect => hexstr754_to_double('800FFFFFFFFFFFFF'),    name => "nextUp(NEG_NORM_x1x0)" };
+push @tests, { func => 'nextUp', arg => '001FFFFFFFFFFFFE', expect => hexstr754_to_double('001FFFFFFFFFFFFF'),    name => "nextUp(POS_NORM_x1xE)" };
+push @tests, { func => 'nextUp', arg => '801FFFFFFFFFFFFE', expect => hexstr754_to_double('801FFFFFFFFFFFFD'),    name => "nextUp(NEG_NORM_x1xE)" };
+push @tests, { func => 'nextUp', arg => '001FFFFFFFFFFFFF', expect => hexstr754_to_double('0020000000000000'),    name => "nextUp(POS_NORM_x1xF)" };
+push @tests, { func => 'nextUp', arg => '801FFFFFFFFFFFFF', expect => hexstr754_to_double('801FFFFFFFFFFFFE'),    name => "nextUp(NEG_NORM_x1xF)" };
+push @tests, { func => 'nextUp', arg => '034FFFFFFFFFFFFF', expect => hexstr754_to_double('0350000000000000'),    name => "nextUp(POS_NORM_x34F)" };
+push @tests, { func => 'nextUp', arg => '834FFFFFFFFFFFFF', expect => hexstr754_to_double('834FFFFFFFFFFFFE'),    name => "nextUp(NEG_NORM_x34F)" };
+push @tests, { func => 'nextUp', arg => '0350000000000000', expect => hexstr754_to_double('0350000000000001'),    name => "nextUp(POS_NORM_x350)" };
+push @tests, { func => 'nextUp', arg => '8350000000000000', expect => hexstr754_to_double('834FFFFFFFFFFFFF'),    name => "nextUp(NEG_NORM_x350)" };
+push @tests, { func => 'nextUp', arg => '7FE0000000000000', expect => hexstr754_to_double('7FE0000000000001'),    name => "nextUp(POS_NORM_xFx0)" };
+push @tests, { func => 'nextUp', arg => 'FFE0000000000000', expect => hexstr754_to_double('FFDFFFFFFFFFFFFF'),    name => "nextUp(NEG_NORM_xFx0)" };
+push @tests, { func => 'nextUp', arg => '7FEFFFFFFFFFFFFF', expect => hexstr754_to_double('7FF0000000000000'),    name => "nextUp(POS_NORM_xFxF)" };
+push @tests, { func => 'nextUp', arg => 'FFEFFFFFFFFFFFFF', expect => hexstr754_to_double('FFEFFFFFFFFFFFFE'),    name => "nextUp(NEG_NORM_xFxF)" };
+push @tests, { func => 'nextUp', arg => '7FF0000000000000', expect => hexstr754_to_double('7FF0000000000000'),    name => "nextUp(POS_INF)" };
+push @tests, { func => 'nextUp', arg => 'FFF0000000000000', expect => hexstr754_to_double('FFEFFFFFFFFFFFFF'),    name => "nextUp(NEG_INF)" };
+push @tests, { func => 'nextUp', arg => '7FF0000000000001', expect => hexstr754_to_double('7FF0000000000001'),    name => "nextUp(POS_SNAN_01)" };
+push @tests, { func => 'nextUp', arg => 'FFF0000000000001', expect => hexstr754_to_double('FFF0000000000001'),    name => "nextUp(NEG_SNAN_01)" };
+push @tests, { func => 'nextUp', arg => '7FF7FFFFFFFFFFFF', expect => hexstr754_to_double('7FF7FFFFFFFFFFFF'),    name => "nextUp(POS_SNAN_7F)" };
+push @tests, { func => 'nextUp', arg => 'FFF7FFFFFFFFFFFF', expect => hexstr754_to_double('FFF7FFFFFFFFFFFF'),    name => "nextUp(NEG_SNAN_7F)" };
+push @tests, { func => 'nextUp', arg => '7FF8000000000000', expect => hexstr754_to_double('7FF8000000000000'),    name => "nextUp(POS_IND_80)" };
+push @tests, { func => 'nextUp', arg => 'FFF8000000000000', expect => hexstr754_to_double('FFF8000000000000'),    name => "nextUp(NEG_IND_80)" };
+push @tests, { func => 'nextUp', arg => '7FF8000000000001', expect => hexstr754_to_double('7FF8000000000001'),    name => "nextUp(POS_QNAN_81)" };
+push @tests, { func => 'nextUp', arg => 'FFF8000000000001', expect => hexstr754_to_double('FFF8000000000001'),    name => "nextUp(NEG_QNAN_81)" };
+push @tests, { func => 'nextUp', arg => '7FFFFFFFFFFFFFFF', expect => hexstr754_to_double('7FFFFFFFFFFFFFFF'),    name => "nextUp(POS_QNAN_FF)" };
+push @tests, { func => 'nextUp', arg => 'FFFFFFFFFFFFFFFF', expect => hexstr754_to_double('FFFFFFFFFFFFFFFF'),    name => "nextUp(NEG_QNAN_FF)" };
 
-# now test all the nextdown()
-push @tests, { func => 'nextdown', arg => '0000000000000000', expect => hexstr754_to_double('8000000000000001'),    name => "nextdown(POS_ZERO)" };
-push @tests, { func => 'nextdown', arg => '8000000000000000', expect => hexstr754_to_double('8000000000000001'),    name => "nextdown(NEG_ZERO)" };
-push @tests, { func => 'nextdown', arg => '0000000000000001', expect => hexstr754_to_double('0000000000000000'),    name => "nextdown(POS_DENORM_1)" };
-push @tests, { func => 'nextdown', arg => '8000000000000001', expect => hexstr754_to_double('8000000000000002'),    name => "nextdown(NEG_DENORM_1)" };
-push @tests, { func => 'nextdown', arg => '000FFFFFFFFFFFFF', expect => hexstr754_to_double('000FFFFFFFFFFFFE'),    name => "nextdown(POS_DENORM_F)" };
-push @tests, { func => 'nextdown', arg => '800FFFFFFFFFFFFF', expect => hexstr754_to_double('8010000000000000'),    name => "nextdown(NEG_DENORM_F)" };
-push @tests, { func => 'nextdown', arg => '0010000000000000', expect => hexstr754_to_double('000FFFFFFFFFFFFF'),    name => "nextdown(POS_NORM_x1x0)" };
-push @tests, { func => 'nextdown', arg => '8010000000000000', expect => hexstr754_to_double('8010000000000001'),    name => "nextdown(NEG_NORM_x1x0)" };
-push @tests, { func => 'nextdown', arg => '001FFFFFFFFFFFFE', expect => hexstr754_to_double('001FFFFFFFFFFFFD'),    name => "nextdown(POS_NORM_x1xE)" };
-push @tests, { func => 'nextdown', arg => '801FFFFFFFFFFFFE', expect => hexstr754_to_double('801FFFFFFFFFFFFF'),    name => "nextdown(NEG_NORM_x1xE)" };
-push @tests, { func => 'nextdown', arg => '001FFFFFFFFFFFFF', expect => hexstr754_to_double('001FFFFFFFFFFFFE'),    name => "nextdown(POS_NORM_x1xF)" };
-push @tests, { func => 'nextdown', arg => '801FFFFFFFFFFFFF', expect => hexstr754_to_double('8020000000000000'),    name => "nextdown(NEG_NORM_x1xF)" };
-push @tests, { func => 'nextdown', arg => '034FFFFFFFFFFFFF', expect => hexstr754_to_double('034FFFFFFFFFFFFE'),    name => "nextdown(POS_NORM_x34F)" };
-push @tests, { func => 'nextdown', arg => '834FFFFFFFFFFFFF', expect => hexstr754_to_double('8350000000000000'),    name => "nextdown(NEG_NORM_x34F)" };
-push @tests, { func => 'nextdown', arg => '0350000000000000', expect => hexstr754_to_double('034FFFFFFFFFFFFF'),    name => "nextdown(POS_NORM_x350)" };
-push @tests, { func => 'nextdown', arg => '8350000000000000', expect => hexstr754_to_double('8350000000000001'),    name => "nextdown(NEG_NORM_x350)" };
-push @tests, { func => 'nextdown', arg => '7FE0000000000000', expect => hexstr754_to_double('7FDFFFFFFFFFFFFF'),    name => "nextdown(POS_NORM_xFx0)" };
-push @tests, { func => 'nextdown', arg => 'FFE0000000000000', expect => hexstr754_to_double('FFE0000000000001'),    name => "nextdown(NEG_NORM_xFx0)" };
-push @tests, { func => 'nextdown', arg => '7FEFFFFFFFFFFFFF', expect => hexstr754_to_double('7FEFFFFFFFFFFFFE'),    name => "nextdown(POS_NORM_xFxF)" };
-push @tests, { func => 'nextdown', arg => 'FFEFFFFFFFFFFFFF', expect => hexstr754_to_double('FFF0000000000000'),    name => "nextdown(NEG_NORM_xFxF)" };
-push @tests, { func => 'nextdown', arg => '7FF0000000000000', expect => hexstr754_to_double('7FEFFFFFFFFFFFFF'),    name => "nextdown(POS_INF)" };
-push @tests, { func => 'nextdown', arg => 'FFF0000000000000', expect => hexstr754_to_double('FFF0000000000000'),    name => "nextdown(NEG_INF)" };
-push @tests, { func => 'nextdown', arg => '7FF0000000000001', expect => hexstr754_to_double('7FF0000000000001'),    name => "nextdown(POS_SNAN_01)" };
-push @tests, { func => 'nextdown', arg => 'FFF0000000000001', expect => hexstr754_to_double('FFF0000000000001'),    name => "nextdown(NEG_SNAN_01)" };
-push @tests, { func => 'nextdown', arg => '7FF7FFFFFFFFFFFF', expect => hexstr754_to_double('7FF7FFFFFFFFFFFF'),    name => "nextdown(POS_SNAN_7F)" };
-push @tests, { func => 'nextdown', arg => 'FFF7FFFFFFFFFFFF', expect => hexstr754_to_double('FFF7FFFFFFFFFFFF'),    name => "nextdown(NEG_SNAN_7F)" };
-push @tests, { func => 'nextdown', arg => '7FF8000000000000', expect => hexstr754_to_double('7FF8000000000000'),    name => "nextdown(POS_IND_80)" };
-push @tests, { func => 'nextdown', arg => 'FFF8000000000000', expect => hexstr754_to_double('FFF8000000000000'),    name => "nextdown(NEG_IND_80)" };
-push @tests, { func => 'nextdown', arg => '7FF8000000000001', expect => hexstr754_to_double('7FF8000000000001'),    name => "nextdown(POS_QNAN_81)" };
-push @tests, { func => 'nextdown', arg => 'FFF8000000000001', expect => hexstr754_to_double('FFF8000000000001'),    name => "nextdown(NEG_QNAN_81)" };
-push @tests, { func => 'nextdown', arg => '7FFFFFFFFFFFFFFF', expect => hexstr754_to_double('7FFFFFFFFFFFFFFF'),    name => "nextdown(POS_QNAN_FF)" };
-push @tests, { func => 'nextdown', arg => 'FFFFFFFFFFFFFFFF', expect => hexstr754_to_double('FFFFFFFFFFFFFFFF'),    name => "nextdown(NEG_QNAN_FF)" };
+# now test all the nextDown()
+push @tests, { func => 'nextDown', arg => '0000000000000000', expect => hexstr754_to_double('8000000000000001'),    name => "nextDown(POS_ZERO)" };
+push @tests, { func => 'nextDown', arg => '8000000000000000', expect => hexstr754_to_double('8000000000000001'),    name => "nextDown(NEG_ZERO)" };
+push @tests, { func => 'nextDown', arg => '0000000000000001', expect => hexstr754_to_double('0000000000000000'),    name => "nextDown(POS_DENORM_1)" };
+push @tests, { func => 'nextDown', arg => '8000000000000001', expect => hexstr754_to_double('8000000000000002'),    name => "nextDown(NEG_DENORM_1)" };
+push @tests, { func => 'nextDown', arg => '000FFFFFFFFFFFFF', expect => hexstr754_to_double('000FFFFFFFFFFFFE'),    name => "nextDown(POS_DENORM_F)" };
+push @tests, { func => 'nextDown', arg => '800FFFFFFFFFFFFF', expect => hexstr754_to_double('8010000000000000'),    name => "nextDown(NEG_DENORM_F)" };
+push @tests, { func => 'nextDown', arg => '0010000000000000', expect => hexstr754_to_double('000FFFFFFFFFFFFF'),    name => "nextDown(POS_NORM_x1x0)" };
+push @tests, { func => 'nextDown', arg => '8010000000000000', expect => hexstr754_to_double('8010000000000001'),    name => "nextDown(NEG_NORM_x1x0)" };
+push @tests, { func => 'nextDown', arg => '001FFFFFFFFFFFFE', expect => hexstr754_to_double('001FFFFFFFFFFFFD'),    name => "nextDown(POS_NORM_x1xE)" };
+push @tests, { func => 'nextDown', arg => '801FFFFFFFFFFFFE', expect => hexstr754_to_double('801FFFFFFFFFFFFF'),    name => "nextDown(NEG_NORM_x1xE)" };
+push @tests, { func => 'nextDown', arg => '001FFFFFFFFFFFFF', expect => hexstr754_to_double('001FFFFFFFFFFFFE'),    name => "nextDown(POS_NORM_x1xF)" };
+push @tests, { func => 'nextDown', arg => '801FFFFFFFFFFFFF', expect => hexstr754_to_double('8020000000000000'),    name => "nextDown(NEG_NORM_x1xF)" };
+push @tests, { func => 'nextDown', arg => '034FFFFFFFFFFFFF', expect => hexstr754_to_double('034FFFFFFFFFFFFE'),    name => "nextDown(POS_NORM_x34F)" };
+push @tests, { func => 'nextDown', arg => '834FFFFFFFFFFFFF', expect => hexstr754_to_double('8350000000000000'),    name => "nextDown(NEG_NORM_x34F)" };
+push @tests, { func => 'nextDown', arg => '0350000000000000', expect => hexstr754_to_double('034FFFFFFFFFFFFF'),    name => "nextDown(POS_NORM_x350)" };
+push @tests, { func => 'nextDown', arg => '8350000000000000', expect => hexstr754_to_double('8350000000000001'),    name => "nextDown(NEG_NORM_x350)" };
+push @tests, { func => 'nextDown', arg => '7FE0000000000000', expect => hexstr754_to_double('7FDFFFFFFFFFFFFF'),    name => "nextDown(POS_NORM_xFx0)" };
+push @tests, { func => 'nextDown', arg => 'FFE0000000000000', expect => hexstr754_to_double('FFE0000000000001'),    name => "nextDown(NEG_NORM_xFx0)" };
+push @tests, { func => 'nextDown', arg => '7FEFFFFFFFFFFFFF', expect => hexstr754_to_double('7FEFFFFFFFFFFFFE'),    name => "nextDown(POS_NORM_xFxF)" };
+push @tests, { func => 'nextDown', arg => 'FFEFFFFFFFFFFFFF', expect => hexstr754_to_double('FFF0000000000000'),    name => "nextDown(NEG_NORM_xFxF)" };
+push @tests, { func => 'nextDown', arg => '7FF0000000000000', expect => hexstr754_to_double('7FEFFFFFFFFFFFFF'),    name => "nextDown(POS_INF)" };
+push @tests, { func => 'nextDown', arg => 'FFF0000000000000', expect => hexstr754_to_double('FFF0000000000000'),    name => "nextDown(NEG_INF)" };
+push @tests, { func => 'nextDown', arg => '7FF0000000000001', expect => hexstr754_to_double('7FF0000000000001'),    name => "nextDown(POS_SNAN_01)" };
+push @tests, { func => 'nextDown', arg => 'FFF0000000000001', expect => hexstr754_to_double('FFF0000000000001'),    name => "nextDown(NEG_SNAN_01)" };
+push @tests, { func => 'nextDown', arg => '7FF7FFFFFFFFFFFF', expect => hexstr754_to_double('7FF7FFFFFFFFFFFF'),    name => "nextDown(POS_SNAN_7F)" };
+push @tests, { func => 'nextDown', arg => 'FFF7FFFFFFFFFFFF', expect => hexstr754_to_double('FFF7FFFFFFFFFFFF'),    name => "nextDown(NEG_SNAN_7F)" };
+push @tests, { func => 'nextDown', arg => '7FF8000000000000', expect => hexstr754_to_double('7FF8000000000000'),    name => "nextDown(POS_IND_80)" };
+push @tests, { func => 'nextDown', arg => 'FFF8000000000000', expect => hexstr754_to_double('FFF8000000000000'),    name => "nextDown(NEG_IND_80)" };
+push @tests, { func => 'nextDown', arg => '7FF8000000000001', expect => hexstr754_to_double('7FF8000000000001'),    name => "nextDown(POS_QNAN_81)" };
+push @tests, { func => 'nextDown', arg => 'FFF8000000000001', expect => hexstr754_to_double('FFF8000000000001'),    name => "nextDown(NEG_QNAN_81)" };
+push @tests, { func => 'nextDown', arg => '7FFFFFFFFFFFFFFF', expect => hexstr754_to_double('7FFFFFFFFFFFFFFF'),    name => "nextDown(POS_QNAN_FF)" };
+push @tests, { func => 'nextDown', arg => 'FFFFFFFFFFFFFFFF', expect => hexstr754_to_double('FFFFFFFFFFFFFFFF'),    name => "nextDown(NEG_QNAN_FF)" };
 
 # plan and execute
 plan tests => scalar @tests;

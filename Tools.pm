@@ -5,7 +5,7 @@ use strict;
 use Carp;
 use Exporter 'import';  # just use the import() function, without the rest of the overhead of ISA
 
-use version 0.77; our $VERSION = version->declare('0.012');
+use version 0.77; our $VERSION = version->declare('0.013_007');
 
 =pod
 
@@ -100,20 +100,63 @@ inputs.  However, forcing the installation I<might> still allow coercion
 from the smaller Perl NV into a true IEEE 754 double (64bit) floating-point,
 but there is no guarantee it will work.
 
+=head1 INTERFACE NOT YET STABLE
+
+Please note: the interface to this module is not yet stable.  There may be changes
+to function naming conventions (under_scores vs. camelCase, argument order, etc).
+Once B<Data::IEEE754::Tools> hits v1.000, the interface should be stable for all
+sub-versions of v1: existing functions should keep the same calling conventions,
+though new functions may be added; significant changes to the interface will cause
+a transition to v2.
+
+=over
+
+=item v0.013_003: C<nextup()> renamed to C<nextUp()>
+
+=item v0.013_003: C<nextdown()> renamed to C<nextDown()>
+
+=item v0.013_003: C<nextafter()> renamed to C<nextAfter()>
+
+=back
+
 =head1 EXPORTABLE FUNCTIONS AND VARIABLES
 
 =cut
 
-my  @EXPORT_RAW754 = qw(hexstr754_from_double binstr754_from_double hexstr754_to_double binstr754_to_double);
+my  @EXPORT_RAW754 = qw(
+    hexstr754_from_double binstr754_from_double
+    hexstr754_to_double binstr754_to_double
+);
 my  @EXPORT_FLOATING = qw(to_hex_floatingpoint to_dec_floatingpoint);
-my  @EXPORT_ULP = qw(ulp toggle_ulp nextup nextdown nextafter);
+my  @EXPORT_ULP = qw(ulp toggle_ulp nextUp nextDown nextAfter);
+my  @EXPORT_CONST = qw(
+    POS_ZERO
+    POS_DENORM_SMALLEST POS_DENORM_BIGGEST
+    POS_NORM_SMALLEST POS_NORM_BIGGEST
+    POS_INF
+    POS_SNAN_FIRST POS_SNAN_LAST
+    POS_IND POS_QNAN_FIRST POS_QNAN_LAST
+    NEG_ZERO
+    NEG_DENORM_SMALLEST NEG_DENORM_BIGGEST
+    NEG_NORM_SMALLEST NEG_NORM_BIGGEST
+    NEG_INF
+    NEG_SNAN_FIRST NEG_SNAN_LAST
+    NEG_IND NEG_QNAN_FIRST NEG_QNAN_LAST
+);
+my @EXPORT_INFO = qw(isSignMinus isNormal isFinite isZero isSubnormal
+    isInfinite isNaN isSignaling isSignalingConvertedToQuiet isCanonical
+    class radix totalOrder totalOrderMag);
+my @EXPORT_SIGNBIT = qw(negate absolute isCoreAbsWrongForNegNaN copySign isSignMinus);
 
-our @EXPORT_OK = (@EXPORT_FLOATING, @EXPORT_RAW754, @EXPORT_ULP);
+our @EXPORT_OK = (@EXPORT_FLOATING, @EXPORT_RAW754, @EXPORT_ULP, @EXPORT_CONST, @EXPORT_INFO, @EXPORT_SIGNBIT);
 our %EXPORT_TAGS = (
     floating        => [@EXPORT_FLOATING],
     floatingpoint   => [@EXPORT_FLOATING],
     raw754          => [@EXPORT_RAW754],
     ulp             => [@EXPORT_ULP],
+    constants       => [@EXPORT_CONST],
+    info            => [@EXPORT_INFO],
+    signbit         => [@EXPORT_SIGNBIT],
     all             => [@EXPORT_OK],
 );
 
@@ -122,9 +165,9 @@ our %EXPORT_TAGS = (
 These are the functions to do raw conversion from a floating-point value to a hexadecimal or binary
 string of the underlying IEEE754 encoded value, and back.
 
-=head3 hexstr754_from_double( I<val> )
+=head3 hexstr754_from_double( I<value> )
 
-Converts the floating-point I<val> into a big-endian hexadecimal representation of the underlying
+Converts the floating-point I<value> into a big-endian hexadecimal representation of the underlying
 IEEE754 encoding.
 
     hexstr754_from_double(12.875);      #  4029C00000000000
@@ -157,9 +200,9 @@ the sign, fraction, and exponent for you.  (See below for more details.)
                                         # :
                                         # `- sign
 
-=head3 binstr754_from_double( I<val> )
+=head3 binstr754_from_double( I<value> )
 
-Converts the floating-point I<val> into a big-endian binary representation of the underlying
+Converts the floating-point I<value> into a big-endian binary representation of the underlying
 IEEE754 encoding.
 
     binstr754_from_double(12.875);      # 0100000000101001110000000000000000000000000000000000000000000000
@@ -174,7 +217,7 @@ The first bit is the sign, the next 11 are the exponent's encoding
 
 =head3 hexstr754_to_double( I<str> )
 
-The inverse of I<hexstr754_from_double()>: it takes a string representing the 16 nibbles
+The inverse of C<hexstr754_from_double()>: it takes a string representing the 16 nibbles
 of the IEEE754 double value, and converts it back to a perl floating-point value.
 
     print hexstr754_to_double('4029C00000000000');
@@ -182,7 +225,7 @@ of the IEEE754 double value, and converts it back to a perl floating-point value
 
 =head3 binstr754_to_double( I<str> )
 
-The inverse of I<binstr754_from_double()>: it takes a string representing the 64 bits
+The inverse of C<binstr754_from_double()>: it takes a string representing the 64 bits
 of the IEEE754 double value, and converts it back to a perl floating-point value.
 
     print binstr754_to_double('0100000000101001110000000000000000000000000000000000000000000000');
@@ -211,11 +254,11 @@ if( $] lt '5.010' ) {
         *arr2x32b_from_double   = sub { return    unpack('N2' =>         pack 'd'  => shift); };
     } else {
         # I don't handle middle-endian / mixed-endian; sorry
-        *hexstr754_from_double = sub { undef };
-        *binstr754_from_double = sub { undef };
+        *hexstr754_from_double  = sub { undef };
+        *binstr754_from_double  = sub { undef };
 
-        *hexstr754_to_double     = sub { undef };
-        *binstr754_to_double     = sub { undef };
+        *hexstr754_to_double    = sub { undef };
+        *binstr754_to_double    = sub { undef };
     }
 } else {
         *hexstr754_from_double  = sub { return uc unpack('H*' =>         pack 'd>' => shift); };
@@ -329,58 +372,111 @@ The I<exponent> is the power of 2.  Is is always a decimal number, whether the c
 The I<exponent> can range from -1022 to +1023.
 
 Internally, the IEEE 754 representation uses the encoding of -1023 for zero and denormals; to
-aid in understanding the actual number, the I<to_..._floatingpoint()> conversions represent
+aid in understanding the actual number, the C<to_..._floatingpoint()> conversions represent
 them as +0000 for zero, and -1022 for denormals: since denormals are C<(0+fraction)*(2**min_exp)>,
 they are really multiples of 2**-1022, not 2**-1023.
 
 =back
 
+=head2 :constants
+
+These can be useful as references for the specialty values, and include the positive and negative
+zeroes, infinities, a variety of signaling and quiet NAN values.
+
+    POS_ZERO             # +0x0.0000000000000p+0000  # signed zero (positive)
+    POS_DENORM_SMALLEST  # +0x0.0000000000001p-1022  # smallest positive value that requires denormal representation in 64bit floating-point
+    POS_DENORM_BIGGEST   # +0x0.fffffffffffffp-1022  # largest positive value that requires denormal representation in 64bit floating-point
+    POS_NORM_SMALLEST    # +0x1.0000000000000p-1022  # smallest positive value that allows for normal representation in 64bit floating-point
+    POS_NORM_BIGGEST     # +0x1.fffffffffffffp+1023  # largest positive value that allows for normal representation in 64bit floating-point
+    POS_INF              # +0x1.#INF000000000p+0000  # positive infinity: indicates that the answer is out of the range of a 64bit floating-point
+    POS_SNAN_FIRST       # +0x1.#SNAN00000000p+0000  # positive signaling NAN with "0x0000000000001" as the system-dependent information; note that many perl interpreters will internally convert this to a Quiet NaN (QNAN)
+    POS_SNAN_LAST        # +0x1.#SNAN00000000p+0000  # positive signaling NAN with "0x7FFFFFFFFFFFF" as the system-dependent information; note that many perl interpreters will internally convert this to a Quiet NaN (QNAN)
+    POS_IND              # +0x1.#QNAN00000000p+0000  # positive quiet NAN with "0x8000000000000" as the system-dependent information; some perl interpreters define the NEG_IND as an "indeterminate" value (IND), and it wouldn't surprise me if some also defined this positive version as "indeterminate" as well
+    POS_QNAN_FIRST       # +0x1.#QNAN00000000p+0000  # positive quiet NAN with "0x8000000000001" as the system-dependent information
+    POS_QNAN_LAST        # +0x1.#QNAN00000000p+0000  # positive quiet NAN with "0xFFFFFFFFFFFFF" as the system-dependent information
+
+    NEG_ZERO             # -0x0.0000000000000p+0000  # signed zero (negative)
+    NEG_DENORM_SMALLEST  # -0x0.0000000000001p-1022  # smallest negative value that requires denormal representation in 64bit floating-point
+    NEG_DENORM_BIGGEST   # -0x0.fffffffffffffp-1022  # largest negative value that requires denormal representation in 64bit floating-point
+    NEG_NORM_SMALLEST    # -0x1.0000000000000p-1022  # smallest negative value that allows for normal representation in 64bit floating-point
+    NEG_NORM_BIGGEST     # -0x1.fffffffffffffp+1023  # largest negative value that allows for normal representation in 64bit floating-point
+    NEG_INF              # -0x1.#INF000000000p+0000  # negative infinity: indicates that the answer is out of the range of a 64bit floating-point
+    NEG_SNAN_FIRST       # -0x1.#SNAN00000000p+0000  # negative signaling NAN with "0x0000000000001" as the system-dependent information; note that many perl interpreters will internally convert this to a Quiet NaN (QNAN)
+    NEG_SNAN_LAST        # -0x1.#SNAN00000000p+0000  # negative signaling NAN with "0x7FFFFFFFFFFFF" as the system-dependent information; note that many perl interpreters will internally convert this to a Quiet NaN (QNAN)
+    NEG_IND              # -0x1.#IND000000000p+0000  # negative quiet NAN with "0x8000000000000" as the system-dependent information; some perl interpreters define the NEG_IND as an "indeterminate" value (IND)
+    NEG_QNAN_FIRST       # -0x1.#QNAN00000000p+0000  # negative quiet NAN with "0x8000000000001" as the system-dependent information
+    NEG_QNAN_LAST        # -0x1.#QNAN00000000p+0000  # negative quiet NAN with "0xFFFFFFFFFFFFF" as the system-dependent information
+
+=cut
+
+{ my $local; sub POS_ZERO           () { $local = hexstr754_to_double('000'.'0000000000000') unless defined $local; return $local; } }
+{ my $local; sub POS_DENORM_SMALLEST() { $local = hexstr754_to_double('000'.'0000000000001') unless defined $local; return $local; } }
+{ my $local; sub POS_DENORM_BIGGEST () { $local = hexstr754_to_double('000'.'FFFFFFFFFFFFF') unless defined $local; return $local; } }
+{ my $local; sub POS_NORM_SMALLEST  () { $local = hexstr754_to_double('001'.'0000000000000') unless defined $local; return $local; } }
+{ my $local; sub POS_NORM_BIGGEST   () { $local = hexstr754_to_double('7FE'.'FFFFFFFFFFFFF') unless defined $local; return $local; } }
+{ my $local; sub POS_INF            () { $local = hexstr754_to_double('7FF'.'0000000000000') unless defined $local; return $local; } }
+{ my $local; sub POS_SNAN_FIRST     () { $local = hexstr754_to_double('7FF'.'0000000000001') unless defined $local; return $local; } }
+{ my $local; sub POS_SNAN_LAST      () { $local = hexstr754_to_double('7FF'.'7FFFFFFFFFFFF') unless defined $local; return $local; } }
+{ my $local; sub POS_IND            () { $local = hexstr754_to_double('7FF'.'8000000000000') unless defined $local; return $local; } }
+{ my $local; sub POS_QNAN_FIRST     () { $local = hexstr754_to_double('7FF'.'8000000000001') unless defined $local; return $local; } }
+{ my $local; sub POS_QNAN_LAST      () { $local = hexstr754_to_double('7FF'.'FFFFFFFFFFFFF') unless defined $local; return $local; } }
+{ my $local; sub NEG_ZERO           () { $local = hexstr754_to_double('800'.'0000000000000') unless defined $local; return $local; } }
+{ my $local; sub NEG_DENORM_SMALLEST() { $local = hexstr754_to_double('800'.'0000000000001') unless defined $local; return $local; } }
+{ my $local; sub NEG_DENORM_BIGGEST () { $local = hexstr754_to_double('800'.'FFFFFFFFFFFFF') unless defined $local; return $local; } }
+{ my $local; sub NEG_NORM_SMALLEST  () { $local = hexstr754_to_double('801'.'0000000000000') unless defined $local; return $local; } }
+{ my $local; sub NEG_NORM_BIGGEST   () { $local = hexstr754_to_double('FFE'.'FFFFFFFFFFFFF') unless defined $local; return $local; } }
+{ my $local; sub NEG_INF            () { $local = hexstr754_to_double('FFF'.'0000000000000') unless defined $local; return $local; } }
+{ my $local; sub NEG_SNAN_FIRST     () { $local = hexstr754_to_double('FFF'.'0000000000001') unless defined $local; return $local; } }
+{ my $local; sub NEG_SNAN_LAST      () { $local = hexstr754_to_double('FFF'.'7FFFFFFFFFFFF') unless defined $local; return $local; } }
+{ my $local; sub NEG_IND            () { $local = hexstr754_to_double('FFF'.'8000000000000') unless defined $local; return $local; } }
+{ my $local; sub NEG_QNAN_FIRST     () { $local = hexstr754_to_double('FFF'.'8000000000001') unless defined $local; return $local; } }
+{ my $local; sub NEG_QNAN_LAST      () { $local = hexstr754_to_double('FFF'.'FFFFFFFFFFFFF') unless defined $local; return $local; } }
+
 =head2 :ulp
 
-=head3 ulp( I<val> )
+=head3 ulp( I<value> )
 
-Returns the ULP ("Unit in the Last Place") for the given I<val>, which is the smallest number
-that you can add to or subtract from I<val> and still be able to discern a difference between
+Returns the ULP ("Unit in the Last Place") for the given I<value>, which is the smallest number
+that you can add to or subtract from I<value> and still be able to discern a difference between
 the original and modified.  Under normal (or denormal) circumstances, C<ulp($val) + $val E<gt> $val>
 is true.
 
-If the I<val> is a zero or a denormal, C<ulp()> will return the smallest possible denormal.
+If the I<value> is a zero or a denormal, C<ulp()> will return the smallest possible denormal.
 
-Since INF and NAN are not really numbers, C<ulp()> will just return the same I<val>.  Because
+Since INF and NAN are not really numbers, C<ulp()> will just return the same I<value>.  Because
 of the way they are handled, C<ulp($val) + $val E<gt> $val> no longer makes sense (infinity plus
 anything is still infinity, and adding NAN to NAN is not numerically defined, so a numerical
 comparison is meaningless on both).
 
 =cut
 
-sub ulp($) {
+my $TWONEG52        = sub { 2.0**-52 };
+my $FIFTYTWOZEROES  = sub { '0'x52 };
+
+sub ulp {   # ulp_by_div
     my $val = shift;
     my $rawbin = binstr754_from_double($val);
-    my ($sign, $exp, $fract) = ($rawbin =~ /(.)(.{11})(.{52})/);
+    my ($sgn, $exp, $frac) = ($rawbin =~ /(.)(.{11})(.{52})/);
 
-    # check for special conditions
-    if( $exp == '1'x11 ) {                          # return self for INF or NAN
-        return $val;
-    } elsif ( $exp == '0'x11 ) {                    # ZERO or DENORMAL: build (+)(exp:0)(fract:0...1)
-        $fract = '0'x51 . '1';
-        $rawbin = join '', '0', $exp, $fract;
-        return binstr754_to_double($rawbin);
-    }
+    return $val             if $exp eq '11111111111';   # return SELF for INF or NAN
+    return POS_DENORM_SMALLEST   if $exp eq '00000000000';   # return first positive denorm for 0 or denorm
 
-    # calculate normal ULP
-    my $tog = toggle_ulp( $val );
-    return abs($val - $tog);
+    # this method will multiply by 2**-52 (as a constant) after
+    $sgn  = '0';
+    $frac = $FIFTYTWOZEROES->();
+    $val  = binstr754_to_double( $sgn . $exp . $frac );
+    $val *= $TWONEG52->();
 }
 
-=head3 toggle_ulp( I<val> )
+=head3 toggle_ulp( I<value> )
 
-Returns the orginal I<val>, but with the ULP toggled.  In other words, if the ULP bit
+Returns the orginal I<value>, but with the ULP toggled.  In other words, if the ULP bit
 was a 0, it will return a value with the ULP of 1 (equivalent to adding one ULP to a positive
-I<val>); if the ULP bit was a 1, it will return a value with the ULP of 0 (equivalent to
-subtracting one ULP from a positive I<val>).  Under normal (or denormal) circumstances,
+I<value>); if the ULP bit was a 1, it will return a value with the ULP of 0 (equivalent to
+subtracting one ULP from a positive I<value>).  Under normal (or denormal) circumstances,
 C<toggle_ulp($val) != $val> is true.
 
-Since INF and NAN are not really numbers, C<ulp()> will just return the same I<val>.  Because
+Since INF and NAN are not really numbers, C<ulp()> will just return the same I<value>.  Because
 of the way they are handled, C<toggle_ulp($val) != $val> no longer makes sense.
 
 =cut
@@ -402,18 +498,18 @@ sub toggle_ulp {
     return binstr754_to_double($rawbin);
 }
 
-=head3 nextup( I<value> )
+=head3 nextUp( I<value> )
 
 Returns the next floating point value numerically greater than I<value>; that is, it adds one ULP.
 Returns infinite when I<value> is the highest normal floating-point value.
 Returns I<value> when I<value> is positive-infinite or NAN; returns the largest negative normal
 floating-point value when I<value> is negative-infinite.
 
-C<nextup> is an IEEE 754r standard function.
+C<nextUp> is an IEEE 754r standard function (754-2008 #5.3.1).
 
 =cut
 
-sub nextup {
+sub nextUp {
     # thanks again to BrowserUK: http://perlmonks.org/?node_id=1167146
     my $val = shift;
     return $val                                     if $val != $val;                # interestingly, NAN != NAN
@@ -435,38 +531,365 @@ sub nextup {
     return hexstr754_to_double( sprintf '%08X%08X', $msb, $lsb );
 }
 
-=head3 nextdown( I<value> )
+=head3 nextDown( I<value> )
 
 Returns the next floating point value numerically lower than I<value>; that is, it subtracts one ULP.
 Returns -infinity when I<value> is the largest negative normal floating-point value.
 Returns I<value> when I<value> is negative-infinite or NAN; returns the largest positive normal
 floating-point value when I<value> is positive-infinite.
 
-C<nextdown> is an IEEE 754r standard function.
+C<nextDown> is an IEEE 754r standard function (754-2008 #5.3.1).
 
 =cut
 
-sub nextdown {
-    return - nextup( - $_[0] );
+sub nextDown {
+    return - nextUp( - $_[0] );
 }
 
-=head3 nextafter( I<value>, I<direction> )
+=head3 nextAfter( I<value>, I<direction> )
 
 Returns the next floating point value after I<value> in the direction of I<direction>.  If the
 two are identical, return I<direction>; if I<direction> is numerically above I<float>, return
-C<nextup(I<value>)>; if I<direction> is numerically below I<float>, return C<nextdown(I<value>)>.
-
-C<nextafter> is an IEEE 754r standard function.
+C<nextUp(I<value>)>; if I<direction> is numerically below I<float>, return C<nextDown(I<value>)>.
 
 =cut
 
-sub nextafter {
+sub nextAfter {
     return $_[0]            if $_[0] != $_[0];      # return value when value is NaN
     return $_[1]            if $_[1] != $_[1];      # return direction when direction is NaN
     return $_[1]            if $_[1] == $_[0];      # return direction when the two are equal
-    return nextup($_[0])    if $_[1] > $_[0];       # return nextup if direction > value
-    return nextdown($_[0]);                         # otherwise, return nextdown()
+    return nextUp($_[0])    if $_[1] > $_[0];       # return nextUp if direction > value
+    return nextDown($_[0]);                         # otherwise, return nextDown()
 }
+
+=head2 :info
+
+The informational functions include various operations (defined in 754-2008 #5.7.2) that provide general
+information about the floating-point value: most define whether a value is a special condition of
+floating-point or not (such as normal, finite, zero, ...).
+
+=head3 isSignMinus( I<value> )
+
+Returns 1 if I<value> has negative sign (even applies to zeroes and NaNs); otherwise, returns 0.
+
+=cut
+
+sub isSignMinus {
+    # look at leftmost nibble, and determine whether it has the 8-bit or not (which is the sign bit)
+    return (hex(substr(hexstr754_from_double(shift),0,1)) & 8) >> 3;
+}
+
+=head3 isNormal( I<value> )
+
+Returns 1 if I<value> is a normal number (not zero, subnormal, infinite, or NaN); otherwise, returns 0.
+
+=cut
+
+sub isNormal {
+    # it's normal if the leftmost three nibbles (excluding sign bit) are not 000 or 7FF
+    my $exp = hex(substr(hexstr754_from_double(shift),0,3)) & 0x7FF;
+    return (0 < $exp) && ($exp < 0x7FF) || 0;
+}
+
+=head3 isFinite( I<value> )
+
+Returns 1 if I<value> is a finite number (zero, subnormal, or normal; not infinite or NaN); otherwise, returns 0.
+
+=cut
+
+sub isFinite {
+    # it's finite if the leftmost three nibbles (excluding sign bit) are not 7FF
+    my $exp = hex(substr(hexstr754_from_double(shift),0,3)) & 0x7FF;
+    return ($exp < 0x7FF) || 0;
+}
+
+=head3 isZero( I<value> )
+
+Returns 1 if I<value> is positive or negative zero; otherwise, returns 0.
+
+=cut
+
+sub isZero {
+    # it's zero if it's 0x[80]000000000000000
+    my $str = substr(hexstr754_from_double(shift),1,15);
+    return ($str eq '0'x15) || 0;
+}
+
+=head3 isSubnormal( I<value> )
+
+Returns 1 if I<value> is subnormal (not zero, normal, infinite, nor NaN); otherwise, returns 0.
+
+=cut
+
+sub isSubnormal {
+    # it's subnormal if it's 0x[80]00___ and the last 13 digits are not all zero
+    my $h   = hexstr754_from_double(shift);
+    my $exp = substr($h,0,3);
+    my $frc = substr($h,3,13);
+    return ($exp eq '000' || $exp eq '800') && ($frc ne '0'x13) || 0;
+}
+
+=head3 isInfinite( I<value> )
+
+Returns 1 if I<value> is positive or negative infinity (not zero, subnormal, normal, nor NaN); otherwise, returns 0.
+
+=cut
+
+sub isInfinite {
+    # it's infinite if it's 0x[F7]FF_0000000000000
+    my $h   = hexstr754_from_double(shift);
+    my $exp = substr($h,0,3);
+    my $frc = substr($h,3,13);
+    return ($exp eq '7FF' || $exp eq 'FFF') && ($frc eq '0'x13) || 0;
+}
+
+=head3 isNaN( I<value> )
+
+Returns 1 if I<value> is NaN (not zero, subnormal, normal, nor infinite); otherwise, returns 0.
+
+=cut
+
+sub isNaN {
+    # it's infinite if it's 0x[F7]FF_0000000000000
+    my $h   = hexstr754_from_double(shift);
+    my $exp = substr($h,0,3);
+    my $frc = substr($h,3,13);
+    return ($exp eq '7FF' || $exp eq 'FFF') && ($frc ne '0'x13) || 0;
+}
+
+=head3 isSignaling( I<value> )
+
+Returns 1 if I<value> is a signaling NaN (not zero, subnormal, normal, nor infinite), otherwise, returns 0.
+
+Note that some perl implementations convert some or all signaling NaNs to quiet NaNs, in which case,
+C<isSignaling> might return only 0.
+
+=cut
+
+sub isSignaling {
+    # it's signaling if isNaN and MSB of fractional portion is 1
+    my $h   = hexstr754_from_double(shift);
+    my $exp = substr($h,0,3);
+    my $frc = substr($h,3,13);
+    my $qbit = (0x8 && hex(substr($h,3,1))) >> 3;   # 1: quiet, 0: signaling
+    return ($exp eq '7FF' || $exp eq 'FFF') && ($frc ne '0'x13)  && (!$qbit) || 0;
+}
+
+=head4 isSignalingConvertedToQuiet()
+
+Returns 1 if your implementation of perl converts a SignalingNaN to a QuietNaN, otherwise returns 0.
+
+This is I<not> a standard IEEE 754 function; but this is used to determine if the C<isSignaling()>
+function is meaningful in your implementation of perl.
+
+=cut
+
+sub isSignalingConvertedToQuiet {
+    !isSignaling( POS_SNAN_FIRST ) || 0
+}
+
+=head3 isCanonical( I<value> )
+
+Returns 1 to indicate that I<value> is Canonical.
+
+Per IEEE Std 754-2008, "Canonical" is the "preferred" encoding.  Based on the
+B<Data::IEEE754::Tools>'s author's reading of the standard, non-canonical
+applies to decimal floating-point encodings, not the binary floating-point
+encodings that B<Data::IEEE754::Tools> handles.  Since there are not multiple
+choicesfor the representation of a binary-encoded floating-point, all
+I<value>s seem canonical, and thus return 1.
+
+=cut
+
+sub isCanonical { 1 }
+
+=head3 class( I<value> )
+
+Returns the "class" of the I<value>:
+
+    signalingNaN
+    quietNaN
+    negativeInfinity
+    negativeNormal
+    negativeSubnormal
+    negativeZero
+    positiveZero
+    positiveSubnormal
+    positiveNormal
+    positiveInfinity
+
+=cut
+
+sub class {
+    return 'signalingNaN'       if isSignaling($_[0]);
+    return 'quietNaN'           if isNaN($_[0]);
+    return 'negativeInfinity'   if isInfinite($_[0])    && isSignMinus($_[0]);
+    return 'negativeNormal'     if isNormal($_[0])      && isSignMinus($_[0]);
+    return 'negativeSubnormal'  if isSubnormal($_[0])   && isSignMinus($_[0]);
+    return 'negativeZero'       if isZero($_[0])        && isSignMinus($_[0]);
+    return 'positiveZero'       if isZero($_[0])        && !isSignMinus($_[0]);
+    return 'positiveSubnormal'  if isSubnormal($_[0])   && !isSignMinus($_[0]);
+    return 'positiveNormal'     if isNormal($_[0])      && !isSignMinus($_[0]);
+    return 'positiveInfinity'   if isInfinite($_[0])    && !isSignMinus($_[0]);
+}
+
+=head3 radix( I<value> )
+
+Returns the base (radix) of the internal floating point representation.
+This module works with the binary floating-point representations, so will always return 2.
+
+=cut
+
+sub radix { 2 }
+
+=head3 totalOrder( I<x>, I<y>  )
+
+Returns TRUE if I<x> E<le> I<y>, FALSE if I<x> E<gt> I<y>.
+
+Special cases are ordered as below:
+
+    -quietNaN < -signalingNaN < -infinity < ...
+    ... < -normal < -subnormal < -zero < ...
+    ... < +zero < +subnormal < +normal < ...
+    ... < +infinity < +signalingNaN < +quietNaN
+
+=cut
+
+sub totalOrder {
+    my ($x, $y) = @_[0,1];
+    my ($bx,$by) = map { binstr754_from_double($_) } $x, $y;        # convert to binary strings
+    my @xsegs = ($bx =~ /(.)(.{11})(.{20})(.{32})/);                # split into sign, exponent, MSB, LSB
+    my @ysegs = ($by =~ /(.)(.{11})(.{20})(.{32})/);                # split into sign, exponent, MSB, LSB
+    my ($xin, $yin) = map { isNaN($_) } $x, $y;                     # determine if NaN: used twice each, so save the values rather than running twice each during if-switch
+
+    if( $xin && $yin ) {                                            # BOTH NaN
+        # use a trick: the rules for both-NaN treat it as if it's just another floating point,
+        #  so lie about the exponent and do a normal comparison
+        ($bx, $by) = map { $_->[1] = '1' . '0'x10; join '', @$_ } \@xsegs, \@ysegs;
+        ($x, $y) = map { binstr754_to_double($_) } $bx, $by;
+        return (($x <= $y) || 0);
+    } elsif ( $xin ) {                                              # just x NaN: TRUE if x is NEG
+        return ( ($xsegs[0]) || 0 );
+    } elsif ( $yin ) {                                              # just y NaN: TRUE if y is not NEG
+        return ( (!$ysegs[0]) || 0 );
+    } elsif ( isZero($x) && isZero($y) ) {                          # both zero: TRUE if x NEG, or if x==y
+        # trick = -signbit(x) <= -signbit(y), since signbit is 1 for negative, -signbit = -1 for negative
+        return ( (-$xsegs[0] <= -$ysegs[0]) || 0 );
+    } else {                                                        # numeric comparison (works for inf, normal, subnormal, or only one +/-zero)
+        return( ($x <= $y) || 0 );
+    }
+}
+
+=head3 totalOrderMag( I<x>, I<y> )
+
+Returns TRUE if I<abs(x)> E<le> I<abs(y)>, otherwise FALSE.
+Equivalent to
+
+    totalOrder( abs(x), abs(y) )
+
+Special cases are ordered as below:
+
+    zero < subnormal < normal < infinity < signalingNaN < quietNaN
+
+=cut
+
+sub totalOrderMag {
+    my ($x, $y)     = @_[0,1];
+    my ($bx,$by)    = map { binstr754_from_double($_) } $x, $y;                         # convert to binary strings
+    ($x,  $y)       = map { substr $_, 0, 1, '0'; binstr754_to_double($_) } $bx, $by;   # set sign bit to 0, and convert back to number
+    return totalOrder( $x, $y );                                                        # compare normally
+}
+
+# TODO = spaceship() and spaceshipMag() similar to totalOrder and totalOrderMag, but with '<' => -1, '==' => 0, '>' => +1
+
+=head2 :signbit
+
+These functions, from IEEE Std 754-2008, manipulate the sign bits
+of the argument(s)set P.
+
+See IEEE Std 754-2008 #5.5.1 "Sign bit operations": This section asserts
+that the sign bit operations (including C<negate>, C<abs>, and C<copySign>)
+should only affect the sign bit, and should treat numbers and NaNs alike.
+
+=head3 negate( I<value> )
+
+Reverses the sign bit of I<value>.  (If the sign bit is set on I<value>,
+it will not be set on the output, and vice versa; this will work on
+signed zeroes, on infinities, and on NaNs.)
+
+=cut
+
+sub negate {
+    my $b = binstr754_from_double(shift);                                               # convert to binary string
+    my $s = 1 - substr $b, 0, 1;                                                        # toggle sign
+    substr $b, 0, 1, $s;                                                                # replace sign
+    return binstr754_to_double($b);                                                     # convert to floating-point
+}
+
+=head3 CORE::abs( I<value> )
+=head3 absolute( I<value> )
+
+The C<CORE::abs()> function behaves properly (per the IEEE 754 description)
+for all classes of I<value> under many implementations.  However,
+there are implementations which incorrectly return a negative NaN, when
+the specification requires that it return a positive NaN.
+
+C<absolute()> is provided as a module-based alternative which correctly handles
+the absolute value of a signed NaN.
+
+The test suite runs the expected input/output pairs thru both C<CORE::abs()> and
+C<Data::IEEE754::Tools::absolute()>, but will skip the C<CORE::abs()> NaN's if
+C<isCoreAbsWrongForNegNaN()> returns TRUE, and will leave a message indicating
+that condition, and that you should use C<Data::IEEE754::Tools::absolute()> if
+the sign of your NaN is important to you.
+
+=cut
+
+sub absolute {
+    my $b = binstr754_from_double(shift);                                               # convert to binary string
+    substr $b, 0, 1, '0';                                                               # replace sign
+    return binstr754_to_double($b);                                                     # convert to floating-point
+}
+
+=head4 isCoreAbsWrongForNegNaN()
+
+Returns 1 if the builtin C<CORE::abs()> function gets the sign wrong
+for a signed NaN, else returns 0.
+
+Some Perl implementations do not properly handle signed NaN.  One place
+that it shows up is whether C<CORE::abs(NEG_SNAN_LAST)> is still negative,
+or whether it's properly converted to a positive NaN.
+
+If the sign of your NaN is important, then you can use
+C<isCoreAbsWrongForNegNaN()> to determine whether you should choose
+to use the builtin C<abs()> function, or whether you should switch to
+using this module's C<absolute()> function.  The C<make test> will also
+indicate whether you should rely on the C<CORE::abs()> function or not.
+
+=cut
+
+sub isCoreAbsWrongForNegNaN {
+    ( hexstr754_from_double(CORE::abs(NEG_QNAN_LAST)) ne hexstr754_from_double(CORE::abs(POS_QNAN_LAST)) ) || 0;
+}
+
+=head3 copySign( I<x>, I<y> )
+
+Copies the sign from I<y>, but uses the value from I<x>.  For example,
+
+    $new = copySign( 1.25, -5.5);   # $new is -1.25: the value of x, but the sign of y
+
+=cut
+
+sub copySign {
+    my ($x, $y)         = @_[0,1];
+    my ($bx,$by)        = map { binstr754_from_double($_) } $x, $y;                     # convert to binary strings
+    substr($bx, 0, 1)   = substr($by, 0, 1);                                            # copy the sign bit from y to x
+    return binstr754_to_double($bx);                                                    # convert binary-x (with modified sign) back to double
+}
+
+=head3 also exports C<isSignMinus(> I<value> C<)> (see :info)
+
+(:signbit also exports the C<isSignMinus()> function, described in :info, above)
 
 =head2 :all
 
