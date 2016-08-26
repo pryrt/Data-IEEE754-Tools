@@ -41,28 +41,30 @@ push @tests, [NEG_QNAN_FIRST     , 'NEG_QNAN_FIRST     ', POS_QNAN_FIRST     , P
 push @tests, [NEG_QNAN_LAST      , 'NEG_QNAN_LAST      ', POS_QNAN_LAST      , POS_QNAN_LAST      , POS_QNAN_LAST      ];
 
 my @flist = qw(negate absolute core_abs);
-plan tests => scalar(@tests) * (scalar(@flist)+1);
+plan tests => scalar(@tests) * (scalar(@flist)+1)*2;
 
 my $isCoreAbsWrongForNegNaN = isCoreAbsWrongForNegNaN();
 
 foreach my $t ( @tests ) {
     my ($c, $name, @x) = @$t;
     my $mi = (@flist >= @x) ? $#flist : $#x;
+    my $bool = $isCoreAbsWrongForNegNaN && ($name =~ /^NEG_[QS]NAN/i) || 0;
+        # TODO = v0.013_008 negate(NEG_IND) is confirmed on perl v5.16.0:
+        #   either debug or determine to just skip it on NEG_IND, too.
     foreach my $i ( 0 .. $mi ) {
         my $fn = $flist[$i];
         my $xi = $x[$i];
         my $f = \&{$fn};
         SKIP: {
-            skip 'CORE::abs() gives wrong value for abs(-NaN)', 1 if $isCoreAbsWrongForNegNaN;
-            is( $f->($c), $xi, sprintf('%-20.20s(%-20.20s)', $fn, $name ) );
-            #diag( sprintf("%-20.20s(%-20.20s): inp[s:%-27.27s, h:%-27.27s, f:%-27.27s]", $fn, $name, $c, hexstr754_from_double($c), to_hex_floatingpoint($c)) );
-            #diag( sprintf("%-20.20s(%-20.20s): exp[s:%-27.27s, h:%-27.27s, f:%-27.27s]", $fn, $name, $xi, hexstr754_from_double($xi), to_hex_floatingpoint($xi)) );
-            #diag( sprintf("%-20.20s(%-20.20s): got[s:%-27.27s, h:%-27.27s, f:%-27.27s]", $fn, $name, $f->($c), hexstr754_from_double($f->($c)), to_hex_floatingpoint($f->($c))) );
+            skip sprintf('CORE::abs() gives wrong value for abs(-NaN): '.$fn), 2 if $bool && ($fn eq 'core_abs');
+            is( ($f->($c)), ($xi), sprintf('%-20.20s(%-20.20s)', $fn, $name ) );
+            is( to_hex_floatingpoint($f->($c)), to_hex_floatingpoint($xi), sprintf('%-20.20s(%-20.20s)', $fn, $name ) );
         }
     }
     SKIP: {
-        skip 'CORE::abs() gives wrong value for abs(-NaN)', 1 if $isCoreAbsWrongForNegNaN;
-        is( absolute($c), core_abs($c), sprintf('%-20.20s(%-20.20s) for CORE::abs(x) vs Data::IEEE754::Tools::absolute(x)', 'compare', $name) );
+        skip sprintf('CORE::abs() gives wrong value for abs(-NaN): absolute vs CORE::abs'), 2 if $bool;
+        is( (absolute($c)), (core_abs($c)), sprintf('%-20.20s(%-20.20s) for CORE::abs(x) vs Data::IEEE754::Tools::absolute(x)', 'compare', $name) );
+        is( to_hex_floatingpoint(absolute($c)), to_hex_floatingpoint(core_abs($c)), sprintf('%-20.20s(%-20.20s) for CORE::abs(x) vs Data::IEEE754::Tools::absolute(x)', 'compare', $name) );
     }
 }
 

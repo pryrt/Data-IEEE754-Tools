@@ -5,7 +5,7 @@ use strict;
 use Carp;
 use Exporter 'import';  # just use the import() function, without the rest of the overhead of ISA
 
-use version 0.77; our $VERSION = version->declare('0.013_007');
+use version 0.77; our $VERSION = version->declare('0.013_008');
 
 =pod
 
@@ -672,7 +672,7 @@ sub isSignaling {
     my $exp = substr($h,0,3);
     my $frc = substr($h,3,13);
     my $qbit = (0x8 && hex(substr($h,3,1))) >> 3;   # 1: quiet, 0: signaling
-    return ($exp eq '7FF' || $exp eq 'FFF') && ($frc ne '0'x13)  && (!$qbit) || 0;
+    return ($exp eq '7FF' || $exp eq 'FFF') && ($frc ne '0'x13)  && (!$qbit) || 0;  # v0.013_007 = possible coverage bug: don't know whether it's the paren or non-paren, but the "LEFT=TRUE" condition of "OR 2 CONDITIONS" is never covered
 }
 
 =head4 isSignalingConvertedToQuiet()
@@ -685,7 +685,7 @@ function is meaningful in your implementation of perl.
 =cut
 
 sub isSignalingConvertedToQuiet {
-    !isSignaling( POS_SNAN_FIRST ) || 0
+    !isSignaling( POS_SNAN_FIRST ) || 0     # v0.013 coverage note: ignore Devel::Cover failures on this line
 }
 
 =head3 isCanonical( I<value> )
@@ -721,16 +721,16 @@ Returns the "class" of the I<value>:
 =cut
 
 sub class {
-    return 'signalingNaN'       if isSignaling($_[0]);
+    return 'signalingNaN'       if isSignaling($_[0]);      # v0.013 coverage note: ignore Devel::Cover failures on this line (won't return on systems that quiet SNaNs
     return 'quietNaN'           if isNaN($_[0]);
     return 'negativeInfinity'   if isInfinite($_[0])    && isSignMinus($_[0]);
     return 'negativeNormal'     if isNormal($_[0])      && isSignMinus($_[0]);
     return 'negativeSubnormal'  if isSubnormal($_[0])   && isSignMinus($_[0]);
     return 'negativeZero'       if isZero($_[0])        && isSignMinus($_[0]);
-    return 'positiveZero'       if isZero($_[0])        && !isSignMinus($_[0]);
-    return 'positiveSubnormal'  if isSubnormal($_[0])   && !isSignMinus($_[0]);
-    return 'positiveNormal'     if isNormal($_[0])      && !isSignMinus($_[0]);
-    return 'positiveInfinity'   if isInfinite($_[0])    && !isSignMinus($_[0]);
+    return 'positiveZero'       if isZero($_[0])        && !isSignMinus($_[0]);     # v0.013 coverage note: ignore Devel::Cover->CONDITION failure; alternate condition already returned above
+    return 'positiveSubnormal'  if isSubnormal($_[0])   && !isSignMinus($_[0]);     # v0.013 coverage note: ignore Devel::Cover->CONDITION failure; alternate condition already returned above
+    return 'positiveNormal'     if isNormal($_[0])      && !isSignMinus($_[0]);     # v0.013 coverage note: ignore Devel::Cover->CONDITION failure; alternate condition already returned above
+    return 'positiveInfinity'   if isInfinite($_[0])    && !isSignMinus($_[0]);     # v0.013 coverage note: no tests for FALSE because all conditions covered above
 }
 
 =head3 radix( I<value> )
@@ -819,7 +819,7 @@ signed zeroes, on infinities, and on NaNs.)
 
 =cut
 
-sub negate {
+sub negate {    # v0.013 coverage issue?  negate() never tested?
     my $b = binstr754_from_double(shift);                                               # convert to binary string
     my $s = 1 - substr $b, 0, 1;                                                        # toggle sign
     substr $b, 0, 1, $s;                                                                # replace sign
@@ -869,7 +869,7 @@ indicate whether you should rely on the C<CORE::abs()> function or not.
 =cut
 
 sub isCoreAbsWrongForNegNaN {
-    ( hexstr754_from_double(CORE::abs(NEG_QNAN_LAST)) ne hexstr754_from_double(CORE::abs(POS_QNAN_LAST)) ) || 0;
+    ( hexstr754_from_double(CORE::abs(NEG_QNAN_LAST)) ne hexstr754_from_double(CORE::abs(POS_QNAN_LAST)) ) || 0; # v0.013 coverage note: ignore coverage fails -- a system will either evaluate to TRUE or to FALSE, never both, so Devel::Cover will never pass both
 }
 
 =head3 copySign( I<x>, I<y> )
