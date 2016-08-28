@@ -1,10 +1,5 @@
 TODO
-    - BUG: t\09-signbit: while verifying test coverage in v0.013_008,
-        discovered that signbit test was never testing negate, because the SKIP was too aggressive;
-        once I de-aggressified the SKIP, finding more failures
-
-    - add the "is_xxxx", sign-copy, and other similar functions from IEEE754/Data::Float
-      <https://rt.cpan.org/Ticket/Display.html?id=116155>
+    - long-term: implement more functions from IEEE754-2007, especially
       + IEEE754 5.4.2 => 5.12
         <format>-convertFormat
         <format>-convertFromDecimalCharacter
