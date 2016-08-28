@@ -1,6 +1,22 @@
 Revision history for Perl module Data::IEEE754::Tools.
 
 v0.013 Development Version
+    - v0.013_008: Devel::Cover showed SKIP was too aggressive in t\09 and t\10, so never tested 
+		negate in v0.013_007.
+        + FIXED BUG: t\09-signbit: while verifying test coverage in v0.013_008, discovered
+          that signbit test was never testing negate, because the SKIP was too aggressive;
+          once I de-aggressified the SKIP, finding more failures.
+        + it looks like NEG_IND is not properly sign-changed to POS_IND, either... need to
+          investigate further on multiple systems
+		+ Determined that it's pointless to keep trying to make CORE::abs() pass the tests.
+		  Rename Data::IEEE754::Tools::absolute() to ...::abs(), and stop testing the 
+		  CORE::abs().  Just make a note that exporting abs or :signbit will override the
+		  builtin behavior, and explain how to still access CORE::abs().
+		+ remove isCoreAbsWrongForNegNaN(), since apparently Perl itself is the culprit, not
+		  certain implementations.  (The auto-stringification of NaN was sometimes not 
+		  distinguishing the sign bits.)
+	    + t\10-copysign: switch to the to_hex_floatingpoint() for comparing abs($x) to abs($z),
+		  to avoid the same display bug that masked the CORE::abs() bug for 5.8.5 and 5.24.0.
     - v0.013_007: CPAN Testers for a slew of errors for v0.013_006, so fix those
         FIXED = <https://rt.cpan.org/Ticket/Display.html?id=117163>
         + BUG DESCRIPTION: in some configs, the 09-signbit and 10-copysign values have wrong sign

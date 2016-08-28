@@ -44,9 +44,11 @@ foreach my $x (@constants) {
 
         my $z = copySign($x, $y);
         my $zsign = isSignMinus($z);
+		
+		my $pre = sprintf('copySign(%-25.25s,%-25.25s): ', to_hex_floatingpoint($x), to_hex_floatingpoint($y));
 
-        is( $zsign , $ysign , sprintf('copySign(%-25.25s,%-25.25s): sign compare', to_hex_floatingpoint($x), to_hex_floatingpoint($y)) );
-        is( absolute($z), absolute($x), sprintf('copySign(%-25.25s,%-25.25s): abs compare', to_hex_floatingpoint($x), to_hex_floatingpoint($y)) );
+        is( $zsign , $ysign , $pre . 'sign compare' );
+        is( to_hex_floatingpoint(abs($z)), to_hex_floatingpoint(abs($x)), $pre . 'abs compare' );
     }
 }
 

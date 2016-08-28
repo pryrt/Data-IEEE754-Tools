@@ -5,7 +5,7 @@ use strict;
 use Carp;
 use Exporter 'import';  # just use the import() function, without the rest of the overhead of ISA
 
-use version 0.77; our $VERSION = version->declare('0.013_007');
+use version 0.77; our $VERSION = version->declare('0.013_008');
 
 =pod
 
@@ -117,6 +117,8 @@ a transition to v2.
 
 =item v0.013_003: C<nextafter()> renamed to C<nextAfter()>
 
+=item v0.013_008: C<absolute()> renamed to C<abs()>, and noted that perl's builtin can be accessed via C<CORE::abs()>
+
 =back
 
 =head1 EXPORTABLE FUNCTIONS AND VARIABLES
@@ -146,7 +148,7 @@ my  @EXPORT_CONST = qw(
 my @EXPORT_INFO = qw(isSignMinus isNormal isFinite isZero isSubnormal
     isInfinite isNaN isSignaling isSignalingConvertedToQuiet isCanonical
     class radix totalOrder totalOrderMag);
-my @EXPORT_SIGNBIT = qw(negate absolute isCoreAbsWrongForNegNaN copySign isSignMinus);
+my @EXPORT_SIGNBIT = qw(negate abs isCoreAbsWrongForNegNaN copySign isSignMinus);
 
 our @EXPORT_OK = (@EXPORT_FLOATING, @EXPORT_RAW754, @EXPORT_ULP, @EXPORT_CONST, @EXPORT_INFO, @EXPORT_SIGNBIT);
 our %EXPORT_TAGS = (
@@ -389,9 +391,9 @@ zeroes, infinities, a variety of signaling and quiet NAN values.
     POS_NORM_SMALLEST    # +0x1.0000000000000p-1022  # smallest positive value that allows for normal representation in 64bit floating-point
     POS_NORM_BIGGEST     # +0x1.fffffffffffffp+1023  # largest positive value that allows for normal representation in 64bit floating-point
     POS_INF              # +0x1.#INF000000000p+0000  # positive infinity: indicates that the answer is out of the range of a 64bit floating-point
-    POS_SNAN_FIRST       # +0x1.#SNAN00000000p+0000  # positive signaling NAN with "0x0000000000001" as the system-dependent information; note that many perl interpreters will internally convert this to a Quiet NaN (QNAN)
-    POS_SNAN_LAST        # +0x1.#SNAN00000000p+0000  # positive signaling NAN with "0x7FFFFFFFFFFFF" as the system-dependent information; note that many perl interpreters will internally convert this to a Quiet NaN (QNAN)
-    POS_IND              # +0x1.#QNAN00000000p+0000  # positive quiet NAN with "0x8000000000000" as the system-dependent information; some perl interpreters define the NEG_IND as an "indeterminate" value (IND), and it wouldn't surprise me if some also defined this positive version as "indeterminate" as well
+    POS_SNAN_FIRST       # +0x1.#SNAN00000000p+0000  # positive signaling NAN with "0x0000000000001" as the system-dependent information [*]
+    POS_SNAN_LAST        # +0x1.#SNAN00000000p+0000  # positive signaling NAN with "0x7FFFFFFFFFFFF" as the system-dependent information [*]
+    POS_IND              # +0x1.#QNAN00000000p+0000  # positive quiet NAN with "0x8000000000000" as the system-dependent information [%]
     POS_QNAN_FIRST       # +0x1.#QNAN00000000p+0000  # positive quiet NAN with "0x8000000000001" as the system-dependent information
     POS_QNAN_LAST        # +0x1.#QNAN00000000p+0000  # positive quiet NAN with "0xFFFFFFFFFFFFF" as the system-dependent information
 
@@ -401,11 +403,15 @@ zeroes, infinities, a variety of signaling and quiet NAN values.
     NEG_NORM_SMALLEST    # -0x1.0000000000000p-1022  # smallest negative value that allows for normal representation in 64bit floating-point
     NEG_NORM_BIGGEST     # -0x1.fffffffffffffp+1023  # largest negative value that allows for normal representation in 64bit floating-point
     NEG_INF              # -0x1.#INF000000000p+0000  # negative infinity: indicates that the answer is out of the range of a 64bit floating-point
-    NEG_SNAN_FIRST       # -0x1.#SNAN00000000p+0000  # negative signaling NAN with "0x0000000000001" as the system-dependent information; note that many perl interpreters will internally convert this to a Quiet NaN (QNAN)
-    NEG_SNAN_LAST        # -0x1.#SNAN00000000p+0000  # negative signaling NAN with "0x7FFFFFFFFFFFF" as the system-dependent information; note that many perl interpreters will internally convert this to a Quiet NaN (QNAN)
-    NEG_IND              # -0x1.#IND000000000p+0000  # negative quiet NAN with "0x8000000000000" as the system-dependent information; some perl interpreters define the NEG_IND as an "indeterminate" value (IND)
+    NEG_SNAN_FIRST       # -0x1.#SNAN00000000p+0000  # negative signaling NAN with "0x0000000000001" as the system-dependent information [*]
+    NEG_SNAN_LAST        # -0x1.#SNAN00000000p+0000  # negative signaling NAN with "0x7FFFFFFFFFFFF" as the system-dependent information [*]
+    NEG_IND              # -0x1.#IND000000000p+0000  # negative quiet NAN with "0x8000000000000" as the system-dependent information [%]
     NEG_QNAN_FIRST       # -0x1.#QNAN00000000p+0000  # negative quiet NAN with "0x8000000000001" as the system-dependent information
     NEG_QNAN_LAST        # -0x1.#QNAN00000000p+0000  # negative quiet NAN with "0xFFFFFFFFFFFFF" as the system-dependent information
+	
+	[*] note that many perl interpreters will internally convert Signalling NaN (SNAN) to Quiet NaN (QNAN)
+	[%] some perl interpreters define the zeroeth negative Quiet NaN, NEG_IND, as an "indeterminate" value (IND); 
+	    in a symmetrical world, they would also define the zeroeth positive Quiet NaN, POS_IND, as an "indeterminate" value (IND)
 
 =cut
 
@@ -672,7 +678,7 @@ sub isSignaling {
     my $exp = substr($h,0,3);
     my $frc = substr($h,3,13);
     my $qbit = (0x8 && hex(substr($h,3,1))) >> 3;   # 1: quiet, 0: signaling
-    return ($exp eq '7FF' || $exp eq 'FFF') && ($frc ne '0'x13)  && (!$qbit) || 0;
+    return ($exp eq '7FF' || $exp eq 'FFF') && ($frc ne '0'x13)  && (!$qbit) || 0;  # v0.013_007 = possible coverage bug: don't know whether it's the paren or non-paren, but the "LEFT=TRUE" condition of "OR 2 CONDITIONS" is never covered
 }
 
 =head4 isSignalingConvertedToQuiet()
@@ -685,7 +691,7 @@ function is meaningful in your implementation of perl.
 =cut
 
 sub isSignalingConvertedToQuiet {
-    !isSignaling( POS_SNAN_FIRST ) || 0
+    !isSignaling( POS_SNAN_FIRST ) || 0     # v0.013 coverage note: ignore Devel::Cover failures on this line
 }
 
 =head3 isCanonical( I<value> )
@@ -721,16 +727,16 @@ Returns the "class" of the I<value>:
 =cut
 
 sub class {
-    return 'signalingNaN'       if isSignaling($_[0]);
+    return 'signalingNaN'       if isSignaling($_[0]);      # v0.013 coverage note: ignore Devel::Cover failures on this line (won't return on systems that quiet SNaNs
     return 'quietNaN'           if isNaN($_[0]);
     return 'negativeInfinity'   if isInfinite($_[0])    && isSignMinus($_[0]);
     return 'negativeNormal'     if isNormal($_[0])      && isSignMinus($_[0]);
     return 'negativeSubnormal'  if isSubnormal($_[0])   && isSignMinus($_[0]);
     return 'negativeZero'       if isZero($_[0])        && isSignMinus($_[0]);
-    return 'positiveZero'       if isZero($_[0])        && !isSignMinus($_[0]);
-    return 'positiveSubnormal'  if isSubnormal($_[0])   && !isSignMinus($_[0]);
-    return 'positiveNormal'     if isNormal($_[0])      && !isSignMinus($_[0]);
-    return 'positiveInfinity'   if isInfinite($_[0])    && !isSignMinus($_[0]);
+    return 'positiveZero'       if isZero($_[0])        && !isSignMinus($_[0]);     # v0.013 coverage note: ignore Devel::Cover->CONDITION failure; alternate condition already returned above
+    return 'positiveSubnormal'  if isSubnormal($_[0])   && !isSignMinus($_[0]);     # v0.013 coverage note: ignore Devel::Cover->CONDITION failure; alternate condition already returned above
+    return 'positiveNormal'     if isNormal($_[0])      && !isSignMinus($_[0]);     # v0.013 coverage note: ignore Devel::Cover->CONDITION failure; alternate condition already returned above
+    return 'positiveInfinity'   if isInfinite($_[0])    && !isSignMinus($_[0]);     # v0.013 coverage note: no tests for FALSE because all conditions covered above
 }
 
 =head3 radix( I<value> )
@@ -819,57 +825,36 @@ signed zeroes, on infinities, and on NaNs.)
 
 =cut
 
-sub negate {
+sub negate {    # v0.013 coverage issue?  negate() never tested?
     my $b = binstr754_from_double(shift);                                               # convert to binary string
     my $s = 1 - substr $b, 0, 1;                                                        # toggle sign
     substr $b, 0, 1, $s;                                                                # replace sign
     return binstr754_to_double($b);                                                     # convert to floating-point
 }
 
-=head3 CORE::abs( I<value> )
-=head3 absolute( I<value> )
+=head3 abs( I<value> )
+
+Similar to the C<CORE::abs()> builtin function, C<abs()> is provided as a 
+module-based function to get the absolute value (magnitude) of a 64bit 
+floating-point number.
 
 The C<CORE::abs()> function behaves properly (per the IEEE 754 description)
-for all classes of I<value> under many implementations.  However,
-there are implementations which incorrectly return a negative NaN, when
-the specification requires that it return a positive NaN.
+for all classes of I<value>, except that many implementations do not correctly
+handle -NaN properly, outputting -NaN, which is in violation of the standard.  
+The C<Data::IEEE754::Tools::abs()> function correctly treats NaNs in the same
+way it treats numerical values, and clears the sign bit on the output.
 
-C<absolute()> is provided as a module-based alternative which correctly handles
-the absolute value of a signed NaN.
-
-The test suite runs the expected input/output pairs thru both C<CORE::abs()> and
-C<Data::IEEE754::Tools::absolute()>, but will skip the C<CORE::abs()> NaN's if
-C<isCoreAbsWrongForNegNaN()> returns TRUE, and will leave a message indicating
-that condition, and that you should use C<Data::IEEE754::Tools::absolute()> if
-the sign of your NaN is important to you.
+Please note that exporting C<abs()> or C<:signbit> from this module will
+"hide" the builtin C<abs()> function.  If you really need to use the builtin
+version (for example, you care more about execution speed than its ability to find
+the absolute value of a signed NaN), then you may call it as C<CORE::abs>.
 
 =cut
 
-sub absolute {
+sub abs {
     my $b = binstr754_from_double(shift);                                               # convert to binary string
     substr $b, 0, 1, '0';                                                               # replace sign
     return binstr754_to_double($b);                                                     # convert to floating-point
-}
-
-=head4 isCoreAbsWrongForNegNaN()
-
-Returns 1 if the builtin C<CORE::abs()> function gets the sign wrong
-for a signed NaN, else returns 0.
-
-Some Perl implementations do not properly handle signed NaN.  One place
-that it shows up is whether C<CORE::abs(NEG_SNAN_LAST)> is still negative,
-or whether it's properly converted to a positive NaN.
-
-If the sign of your NaN is important, then you can use
-C<isCoreAbsWrongForNegNaN()> to determine whether you should choose
-to use the builtin C<abs()> function, or whether you should switch to
-using this module's C<absolute()> function.  The C<make test> will also
-indicate whether you should rely on the C<CORE::abs()> function or not.
-
-=cut
-
-sub isCoreAbsWrongForNegNaN {
-    ( hexstr754_from_double(CORE::abs(NEG_QNAN_LAST)) ne hexstr754_from_double(CORE::abs(POS_QNAN_LAST)) ) || 0;
 }
 
 =head3 copySign( I<x>, I<y> )
