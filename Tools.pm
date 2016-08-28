@@ -148,7 +148,7 @@ my  @EXPORT_CONST = qw(
 my @EXPORT_INFO = qw(isSignMinus isNormal isFinite isZero isSubnormal
     isInfinite isNaN isSignaling isSignalingConvertedToQuiet isCanonical
     class radix totalOrder totalOrderMag);
-my @EXPORT_SIGNBIT = qw(negate abs isCoreAbsWrongForNegNaN copySign isSignMinus);
+my @EXPORT_SIGNBIT = qw(copy negate abs isCoreAbsWrongForNegNaN copySign isSignMinus);
 
 our @EXPORT_OK = (@EXPORT_FLOATING, @EXPORT_RAW754, @EXPORT_ULP, @EXPORT_CONST, @EXPORT_INFO, @EXPORT_SIGNBIT);
 our %EXPORT_TAGS = (
@@ -408,9 +408,9 @@ zeroes, infinities, a variety of signaling and quiet NAN values.
     NEG_IND              # -0x1.#IND000000000p+0000  # negative quiet NAN with "0x8000000000000" as the system-dependent information [%]
     NEG_QNAN_FIRST       # -0x1.#QNAN00000000p+0000  # negative quiet NAN with "0x8000000000001" as the system-dependent information
     NEG_QNAN_LAST        # -0x1.#QNAN00000000p+0000  # negative quiet NAN with "0xFFFFFFFFFFFFF" as the system-dependent information
-	
+
 	[*] note that many perl interpreters will internally convert Signalling NaN (SNAN) to Quiet NaN (QNAN)
-	[%] some perl interpreters define the zeroeth negative Quiet NaN, NEG_IND, as an "indeterminate" value (IND); 
+	[%] some perl interpreters define the zeroeth negative Quiet NaN, NEG_IND, as an "indeterminate" value (IND);
 	    in a symmetrical world, they would also define the zeroeth positive Quiet NaN, POS_IND, as an "indeterminate" value (IND)
 
 =cut
@@ -817,6 +817,17 @@ See IEEE Std 754-2008 #5.5.1 "Sign bit operations": This section asserts
 that the sign bit operations (including C<negate>, C<abs>, and C<copySign>)
 should only affect the sign bit, and should treat numbers and NaNs alike.
 
+=head3 copy( I<value> )
+
+Copies the I<value> to the output, leaving the sign bit unchanged, for all
+numbers and NaNs.
+
+=cut
+
+sub copy {
+	return shift;
+}
+
 =head3 negate( I<value> )
 
 Reverses the sign bit of I<value>.  (If the sign bit is set on I<value>,
@@ -825,7 +836,7 @@ signed zeroes, on infinities, and on NaNs.)
 
 =cut
 
-sub negate {    # v0.013 coverage issue?  negate() never tested?
+sub negate {
     my $b = binstr754_from_double(shift);                                               # convert to binary string
     my $s = 1 - substr $b, 0, 1;                                                        # toggle sign
     substr $b, 0, 1, $s;                                                                # replace sign
@@ -834,13 +845,13 @@ sub negate {    # v0.013 coverage issue?  negate() never tested?
 
 =head3 abs( I<value> )
 
-Similar to the C<CORE::abs()> builtin function, C<abs()> is provided as a 
-module-based function to get the absolute value (magnitude) of a 64bit 
+Similar to the C<CORE::abs()> builtin function, C<abs()> is provided as a
+module-based function to get the absolute value (magnitude) of a 64bit
 floating-point number.
 
 The C<CORE::abs()> function behaves properly (per the IEEE 754 description)
 for all classes of I<value>, except that many implementations do not correctly
-handle -NaN properly, outputting -NaN, which is in violation of the standard.  
+handle -NaN properly, outputting -NaN, which is in violation of the standard.
 The C<Data::IEEE754::Tools::abs()> function correctly treats NaNs in the same
 way it treats numerical values, and clears the sign bit on the output.
 
