@@ -3,6 +3,8 @@
 #   :info
 #       totalOrder(v)
 #       totalOrderMag(v)
+#		compareFloatingValue(v)
+#		compareFloatingMag(v)
 #   other functions from info in other test files
 ########################################################################
 use 5.006;
@@ -46,7 +48,7 @@ sub ijSignal($) {	    # hardcoded indexes of the array; if array changes, must c
     /^(3|4|17|18)$/
 }
 
-plan tests => (scalar @constants)**2 * 2;
+plan tests => (scalar @constants)**2 * 4;
 
 my $skip_reason = '';
 if( isSignalingConvertedToQuiet() ) {
@@ -74,34 +76,56 @@ foreach my $i (0 .. $#constants) {
         my $ay = hexstr754_to_double($hay);
         local $, = ", ";
         local $\ = "\n";
-
-        SKIP: {
-            skip sprintf('Order   (%16.16s,%16.16s): %s',$hx,$hy,$skip_reason), 1    if isSignalingConvertedToQuiet() && (
+		my $skip_bool = isSignalingConvertedToQuiet() && (
                 # if Signalling converted to Quiet, order will be messed up if both are NaN but one each of signal and quiet
                 (ijQuiet($i) && ijSignal($j)) ||    # i quiet && j signaling
                 (ijQuiet($j) && ijSignal($i))       # j quiet && i signaling
             );
+
+		# totalOrder(x,y): x<=y ? 1 : 0;
+        SKIP: {
+            skip sprintf('%-25.25s(%16.16s,%16.16s): %s','totalOrder',$hx,$hy,$skip_reason), 1    if $skip_bool;
             # this will still compare either NaN to anything else (INF, NORM, SUB, ZERO), and will also compare
             # signaling to signaling and quiet to quiet
 
             my $got = totalOrder( $x, $y );
             my $exp = ($i <= $j) || 0;
-            is( $got, $exp, sprintf('totalOrder   (%s,%s)', $hx, $hy ) );
+            is( $got, $exp, sprintf('%-30.30s(%s,%s)', 'totalOrder', $hx, $hy ) );
         }
 
+		# totalOrderMag(x,y):  |x|<=|y| ? 1 : 0;
         SKIP: {
-            skip sprintf('OrderMag(%16.16s,%16.16s): %s',$hax,$hay,$skip_reason), 1    if isSignalingConvertedToQuiet() && (
-                # if Signalling converted to Quiet, order will be messed up if both are NaN but one each of signal and quiet
-                (ijQuiet($i) && ijSignal($j)) ||    # i quiet && j signaling
-                (ijQuiet($j) && ijSignal($i))       # j quiet && i signaling
-            );
+            skip sprintf('%-25.25s(%16.16s,%16.16s): %s','totalOrderMag',$hax,$hay,$skip_reason), 1    if $skip_bool;
             # this will still compare either NaN to anything else (INF, NORM, SUB, ZERO), and will also compare
             # signaling to signaling and quiet to quiet
 
             my $got = totalOrderMag( $x, $y );
             my $exp = ( ($i<11 ? 21-$i : $i) <= ($j<11 ? 21-$j : $j) ) || 0;
-            is( $got, $exp, sprintf('totalOrderMag(%s,%s)', $hax, $hay ) );
+            is( $got, $exp, sprintf('%-30.30s(%s,%s)', 'totalOrderMag', $hax, $hay ) );
         }
+
+		# compareFloatingValue(x,y): x <=> y
+        SKIP: {
+            skip sprintf('%-25.25s(%16.16s,%16.16s): %s','compareFloatingValue',$hx,$hy,$skip_reason), 1    if $skip_bool;
+            # this will still compare either NaN to anything else (INF, NORM, SUB, ZERO), and will also compare
+            # signaling to signaling and quiet to quiet
+
+            my $got = compareFloatingValue( $x, $y );
+            my $exp = ($i <=> $j);
+            is( $got, $exp, sprintf('%-30.30s(%s,%s)', 'compareFloatingValue', $hx, $hy ) );
+        }
+
+		# compareFloatingMag(x,y): |x| <=> |y|
+        SKIP: {
+            skip sprintf('%-25.25s(%16.16s,%16.16s): %s','compareFloatingMag',$hax,$hay,$skip_reason), 1    if $skip_bool;
+            # this will still compare either NaN to anything else (INF, NORM, SUB, ZERO), and will also compare
+            # signaling to signaling and quiet to quiet
+
+            my $got = compareFloatingMag( $x, $y );
+            my $exp = ($i<11 ? 21-$i : $i) <=> ($j<11 ? 21-$j : $j);
+            is( $got, $exp, sprintf('%-30.30s(%s,%s)', 'compareFloatingMag', $hax, $hay ) );
+        }
+
     }
 }
 

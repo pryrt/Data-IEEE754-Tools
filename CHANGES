@@ -1,6 +1,8 @@
 Revision history for Perl module Data::IEEE754::Tools.
 
 v0.013 Development Version
+	- v0.013_010: added spaceship-style equivalents of totalOrder and totalOrderMag
+	  + add compareFloatingValue() and compareFloatingMag(), with test suite in t\08-totalorder
 	- v0.013_009: add :signbit -> copy() (with coverage) for completeness
         IN PROGRESS = <https://rt.cpan.org/Ticket/Display.html?id=116155>
     - v0.013_008: Devel::Cover showed SKIP was too aggressive in t\09 and t\10, so never tested

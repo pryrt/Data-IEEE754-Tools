@@ -5,7 +5,7 @@ use strict;
 use Carp;
 use Exporter 'import';  # just use the import() function, without the rest of the overhead of ISA
 
-use version 0.77; our $VERSION = version->declare('0.013_009');
+use version 0.77; our $VERSION = version->declare('0.013_010');
 
 =pod
 
@@ -147,7 +147,7 @@ my  @EXPORT_CONST = qw(
 );
 my @EXPORT_INFO = qw(isSignMinus isNormal isFinite isZero isSubnormal
     isInfinite isNaN isSignaling isSignalingConvertedToQuiet isCanonical
-    class radix totalOrder totalOrderMag);
+    class radix totalOrder totalOrderMag compareFloatingValue compareFloatingMag);
 my @EXPORT_SIGNBIT = qw(copy negate abs isCoreAbsWrongForNegNaN copySign isSignMinus);
 
 our @EXPORT_OK = (@EXPORT_FLOATING, @EXPORT_RAW754, @EXPORT_ULP, @EXPORT_CONST, @EXPORT_INFO, @EXPORT_SIGNBIT);
@@ -806,7 +806,49 @@ sub totalOrderMag {
     return totalOrder( $x, $y );                                                        # compare normally
 }
 
-# TODO = spaceship() and spaceshipMag() similar to totalOrder and totalOrderMag, but with '<' => -1, '==' => 0, '>' => +1
+=head3 compareFloatingValue( I<x>, I<y> )
+
+=head3 compareFloatingMag( I<x>, I<y> )
+
+These are similar to C<totalOrder()> and C<totalOrderMag()>, except they return
+-1 for C<x E<lt> y>, 0 for C<x == y>, and +1 for C<x E<gt> y>.
+
+These are not in IEEE 754-2008, but are included as functions to replace the perl spaceship
+(C<E<lt>=E<gt>>) when comparing floating-point values that might be NaN.
+
+=cut
+
+sub compareFloatingValue {
+    my ($x, $y) = @_[0,1];
+    my ($bx,$by) = map { binstr754_from_double($_) } $x, $y;        # convert to binary strings
+    my @xsegs = ($bx =~ /(.)(.{11})(.{20})(.{32})/);                # split into sign, exponent, MSB, LSB
+    my @ysegs = ($by =~ /(.)(.{11})(.{20})(.{32})/);                # split into sign, exponent, MSB, LSB
+    my ($xin, $yin) = map { isNaN($_) } $x, $y;                     # determine if NaN: used twice each, so save the values rather than running twice each during if-switch
+
+    if( $xin && $yin ) {                                            # BOTH NaN
+        # use a trick: the rules for both-NaN treat it as if it's just another floating point,
+        #  so lie about the exponent and do a normal comparison
+        ($bx, $by) = map { $_->[1] = '1' . '0'x10; join '', @$_ } \@xsegs, \@ysegs;
+        ($x, $y) = map { binstr754_to_double($_) } $bx, $by;
+        return ($x <=> $y);
+    } elsif ( $xin ) {                                              # just x NaN: if isNaN(x) && isNegative(x) THEN -1 (x<y) ELSE (x>y)
+        return ( ($xsegs[0])*-1 || +1 );
+    } elsif ( $yin ) {                                              # just y NaN: if isNaN(y) && !isNegative(y) THEN -1 (x<y) ELSE (x>y)
+        return ( (!$ysegs[0])*-1 || +1 );
+    } elsif ( isZero($x) && isZero($y) ) {                          # both zero: TRUE if x NEG, or if x==y
+        # trick = -signbit(x) <=> -signbit(y), since signbit is 1 for negative, -signbit = -1 for negative
+        return (-$xsegs[0] <=> -$ysegs[0]);
+    } else {                                                        # numeric comparison (works for inf, normal, subnormal, or only one +/-zero)
+        return ($x <=> $y);
+    }
+}
+
+sub compareFloatingMag {
+    my ($x, $y)     = @_[0,1];
+    my ($bx,$by)    = map { binstr754_from_double($_) } $x, $y;                         # convert to binary strings
+    ($x,  $y)       = map { substr $_, 0, 1, '0'; binstr754_to_double($_) } $bx, $by;   # set sign bit to 0, and convert back to number
+    return compareFloatingValue( $x, $y );                                              # compare normally
+}
 
 =head2 :signbit
 
