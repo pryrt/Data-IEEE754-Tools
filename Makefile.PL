@@ -24,7 +24,7 @@ use 5.006;
                 bugtracker => {
                     mailto => 'bug-Data-IEEE754-Tools@rt.cpan.org',
                     web => 'http://rt.cpan.org/Public/Dist/Display.html?Name=Data-IEEE754-Tools',
-                }
+                },
                 repository => 'https://github.com/pryrt/Data-IEEE754-Tools',
             },
             keywords => [ 'IEEE-754', 'floating point representation'],
