@@ -5,7 +5,7 @@ use strict;
 use Carp;
 use Exporter 'import';  # just use the import() function, without the rest of the overhead of ISA
 
-use version 0.77; our $VERSION = version->declare('v0.14003');    # TODO: when moving to 1.0, use '1.000' again
+use version 0.77; our $VERSION = version->declare('v0.14003.0');    # TODO: when moving to 1.0, use '1.000' again
     # only using v-notation because of a typo in Makefile.PL which bumped up from 0.014 to v0.14001.0, so now I have to
     # do sub-versions above 14k, which can only be done in v-notation.
 
