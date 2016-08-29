@@ -20,6 +20,10 @@ use 5.006;
     no warnings;
     if( $ExtUtils::MakeMaker::VERSION >= '6.46' ) {
         $mm_args{META_MERGE} = {
+            'meta-spec' => {
+                version => '2',
+                url     => 'http://search.cpan.org/perldoc?CPAN::Meta::Spec',
+            }
             resources => {
                 bugtracker => {
                     mailto => 'bug-Data-IEEE754-Tools@rt.cpan.org',
@@ -31,7 +35,7 @@ use 5.006;
             provides => {
                 'Data::IEEE754::Tools' => {
                     file => 'Tools.pm',
-                    version => 'v0.014001',
+                    version => '0.014002',
                 }
             }
         },

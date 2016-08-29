@@ -1,5 +1,13 @@
 Revision history for Perl module Data::IEEE754::Tools.
 
+v0.014002 2016-Aug-29
+    - It categorized v0.014001 as a major release; however, due to
+      bad data in the META, it lists it as v0.14001.0.  I hope
+      I'll be able to release as v0.014002 with the fixed META version
+      without CPAN complaining about going backwords in version.
+      Otherwise, I'll have to call it 'v0.16000.0' in the declare,
+      and get rid of that stupid 'provides'.
+
 v0.014001 2016-Aug-29
     - had a bug in the makefile which caused CPAN to not index the v0.014
       release.  Add version => 'v0.014001' to provides subhash,
