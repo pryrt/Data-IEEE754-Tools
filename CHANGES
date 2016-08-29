@@ -1,5 +1,12 @@
 Revision history for Perl module Data::IEEE754::Tools.
 
+v0.014001 2016-Aug-29
+    - had a bug in the makefile which caused CPAN to not index the v0.014
+      release.  Add version => 'v0.014001' to provides subhash,
+      and try to release without the underscore (I think that should allow
+      a 6-character number but without marking it as alpha/developer.
+      If not, I will come back and release as v0.016, which I'd rather not do
+
 v0.014 2016-Aug-29
     - feature request <https://rt.cpan.org/Ticket/Display.html?id=116155>
       + add many functions

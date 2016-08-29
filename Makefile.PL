@@ -31,6 +31,7 @@ use 5.006;
             provides => {
                 'Data::IEEE754::Tools' => {
                     file => 'Tools.pm',
+                    version => 'v0.014001',
                 }
             }
         },
