@@ -1,14 +1,6 @@
 Revision history for Perl module Data::IEEE754::Tools.
 
 v0.014 2016-Aug-29
-    - bugfix <https://rt.cpan.org/Ticket/Display.html?id=117163>
-      + fix test suite while debugging v0.013*, in preparation for v0.014,
-        because Perl's CORE::abs() isn't guaranteed IEEE Std 754-2008 compliant
-        but test suite up until v0.013_007 had assumed it was.
-    - bugfix <https://rt.cpan.org/Ticket/Display.html?id=117041>
-      + fix test suite while debugging v0.013*, in preparation for v0.014,
-        because test suite has to skip some tests on implementations that
-        always convert Signaling NaN to Quiet NaN.
     - feature request <https://rt.cpan.org/Ticket/Display.html?id=116155>
       + add many functions
         :ulp => ulp, nextUp, nextDown, nextAfter
@@ -20,8 +12,11 @@ v0.014 2016-Aug-29
       + add :constants
     - feature request <https://rt.cpan.org/Ticket/Display.html?id=116153>
       + update ulp() with new, faster method
-    - detailed history for development versions v0.013_001 - v0.013_010 can be
-      found at <https://github.com/pryrt/Data-IEEE754-Tools>
+
+v0.013
+    - Odd versions are development versions, used for developing and verifying
+      new features and bug fixes.  There may have been one or more alpha
+      subversions (v0.013_001, etc).
 
 v0.012 2016-Jul-14
     - test coverage: Devel::Cover showed two conditionals which can only ever
@@ -52,10 +47,12 @@ v0.012 2016-Jul-14
         "work" if the installation is forced)
 
 v0.011
-    - Bugfix verification alpha releases
+    - Odd versions are development versions, used for developing and verifying
+      new features and bug fixes.  There may have been one or more alpha
+      subversions (v0.011_001, etc).
 
 v0.010 Fri Jul 08 16:50:00 PDT 2016
     - Initial release
 
 v0.001 - v0.008
-    - Private development
+    - Initial development; no public releases
