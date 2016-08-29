@@ -5,7 +5,7 @@ use strict;
 use Carp;
 use Exporter 'import';  # just use the import() function, without the rest of the overhead of ISA
 
-use version 0.77; our $VERSION = version->declare('0.013_010');
+use version 0.77; our $VERSION = version->declare('0.014');
 
 =pod
 
@@ -148,7 +148,7 @@ my  @EXPORT_CONST = qw(
 my @EXPORT_INFO = qw(isSignMinus isNormal isFinite isZero isSubnormal
     isInfinite isNaN isSignaling isSignalingConvertedToQuiet isCanonical
     class radix totalOrder totalOrderMag compareFloatingValue compareFloatingMag);
-my @EXPORT_SIGNBIT = qw(copy negate abs isCoreAbsWrongForNegNaN copySign isSignMinus);
+my @EXPORT_SIGNBIT = qw(copy negate abs copySign isSignMinus);
 
 our @EXPORT_OK = (@EXPORT_FLOATING, @EXPORT_RAW754, @EXPORT_ULP, @EXPORT_CONST, @EXPORT_INFO, @EXPORT_SIGNBIT);
 our %EXPORT_TAGS = (
@@ -974,7 +974,8 @@ the sub.
 Peter C. Jones C<E<lt>petercj AT cpan DOT orgE<gt>>
 
 Please report any bugs or feature requests emailing C<E<lt>bug-Data-IEEE754-Tools AT rt.cpan.orgE<gt>>
-or thru the web interface at L<http://rt.cpan.org/NoAuth/ReportBug.html?Queue=Data-IEEE754-Tools>.
+or thru the web interface at L<http://rt.cpan.org/NoAuth/ReportBug.html?Queue=Data-IEEE754-Tools>,
+or thru the repository's interface at L<https://github.com/pryrt/Data-IEEE754-Tools/issues>.
 
 =head1 COPYRIGHT
 

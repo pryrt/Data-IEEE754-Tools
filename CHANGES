@@ -1,62 +1,22 @@
 Revision history for Perl module Data::IEEE754::Tools.
 
-v0.013 Development Version
-	- v0.013_010: added spaceship-style equivalents of totalOrder and totalOrderMag
-	  + add compareFloatingValue() and compareFloatingMag(), with test suite in t\08-totalorder
-	- v0.013_009: add :signbit -> copy() (with coverage) for completeness
-        IN PROGRESS = <https://rt.cpan.org/Ticket/Display.html?id=116155>
-    - v0.013_008: Devel::Cover showed SKIP was too aggressive in t\09 and t\10, so never tested
-		negate in v0.013_007.
-        + FIXED BUG: t\09-signbit: while verifying test coverage in v0.013_008, discovered
-          that signbit test was never testing negate, because the SKIP was too aggressive;
-          once I de-aggressified the SKIP, finding more failures.
-        + it looks like NEG_IND is not properly sign-changed to POS_IND, either... need to
-          investigate further on multiple systems
-		+ Determined that it's pointless to keep trying to make CORE::abs() pass the tests.
-		  Rename Data::IEEE754::Tools::absolute() to ...::abs(), and stop testing the
-		  CORE::abs().  Just make a note that exporting abs or :signbit will override the
-		  builtin behavior, and explain how to still access CORE::abs().
-		+ remove isCoreAbsWrongForNegNaN(), since apparently Perl itself is the culprit, not
-		  certain implementations.  (The auto-stringification of NaN was sometimes not
-		  distinguishing the sign bits.)
-	    + t\10-copysign: switch to the to_hex_floatingpoint() for comparing abs($x) to abs($z),
-		  to avoid the same display bug that masked the CORE::abs() bug for 5.8.5 and 5.24.0.
-    - v0.013_007: CPAN Testers for a slew of errors for v0.013_006, so fix those
-        FIXED = <https://rt.cpan.org/Ticket/Display.html?id=117163>
-        + BUG DESCRIPTION: in some configs, the 09-signbit and 10-copysign values have wrong sign
-        + added isCoreAbsWrongForNegNaN() to indicate systems for which CORE::abs() has the wrong
-          sign.
-        + t\09-signbit: Use that to skip the NaN tests relying on CORE::abs().
-        + t\10-copysign: Use absolute() instead of abs() for verifying the magnitude copied correctly
-          from argument x.
-    - v0.013_006: fixing isSignaling bug in test suite
-        FIXED BUG = <https://rt.cpan.org/Ticket/Display.html?id=117041>
-        + add isSignalingConvertedToQuiet() to indicate implementations that make it quiet
-        + Test::More::skip() t/07 iff isSignalingConvertedToQuiet and (isSignaling or class eq signalingNaN)
-        + Test::More::skip() t/08 iff isSignalingConvertedToQuiet and (one signaling other quiet)
-    - v0.013_005: adding negate(), abs(), copySign()
-        IN PROGRESS = <https://rt.cpan.org/Ticket/Display.html?id=116155>
-        + negate(), absolute(), copySign() working and tested
-        + CORE::abs() confirmed to be equivalent to absolute(); documented as such
-          (and still remains in the test suite)
-    - v0.013_004: adding totalOrder, totalOrderMag()
-        IN PROGRESS = <https://rt.cpan.org/Ticket/Display.html?id=116155>
-        + totalOrder() working as I expect: use the trick for both-NaN to convert
-          them to a real number by changing the exponents to the same value, and doing
-          a numerical comparison
-        + totalOrderMag() = flip the sign bit, then call totalOrder
-    - v0.013_003: adding 5.7.2 informational operations, adding coverage in t/07*.t;
-        IN PROGRESS = <https://rt.cpan.org/Ticket/Display.html?id=116155>
-        + nextup(), nextdown(), nextafter() => renamed to nextUp(), nextDown(), nextAfter()
-          to agree with IEEE Std 754-2008 nomenclature.
-        + finished the isXxx(): isSignMinus .. isCanonical;
-        + finished: class(), radix()
-        - TODO: totalOrder(), totalOrderMag()
-    - v0.013_002: add the constants; add test coverage for :constants
-        FIXED = <https://rt.cpan.org/Ticket/Display.html?id=116154>
-    - v0.013_001: swap out old ulp() for ulp_by_div(), which benchmarks said ran
-        50-60% more effeciently; still passes existing tests.
-        FIXED = <https://rt.cpan.org/Ticket/Display.html?id=116153>
+v0.014 2016-Aug-29
+    - feature request <https://rt.cpan.org/Ticket/Display.html?id=116155>
+      + add many functions
+        :ulp => ulp, nextUp, nextDown, nextAfter
+        :info => isSignMinus, isNormal, isFinite, isNaN, isSignaling,
+            isSignalingConvertedToQuiet, isCanonical, class, radix, totalOrder,
+            totalOrderMag, compareFloatingValue, compareFloatingMag
+        :signbit => copy, negate, abs, copySign, isSignMinus
+    - feature request <https://rt.cpan.org/Ticket/Display.html?id=116154>
+      + add :constants
+    - feature request <https://rt.cpan.org/Ticket/Display.html?id=116153>
+      + update ulp() with new, faster method
+
+v0.013
+    - Odd versions are development versions, used for developing and verifying
+      new features and bug fixes.  There may have been one or more alpha
+      subversions (v0.013_001, etc).
 
 v0.012 2016-Jul-14
     - test coverage: Devel::Cover showed two conditionals which can only ever
@@ -87,10 +47,12 @@ v0.012 2016-Jul-14
         "work" if the installation is forced)
 
 v0.011
-    - Bugfix verification alpha releases
+    - Odd versions are development versions, used for developing and verifying
+      new features and bug fixes.  There may have been one or more alpha
+      subversions (v0.011_001, etc).
 
 v0.010 Fri Jul 08 16:50:00 PDT 2016
     - Initial release
 
 v0.001 - v0.008
-    - Private development
+    - Initial development; no public releases

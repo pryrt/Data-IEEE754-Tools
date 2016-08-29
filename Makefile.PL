@@ -21,10 +21,18 @@ use 5.006;
     if( $ExtUtils::MakeMaker::VERSION >= '6.46' ) {
         $mm_args{META_MERGE} = {
             resources => {
-                bugtracker => 'http://rt.cpan.org/Public/Dist/Display.html?Name=Data-IEEE754-Tools',
+                bugtracker => {
+                    mailto => 'bug-Data-IEEE754-Tools@rt.cpan.org',
+                    web => 'http://rt.cpan.org/Public/Dist/Display.html?Name=Data-IEEE754-Tools',
+                },
                 repository => 'https://github.com/pryrt/Data-IEEE754-Tools',
             },
             keywords => [ 'IEEE-754', 'floating point representation'],
+            provides => {
+                'Data::IEEE754::Tools' => {
+                    file => 'Tools.pm',
+                }
+            }
         },
     }
     if( $ExtUtils::MakeMaker::VERSION >= '6.31' ) {
@@ -36,6 +44,11 @@ use 5.006;
     if( $ExtUtils::MakeMaker::VERSION >= '6.52' ) {
         $mm_args{CONFIGURE_REQUIRES} = {
             'ExtUtils::MakeMaker' => 0,
+            'warnings' => 0,
+            'strict' => 0,
+            'Test::More' => 0.86,
+            'constant' => 0,
+            'Config' => 0,
         },
     }
     if( $ExtUtils::MakeMaker::VERSION >= '6.64' ) {
