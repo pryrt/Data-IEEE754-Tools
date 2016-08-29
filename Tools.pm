@@ -5,7 +5,9 @@ use strict;
 use Carp;
 use Exporter 'import';  # just use the import() function, without the rest of the overhead of ISA
 
-use version 0.77; our $VERSION = version->declare('0.014002');
+use version 0.77; our $VERSION = version->declare('v0.14003');    # TODO: when moving to 1.0, use '1.000' again
+    # only using v-notation because of a typo in Makefile.PL which bumped up from 0.014 to v0.14001.0, so now I have to
+    # do sub-versions above 14k, which can only be done in v-notation.
 
 =pod
 
@@ -118,6 +120,8 @@ a transition to v2.
 =item v0.013_003: C<nextafter()> renamed to C<nextAfter()>
 
 =item v0.013_008: C<absolute()> renamed to C<abs()>, and noted that perl's builtin can be accessed via C<CORE::abs()>
+
+=item v0.14001: messed up version numbering convention when I get to 1.000, it will be reset to decimal-based.
 
 =back
 

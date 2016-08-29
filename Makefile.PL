@@ -26,18 +26,15 @@ use 5.006;
             },
             resources => {
                 bugtracker => {
-                    mailto => 'bug-Data-IEEE754-Tools@rt.cpan.org',
-                    web => 'http://rt.cpan.org/Public/Dist/Display.html?Name=Data-IEEE754-Tools',
+                    mailto  => 'bug-Data-IEEE754-Tools@rt.cpan.org',
+                    web     => 'https://github.com/pryrt/Data-IEEE754-Tools/issues',
                 },
                 repository => 'https://github.com/pryrt/Data-IEEE754-Tools',
             },
             keywords => [ 'IEEE-754', 'floating point representation'],
-            provides => {
-                'Data::IEEE754::Tools' => {
-                    file => 'Tools.pm',
-                    version => '0.014002',
-                }
-            },
+            # don't use 'provides', because it's an extra step to maintain, and
+            # can cause problems (getting a mismatch between the $VERSION string and the
+            # provides->{version} will really make it hard to release a next version into CPAN
         },
     }
     if( $ExtUtils::MakeMaker::VERSION >= '6.31' ) {

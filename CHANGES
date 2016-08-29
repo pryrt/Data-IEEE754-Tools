@@ -1,5 +1,9 @@
 Revision history for Perl module Data::IEEE754::Tools.
 
+v0.14003 2016-Aug-29
+    - had to switch to dotted-decimal notation
+    - removed the 'provides' so I don't do this to myself again
+
 v0.014002 2016-Aug-29
     - It categorized v0.014001 as a major release; however, due to
       bad data in the META, it lists it as v0.14001.0.  I hope
