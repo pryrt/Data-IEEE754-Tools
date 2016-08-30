@@ -8,7 +8,7 @@ use 5.006;
     'VERSION_FROM'  => 'Tools.pm',
     'ABSTRACT_FROM' => 'Tools.pm',
     'PREREQ_PM'     => {
-        'Exporter'      => 0,
+        'Exporter'      => 5.57,    # needed for `use Exporter qw(import);` notation
         'version'       => 0.77,
         'warnings'      => 0,
         'strict'        => 0,
@@ -29,7 +29,11 @@ use 5.006;
                     mailto  => 'bug-Data-IEEE754-Tools@rt.cpan.org',
                     web     => 'https://github.com/pryrt/Data-IEEE754-Tools/issues',
                 },
-                repository => 'https://github.com/pryrt/Data-IEEE754-Tools',
+                repository => {
+                    url     => 'https://github.com/pryrt/Data-IEEE754-Tools.git',
+                    web     => 'https://github.com/pryrt/Data-IEEE754-Tools',
+                    type    => 'git',
+                },
             },
             keywords => [ 'IEEE-754', 'floating point representation'],
             # don't use 'provides', because it's an extra step to maintain, and
