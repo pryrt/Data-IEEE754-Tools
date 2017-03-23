@@ -5,9 +5,9 @@ use strict;
 use Carp;
 use Exporter 'import';  # just use the import() function, without the rest of the overhead of ISA
 
-use version 0.77; our $VERSION = version->declare('0.017_001');
-    # use rrr.mmmsss,  where rrr is major revision, mmm is EVEN minor revision, and sss is sub-revision
-    # use rrr.mmm_aaa, where rrr is major revision, mmm is ODD minor revision, and aaa is alpha sub-revision
+use version 0.77; our $VERSION = version->declare('0.017_002');
+    # use rrr.mmm_aaa, where rrr is major revision, mmm is ODD minor revision, and aaa is alpha sub-revision (for ALPHA code)
+    # use rrr.mmm,     where rrr is major revision, mmm is EVEN minor revision (for releases)
 
 =pod
 
@@ -17,11 +17,11 @@ Data::IEEE754::Tools - Various tools for understanding and manipulating the unde
 
 =head1 SYNOPSIS
 
-    use Data::IEEE754::Tools qw/:floatingpoint :ulp/;
+    use Data::IEEE754::Tools qw/:convertToCharacter :ulp/;
 
-    # return -12.875 as decimal and hexadecimal floating point numbers
-    to_dec_floatingpoint(-12.875);          # -0d1.6093750000000000p+0003
-    to_hex_floatingpoint(-12.875);          # -0x1.9c00000000000p+0003
+    # return -12.875 as decimal and hexadecimal floating point numbers ("convertToCharacter" in IEEE-754 parlance)
+    convertToDecimalCharacter(-12.875);      # -0d1.6093750000000000p+0003
+    convertToHexCharacter(-12.875);          # -0x1.9c00000000000p+0003
 
     # shows the smallest value you can add or subtract to 16.16 (ulp = "Unit in the Last Place")
     print ulp( 16.16 );                     # 3.5527136788005e-015
@@ -133,7 +133,8 @@ my  @EXPORT_RAW754 = qw(
     hexstr754_from_double binstr754_from_double
     hexstr754_to_double binstr754_to_double
 );
-my  @EXPORT_FLOATING = qw(to_hex_floatingpoint to_dec_floatingpoint);
+my  @EXPORT_FLOATING = qw(to_hex_floatingpoint to_dec_floatingpoint);           # deprecated
+my  @EXPORT_CONVERT2CHAR = qw(convertToHexCharacter convertToDecimalCharacter);
 my  @EXPORT_ULP = qw(ulp toggle_ulp nextUp nextDown nextAfter);
 my  @EXPORT_CONST = qw(
     POS_ZERO
@@ -154,16 +155,17 @@ my @EXPORT_INFO = qw(isSignMinus isNormal isFinite isZero isSubnormal
     class radix totalOrder totalOrderMag compareFloatingValue compareFloatingMag);
 my @EXPORT_SIGNBIT = qw(copy negate abs copySign isSignMinus);
 
-our @EXPORT_OK = (@EXPORT_FLOATING, @EXPORT_RAW754, @EXPORT_ULP, @EXPORT_CONST, @EXPORT_INFO, @EXPORT_SIGNBIT);
+our @EXPORT_OK = (@EXPORT_FLOATING, @EXPORT_CONVERT2CHAR, @EXPORT_RAW754, @EXPORT_ULP, @EXPORT_CONST, @EXPORT_INFO, @EXPORT_SIGNBIT);
 our %EXPORT_TAGS = (
-    floating        => [@EXPORT_FLOATING],
-    floatingpoint   => [@EXPORT_FLOATING],
-    raw754          => [@EXPORT_RAW754],
-    ulp             => [@EXPORT_ULP],
-    constants       => [@EXPORT_CONST],
-    info            => [@EXPORT_INFO],
-    signbit         => [@EXPORT_SIGNBIT],
-    all             => [@EXPORT_OK],
+    convertToCharacter  => [@EXPORT_CONVERT2CHAR],
+    floating            => [@EXPORT_FLOATING],      # deprecated
+    floatingpoint       => [@EXPORT_FLOATING],      # deprecated
+    raw754              => [@EXPORT_RAW754],
+    ulp                 => [@EXPORT_ULP],
+    constants           => [@EXPORT_CONST],
+    info                => [@EXPORT_INFO],
+    signbit             => [@EXPORT_SIGNBIT],
+    all                 => [@EXPORT_OK],
 );
 
 =head2 :raw754
@@ -196,10 +198,10 @@ by zero or the logarithm of a zero or negative value) (NaN).
 The final thirteen nibbles are the encoding of the fractional value (usually C<1 + thirteennibbles /
 16**13>, unless it's zero, denormal, infinite, or not a number).
 
-Of course, this is easier to decode using the L</to_dec_floatingpoint()> function, which interprets
+Of course, this is easier to decode using the L</convertToDecimalString()> function, which interprets
 the sign, fraction, and exponent for you.  (See below for more details.)
 
-    to_dec_floatingpoint(12.875);       # +0d1.6093750000000000p+0003
+    convertToDecimalString(12.875);     # +0d1.6093750000000000p+0003
                                         # ^  ^^^^^^^^^^^^^^^^^^  ^^^^
                                         # :  :                   :
                                         # :  `- coefficient      `- exponent (power of 2)
@@ -276,24 +278,24 @@ if( $] lt '5.010' ) {
         *arr2x32b_from_double   = sub { return    unpack('N2' =>         pack 'd>' => shift); };
 }
 
-=head2 :floatingpoint
+=head2 :convertToCharacter
 
-=head3 to_hex_floatingpoint( I<value> )
+=head3 convertToHexCharacter( I<value> )
 
-=head3 to_dec_floatingpoint( I<value> )
+=head3 convertToDecimalCharacter( I<value> )
 
 Converts value to a hexadecimal or decimal floating-point notation that indicates the sign and
 the coefficient and the power of two, with the coefficient either in hexadecimal or decimal
 notation.
 
-    to_hex_floatingpoint(-3.9999999999999996)    # -0x1.fffffffffffffp+0001
-    to_dec_floatingpoint(-3.9999999999999996)    # -0d1.9999999999999998p+0001
+    convertToHexCharacter(-3.9999999999999996)      # -0x1.fffffffffffffp+0001
+    convertToDecimalCharacter(-3.9999999999999996)  # -0d1.9999999999999998p+0001
 
 It displays the value as (sign)(0base)(implied).(fraction)p(exponent):
 
 =cut
 
-sub to_hex_floatingpoint {
+sub binary64_convertToHexCharacter {
     # thanks to BrowserUK @ http://perlmonks.org/?node_id=1167146 for slighly better decision factors
     # I tweaked it to use the two 32bit words instead of one 64bit word (which wouldn't work on some systems)
     my $v = shift;
@@ -314,9 +316,13 @@ sub to_hex_floatingpoint {
     }
     sprintf '%s0x%1u.%13.13sp%+05d', $sign, $implied, $mant, $exp;
 }
+*convertToHexCharacter = \*binary64_convertToHexCharacter;
+*to_hex_floatingpoint = \*convertToHexCharacter;
+    # TODO = update POD and @EXPORT* to use the canonical-based names
+    # TODO: switch($Config{nvsize}) { 4 => \*binary32_convertToDecimalCharacter, 8 => \*binary64, 16 => \*binary128}
 
-sub to_dec_floatingpoint {
-    # based on to_hex_floatingpoint
+sub binary64_convertToDecimalCharacter {
+    # derived from binary64_convertToHexCharacter
     my $v = shift;
     my ($msb,$lsb) = arr2x32b_from_double($v);
     my $sbit = ($msb & 0x80000000) >> 31;
@@ -338,6 +344,9 @@ sub to_dec_floatingpoint {
     my $other = abs($v) / (2.0**$exp);
     sprintf '%s0d%.16fp%+05d', $sign, $other, $exp;
 }
+*convertToDecimalCharacter = \*binary64_convertToDecimalCharacter;
+*to_dec_floatingpoint = \*convertToDecimalCharacter;
+    # TODO = same as above
 
 
 =over
@@ -378,11 +387,14 @@ The I<exponent> is the power of 2.  Is is always a decimal number, whether the c
 The I<exponent> can range from -1022 to +1023.
 
 Internally, the IEEE 754 representation uses the encoding of -1023 for zero and denormals; to
-aid in understanding the actual number, the C<to_..._floatingpoint()> conversions represent
+aid in understanding the actual number, the C<:convertToCharacter> conversions represent
 them as +0000 for zero, and -1022 for denormals: since denormals are C<(0+fraction)*(2**min_exp)>,
 they are really multiples of 2**-1022, not 2**-1023.
 
 =back
+
+For backward compatibility, if you use the older tag C<:floatingpoint>, you can refer to these
+functions as C<to_hex_floatingpoint()> and C<to_dec_floatingpoint()>.
 
 =head2 :constants
 
@@ -695,7 +707,7 @@ function is meaningful in your implementation of perl.
 =cut
 
 sub isSignalingConvertedToQuiet {
-    !isSignaling( POS_SNAN_FIRST ) || 0     # v0.013 coverage note: ignore Devel::Cover failures on this line
+    !isSignaling( POS_SNAN_FIRST ) || 0     # v0.013 coverage note: ignore Devel::Cover failures on this line -- will be only LEFT on quiet systems vs. only RIGHT on signaling systems
 }
 
 =head3 isCanonical( I<value> )
@@ -731,7 +743,7 @@ Returns the "class" of the I<value>:
 =cut
 
 sub class {
-    return 'signalingNaN'       if isSignaling($_[0]);      # v0.013 coverage note: ignore Devel::Cover failures on this line (won't return on systems that quiet SNaNs
+    return 'signalingNaN'       if isSignaling($_[0]);      # v0.013 coverage note: ignore Devel::Cover failures on this line (won't return on systems that quiet SNaNs)
     return 'quietNaN'           if isNaN($_[0]);
     return 'negativeInfinity'   if isInfinite($_[0])    && isSignMinus($_[0]);
     return 'negativeNormal'     if isNormal($_[0])      && isSignMinus($_[0]);

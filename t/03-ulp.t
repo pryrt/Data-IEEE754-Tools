@@ -3,13 +3,13 @@
 #   :ulp
 #       ulp(v)
 #       toggle_ulp(v)
-#   remaining :ulp features in next test(s)
+#   -remaining :ulp features in next test(s)
 ########################################################################
 use 5.006;
 use warnings;
 use strict;
 use Test::More;
-use Data::IEEE754::Tools qw/:raw754 :ulp :floatingpoint/;
+use Data::IEEE754::Tools qw/:raw754 :ulp/;
 
 my ($h,$u,$v);
 
@@ -45,9 +45,9 @@ sub fntest {
     unless($r) {
         diag '';
         diag "$n:";
-        diag sprintf "ORIGINAL: hex(%-30s) = %s", to_dec_floatingpoint($v), $h;
-        diag sprintf "EXPECT:   hex(%-30s) = %s", to_dec_floatingpoint($x), hexstr754_from_double($x);
-        diag sprintf "ANSWER:   hex(%-30s) = %s", to_dec_floatingpoint($u), hexstr754_from_double($u);
+        diag sprintf "ORIGINAL: hex(%-30s) = %s", convertToDecimalCharacter($v), $h;
+        diag sprintf "EXPECT:   hex(%-30s) = %s", convertToDecimalCharacter($x), hexstr754_from_double($x);
+        diag sprintf "ANSWER:   hex(%-30s) = %s", convertToDecimalCharacter($u), hexstr754_from_double($u);
         diag '';
     }
     note '-'x80;

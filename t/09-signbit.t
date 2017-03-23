@@ -11,7 +11,7 @@ use 5.006;
 use warnings;
 use strict;
 use Test::More;
-use Data::IEEE754::Tools qw/:raw754 :floatingpoint :constants :signbit/;
+use Data::IEEE754::Tools qw/:raw754 :convertToCharacter :constants :signbit/;
 
 my @tests = ();
 #            [CONSTANT           , 'NAME               ', CONSTANT           , negate()           , abs()         	  ];
@@ -50,7 +50,7 @@ foreach my $t ( @tests ) {
         my $xi = $x[$i];
         my $f = \&{$fn};
 		is( ($f->($c)), ($xi), sprintf('%-20.20s(%-20.20s)', $fn, $name ) );
-		is( to_hex_floatingpoint($f->($c)), to_hex_floatingpoint($xi), sprintf('%-20.20s(%-20.20s)', $fn, $name ) );
+		is( convertToHexCharacter($f->($c)), convertToHexCharacter($xi), sprintf('%-20.20s(%-20.20s)', $fn, $name ) );
     }
 }
 

@@ -1,6 +1,11 @@
 ########################################################################
 # Verifies the various constant double-float values:
 #   :constants
+#
+#   :floatingpoint: verifies the old naming convention still works
+#       to_hex_floatingpoint(v)
+#       to_dec_floatingpoint(v)
+#       - see 02-floatingpoint.t for new naming
 ########################################################################
 use 5.006;
 use warnings;
@@ -32,13 +37,16 @@ push @tests, [ NEG_IND            (), hexstr754_to_double('FFF'.'8000000000000')
 push @tests, [ NEG_QNAN_FIRST     (), hexstr754_to_double('FFF'.'8000000000001') , 'NEG_QNAN_FIRST     '];
 push @tests, [ NEG_QNAN_LAST      (), hexstr754_to_double('FFF'.'FFFFFFFFFFFFF') , 'NEG_QNAN_LAST      '];
 
-plan tests => scalar @tests;
+plan tests => 2 * scalar @tests;
 
 foreach (@tests) {
     my ($c, $x, $n) = @$_;
     my $got = to_hex_floatingpoint $c;
     my $exp = to_hex_floatingpoint $x;
-    is( $got , $exp , "const: $n" );
+    is( $got , $exp , "const: $n [w/ to_hex_floatingpoint()]" );
+    $got = to_dec_floatingpoint $c;
+    $exp = to_dec_floatingpoint $x;
+    is( $got , $exp , "const: $n [w/ to_dec_floatingpoint()]" );
 }
 
 exit;

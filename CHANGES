@@ -1,7 +1,12 @@
 Revision history for Perl module Data::IEEE754::Tools.
 
 v0.017 internal development version
-    - v0.017_001: META = adding Travis-CI, coveralls.io, automatic signatures, etc.
+    - v0.017_001_github_integrations: META = adding Travis-CI, coveralls.io,
+      automatic signatures, etc.
+    - v0.017_002_namingconvention: start changing names per the naming-
+      convention issue#6
+      - rename :floatingpoint, to_hex_floatingpoint(), to_dec_floatingpoint()
+        to :convertToCharacter, convertToHexCharacter(), convertToDecimalCharacter()
 
 v0.016 2016-Aug-29
     - had a bug in v0.014 Makefile which caused CPAN to not
