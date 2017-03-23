@@ -48,10 +48,12 @@ I use a local svn client to checkout the GitHub repo.  All these things can be d
 
     * **svn:** final commit of the development branch
 
+    * **svn:** switch back to trunk (master) repo
+
     * **GitHub:** make a pull request to bring the branch back into the trunk
         * This should trigger Travis-CI approval for the pull request
         * Once Travis-CI approves, need to approve the pull request, then the branch will be merged back into the trunk
-        * If that branch is truly done, delete the branch using the pull-request page
+        * If that branch is truly done, delete the branch using the pull-request page (wait until AFTER `svn switch`, otherwise `svn switch` will fail)
 
     * **GitHub:** [create a new release](https://help.github.com/articles/creating-releases/):
         * Releases > Releases > Draft a New Release
