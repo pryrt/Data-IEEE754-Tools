@@ -5,8 +5,8 @@ use 5.006;
 %mm_args = (
     'NAME'          => 'Data::IEEE754::Tools',
     'AUTHOR'        => 'Peter C. jones <petercj AT cpan.org>',
-    'VERSION_FROM'  => 'Tools.pm',
-    'ABSTRACT_FROM' => 'Tools.pm',
+    'VERSION_FROM'  => 'lib/Data/IEEE754/Tools.pm',
+    'ABSTRACT_FROM' => 'lib/Data/IEEE754/Tools.pm',
     'PREREQ_PM'     => {
         'Exporter'      => 5.57,    # needed for `use Exporter qw(import);` notation
         'version'       => 0.77,
