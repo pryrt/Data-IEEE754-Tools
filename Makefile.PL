@@ -5,8 +5,8 @@ use 5.006;
 %mm_args = (
     'NAME'          => 'Data::IEEE754::Tools',
     'AUTHOR'        => 'Peter C. jones <petercj AT cpan.org>',
-    'VERSION_FROM'  => 'Tools.pm',
-    'ABSTRACT_FROM' => 'Tools.pm',
+    'VERSION_FROM'  => 'lib/Data/IEEE754/Tools.pm',
+    'ABSTRACT_FROM' => 'lib/Data/IEEE754/Tools.pm',
     'PREREQ_PM'     => {
         'Exporter'      => 5.57,    # needed for `use Exporter qw(import);` notation
         'version'       => 0.77,
@@ -36,10 +36,18 @@ use 5.006;
                 },
             },
             keywords => [ 'IEEE-754', 'floating point representation'],
-            # don't use 'provides', because it's an extra step to maintain, and
+            # don't directly use 'provides', because it's an extra step to maintain, and
             # can cause problems (getting a mismatch between the $VERSION string and the
             # provides->{version} will really make it hard to release a next version into CPAN
         },
+        # automatically determine the versions for 'provides'; MM->parse_version exists as of MM v6.31, so not a problem with >= 6.46
+        #   => this comes out right when printed... but MYMETA.* shows values that look wrong
+        $mm_args{META_MERGE}{provides} = {
+            $mm_args{NAME} => {
+                file => $mm_args{VERSION_FROM},
+                version => ''.MM->parse_version( $mm_args{VERSION_FROM} ),
+            }
+        };
     }
     if( $ExtUtils::MakeMaker::VERSION >= '6.31' ) {
         $mm_args{LICENSE} = 'perl_5';
@@ -66,6 +74,36 @@ use 5.006;
             'Config' => 0,
         };
     }
+    if( $ExtUtils::MakeMaker::VERSION >= '6.18' ) {
+        $mm_args{SIGN} = 1 if MM->can('signature_target') && $ENV{MM_SIGN_DIST};
+    }
+}
+
+sub MY::postamble {
+    my (undef,%h) = @_;
+    #require Data::Dumper;
+    #print STDERR Data::Dumper->Dump([\%h], [qw(mm_args{postamble})]);
+    return <<'POSTAMBLE';
+# TEST_D is used to test for the existence of a directory
+TEST_D = $(ABSPERLRUN) -MExtUtils::Command -e test_d --
+
+# run a test coverage report
+testcover :: lib/Math/PRBS.pm
+	$(NOECHO) cover -test -report html
+
+# run author-tests on the original
+authtest ::
+	$(TEST_D) xt && $(MAKE) test TEST_FILES='xt/*.t'
+
+# run author-tests on the distribution
+distauthtest :: disttest
+	cd $(DISTVNAME) && $(TEST_D) xt && $(MAKE) test TEST_FILES='xt/*.t'
+
+# addition to realclean: also delete coverage database, if testcover was run
+realclean ::
+	$(NOECHO) ( $(TEST_D) cover_db && $(RM_RF) cover_db ) || $(ECHO) realclean:: skip "rm -rf cover_db"
+
+POSTAMBLE
 }
 
 WriteMakefile( %mm_args )
