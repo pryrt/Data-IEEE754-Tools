@@ -5,11 +5,9 @@ use strict;
 use Carp;
 use Exporter 'import';  # just use the import() function, without the rest of the overhead of ISA
 
-use version 0.77; our $VERSION = version->declare('0.016');
+use version 0.77; our $VERSION = version->declare('0.017_001');
     # use rrr.mmmsss,  where rrr is major revision, mmm is EVEN minor revision, and sss is sub-revision
     # use rrr.mmm_aaa, where rrr is major revision, mmm is ODD minor revision, and aaa is alpha sub-revision
-    # due to a mismatch at 0.014, had a couple of invalid releases; I am hoping that using the PAUSE::ResetVersion
-    #   will allow me to upload 0.016
 
 =pod
 

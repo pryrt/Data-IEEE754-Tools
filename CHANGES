@@ -1,5 +1,8 @@
 Revision history for Perl module Data::IEEE754::Tools.
 
+v0.017 internal development version
+    - v0.017_001: META = adding Travis-CI, coveralls.io, automatic signatures, etc.
+
 v0.016 2016-Aug-29
     - had a bug in v0.014 Makefile which caused CPAN to not
       index; tried a couple of submissions, none of which

@@ -14,5 +14,6 @@ t/07-info.t
 t/08-totalorder.t
 t/09-signbit.t
 t/10-copysign.t
+xt/00-sign.t
 TODO
 Tools.pm
