@@ -114,15 +114,47 @@ a transition to v2.
 
 =over
 
-=item v0.013_003: C<nextup()> renamed to C<nextUp()>
+=item * v0.013_003
 
-=item v0.013_003: C<nextdown()> renamed to C<nextDown()>
+=over
 
-=item v0.013_003: C<nextafter()> renamed to C<nextAfter()>
+=item * C<nextup()> renamed to C<nextUp()>
 
-=item v0.013_008: C<absolute()> renamed to C<abs()>, and noted that perl's builtin can be accessed via C<CORE::abs()>
+=item * C<nextdown()> renamed to C<nextDown()>
 
-=item v0.14001: messed up version numbering convention when I get to 1.000, it will be reset to decimal-based.
+=item * C<nextafter()> renamed to C<nextAfter()>
+
+=back
+
+=item * v0.013_008
+
+=over
+
+=item * C<absolute()> renamed to C<abs()>, and noted that perl's builtin can be accessed via C<CORE::abs()>
+
+=back
+
+=item * v0.14001
+
+=over
+
+=item * messed up version numbering convention when I get to 1.000, it will be reset to decimal-based.
+
+=back
+
+=item * v0.017_002
+
+=over
+
+=item * C<:floatingpoint> renamed to C<:convertToCharacter>
+
+=item * C<to_hex_floatingpoint()> renamed to C<convertToHexCharacter()>
+
+=item * C<to_dec_floatingpoint()> renamed to C<convertToDecimalCharacter()>
+
+=back
+
+For backward compatibility, the old names are available, but the new names are recommended.
 
 =back
 
@@ -263,7 +295,7 @@ if( $] lt '5.010' ) {
         *arr2x32b_from_double   = sub { return    unpack('N2' =>         pack 'd'  => shift); };
     } else {
         # I don't handle middle-endian / mixed-endian; sorry
-        croak sprintf "\n\n%s %s configuration error:\n"
+        carp sprintf "\n\n%s %s configuration error:\n"
             ."\tCannot understand your system's endianness.\n"
             ."\tPlease report a bug in %s.ENDIAN#%d('%s'),\n"
             ."\tand include your machine's output of perl -V.\n"
@@ -272,6 +304,12 @@ if( $] lt '5.010' ) {
             ."\tThanks.\n"
             ."\n",
             __PACKAGE__, $VERSION, $VERSION, (caller)[2], defined $str ? $str : '<undef>';
+
+        *hexstr754_from_double  = sub { 'UNKNOWN ENDIANNESS' };
+        *binstr754_from_double  = sub { 'UNKNOWN ENDIANNESS' };
+
+        *hexstr754_to_double    = sub { undef };
+        *binstr754_to_double    = sub { undef };
     }
 } else {
         *hexstr754_from_double  = sub { return uc unpack('H*' =>         pack 'd>' => shift); };
