@@ -263,11 +263,15 @@ if( $] lt '5.010' ) {
         *arr2x32b_from_double   = sub { return    unpack('N2' =>         pack 'd'  => shift); };
     } else {
         # I don't handle middle-endian / mixed-endian; sorry
-        *hexstr754_from_double  = sub { undef };
-        *binstr754_from_double  = sub { undef };
-
-        *hexstr754_to_double    = sub { undef };
-        *binstr754_to_double    = sub { undef };
+        croak sprintf "\n\n%s %s configuration error:\n"
+            ."\tCannot understand your system's endianness.\n"
+            ."\tPlease report a bug in %s.ENDIAN#%d('%s'),\n"
+            ."\tand include your machine's output of perl -V.\n"
+            ."\tAlso, let me know if you're willing to run test\n"
+            ."\tversions on your machine, to help me debug.\n"
+            ."\tThanks.\n"
+            ."\n",
+            __PACKAGE__, $VERSION, $VERSION, (caller)[2], defined $str ? $str : '<undef>';
     }
 } else {
         *hexstr754_from_double  = sub { return uc unpack('H*' =>         pack 'd>' => shift); };
@@ -322,9 +326,11 @@ my $__glue_dispatch;    # issue#7 TODO
 if(0) { # issue#7 TODO
     $__glue_dispatch = sub {    # only use this subref in the glue code, not in any subroutine
         my ($arg, %h) = @_;
-        croak sprintf "\n\n%s %s configuration error: could not determine the right function for your system.\n"
-            ."Please report a bug in %s.DISPATCH_TABLE#%d('%s').\n"
-            ."It would be helpful to include the output of perl -V in the bug report\n"
+        croak sprintf "\n\n%s %s configuration error:\n"
+            ."\tCould not determine the right setup for your system.\n"
+            ."\tPlease report a bug in %s.DISPATCH_TABLE#%d('%s').\n"
+            ."\tIt would be helpful to include the output of perl -V\n"
+            ."\tin the bug report.  Thanks.\n"
             ."\n",
             __PACKAGE__, $VERSION, $VERSION, (caller)[2], defined $arg ? $arg : '<undef>'
         unless exists $h{$arg};

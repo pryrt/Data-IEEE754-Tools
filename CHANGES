@@ -7,6 +7,9 @@ v0.017 internal development version
       convention issue#6
       - rename :floatingpoint, to_hex_floatingpoint(), to_dec_floatingpoint()
         to :convertToCharacter, convertToHexCharacter(), convertToDecimalCharacter()
+      - figured out a framework for issue#7's multiple bitness, but disable
+        for now
+      - improve error messages, and stop module compile on mixed-endianness
 
 v0.016 2016-Aug-29
     - had a bug in v0.014 Makefile which caused CPAN to not
