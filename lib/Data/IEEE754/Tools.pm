@@ -138,7 +138,7 @@ a transition to v2.
 
 =over
 
-=item * messed up version numbering convention when I get to 1.000, it will be reset to decimal-based.
+=item * messed up version numbering convention.  Fixed at v0.016.
 
 =back
 
@@ -273,26 +273,35 @@ of the IEEE754 double value, and converts it back to a perl floating-point value
     12.875
 
 =cut
+
+my ($_helper64_arr2x32b,$_helper128_arr4x32b);
+
 # Perl 5.10 introduced the ">" and "<" modifiers for pack which can be used to
 # force a specific endianness.
 if( $] lt '5.010' ) {
     my $str = join('', unpack("H*", pack 'L' => 0x12345678));
     if('78563412' eq $str) {        # little endian, so reverse byteorder
-        *hexstr754_from_double  = sub { return uc unpack('H*' => reverse pack 'd'  => shift); };
-        *binstr754_from_double  = sub { return uc unpack('B*' => reverse pack 'd'  => shift); };
+        *binary64_hexstr754_from_double  = sub { return uc unpack('H*' => reverse pack 'd'  => shift); };
+        *binary64_binstr754_from_double  = sub { return uc unpack('B*' => reverse pack 'd'  => shift); };
 
-        *hexstr754_to_double    = sub { return    unpack('d'  => reverse pack 'H*' => shift); };
-        *binstr754_to_double    = sub { return    unpack('d'  => reverse pack 'B*' => shift); };
+        *binary64_hexstr754_to_double    = sub { return    unpack('d'  => reverse pack 'H*' => shift); };
+        *binary64_binstr754_to_double    = sub { return    unpack('d'  => reverse pack 'B*' => shift); };
 
-        *arr2x32b_from_double   = sub { return    unpack('N2' => reverse pack 'd'  => shift); };
+        $_helper64_arr2x32b     = sub { return    unpack('N2' => reverse pack 'd'  => shift); };
+        $_helper128_arr4x32b    = ($Config{d_longdbl})
+                                ? sub { return    unpack('N4' => reverse pack 'D'  => shift); }     # long doubles are a "thing"
+                                : sub { undef };                                                    # else don't know how to do this
     } elsif('12345678' eq $str) {   # big endian, so keep default byteorder
-        *hexstr754_from_double  = sub { return uc unpack('H*' =>         pack 'd'  => shift); };
-        *binstr754_from_double  = sub { return uc unpack('B*' =>         pack 'd'  => shift); };
+        *binary64_hexstr754_from_double  = sub { return uc unpack('H*' =>         pack 'd'  => shift); };
+        *binary64_binstr754_from_double  = sub { return uc unpack('B*' =>         pack 'd'  => shift); };
 
-        *hexstr754_to_double    = sub { return    unpack('d'  =>         pack 'H*' => shift); };
-        *binstr754_to_double    = sub { return    unpack('d'  =>         pack 'B*' => shift); };
+        *binary64_hexstr754_to_double    = sub { return    unpack('d'  =>         pack 'H*' => shift); };
+        *binary64_binstr754_to_double    = sub { return    unpack('d'  =>         pack 'B*' => shift); };
 
-        *arr2x32b_from_double   = sub { return    unpack('N2' =>         pack 'd'  => shift); };
+        $_helper64_arr2x32b     = sub { return    unpack('N2' =>         pack 'd'  => shift); };
+        $_helper128_arr4x32b    = ($Config{d_longdbl})
+                                ? sub { return    unpack('N4' =>         pack 'D'  => shift); }     # long doubles are a "thing"
+                                : sub { undef };                                                    # else don't know how to do this
     } else {
         # I don't handle middle-endian / mixed-endian; sorry
         carp sprintf "\n\n%s %s configuration error:\n"
@@ -305,21 +314,36 @@ if( $] lt '5.010' ) {
             ."\n",
             __PACKAGE__, $VERSION, $VERSION, (caller)[2], defined $str ? $str : '<undef>';
 
-        *hexstr754_from_double  = sub { 'UNKNOWN ENDIANNESS' };
-        *binstr754_from_double  = sub { 'UNKNOWN ENDIANNESS' };
+        *binary64_hexstr754_from_double  = sub { 'UNKNOWN ENDIANNESS' };
+        *binary64_binstr754_from_double  = sub { 'UNKNOWN ENDIANNESS' };
 
-        *hexstr754_to_double    = sub { undef };
-        *binstr754_to_double    = sub { undef };
+        *binary64_hexstr754_to_double    = sub { undef };
+        *binary64_binstr754_to_double    = sub { undef };
+        $_helper64_arr2x32b     = sub { undef };
+        $_helper128_arr4x32b    = sub { undef };
     }
 } else {
-        *hexstr754_from_double  = sub { return uc unpack('H*' =>         pack 'd>' => shift); };
-        *binstr754_from_double  = sub { return uc unpack('B*' =>         pack 'd>' => shift); };
+        *binary64_hexstr754_from_double  = sub { return uc unpack('H*' =>         pack 'd>' => shift); };
+        *binary64_binstr754_from_double  = sub { return uc unpack('B*' =>         pack 'd>' => shift); };
 
-        *hexstr754_to_double    = sub { return    unpack('d>' =>         pack 'H*' => shift); };
-        *binstr754_to_double    = sub { return    unpack('d>' =>         pack 'B*' => shift); };
+        *binary64_hexstr754_to_double    = sub { return    unpack('d>' =>         pack 'H*' => shift); };
+        *binary64_binstr754_to_double    = sub { return    unpack('d>' =>         pack 'B*' => shift); };
 
-        *arr2x32b_from_double   = sub { return    unpack('N2' =>         pack 'd>' => shift); };
+        $_helper64_arr2x32b     = sub { return    unpack('N2' =>         pack 'd>' => shift); };
+        $_helper128_arr4x32b    = sub { return    unpack('N4' =>         pack 'D>' => shift); };
 }
+
+# TODO: issue#6: still trying to determine canonical camelCase name:
+#   ? <type>_ieee754stringBinaryFromFloat, <type>_ieee754stringBinaryToFloat, <type>_ieee754stringHexFromFloat, <type>_ieee754stringHexToFloat
+#   ? <type>_binaryStringFromFloat, <type>_binaryStringToFloat, <type>_hexStringFromFloat, <type>_hexStringToFloat
+#   ? <bin/hex>str754_<from/to>_<type> (ie, stay almost the same as now)
+#   ? <type>_<from/to>Binary754string, <type>_<from/to>Hex754string;    generic = float_<from/to><Binary/Hex>754string
+#   ? <type>_from/toInternal<Binary/Hex>String;                         generic = float_<from/to>Internal<Binary/Hex>String
+*hexstr754_from_double = \*binary64_hexstr754_from_double;
+*binstr754_from_double = \*binary64_binstr754_from_double;
+*hexstr754_to_double   = \*binary64_hexstr754_to_double;
+*binstr754_to_double   = \*binary64_binstr754_to_double;
+# TODO: issue#7 switch, per below
 
 =head2 :convertToCharacter
 
@@ -342,7 +366,7 @@ sub binary64_convertToHexCharacter {
     # thanks to BrowserUK @ http://perlmonks.org/?node_id=1167146 for slighly better decision factors
     # I tweaked it to use the two 32bit words instead of one 64bit word (which wouldn't work on some systems)
     my $v = shift;
-    my ($msb,$lsb) = arr2x32b_from_double($v);
+    my ($msb,$lsb) = $_helper64_arr2x32b->($v);
     my $sbit = ($msb & 0x80000000) >> 31;
     my $sign = $sbit ? '-' : '+';
     my $exp  = (($msb & 0x7FF00000) >> 20) - 1023;
@@ -386,7 +410,7 @@ if(0) { # issue#7 TODO
 sub binary64_convertToDecimalCharacter {
     # derived from binary64_convertToHexCharacter
     my $v = shift;
-    my ($msb,$lsb) = arr2x32b_from_double($v);
+    my ($msb,$lsb) = $_helper64_arr2x32b->($v);
     my $sbit = ($msb & 0x80000000) >> 31;
     my $sign = $sbit ? '-' : '+';
     my $exp  = (($msb & 0x7FF00000) >> 20) - 1023;
@@ -607,7 +631,7 @@ sub nextUp {
     return $val                                     if $h754 eq '7FF0000000000000'; # return self               for +INF
     return hexstr754_to_double('FFEFFFFFFFFFFFFF')  if $h754 eq 'FFF0000000000000'; # return largest negative   for -INF
     return hexstr754_to_double('0000000000000001')  if $h754 eq '8000000000000000'; # return +SmallestDenormal  for -ZERO
-    my ($msb,$lsb) = arr2x32b_from_double($val);
+    my ($msb,$lsb) = $_helper64_arr2x32b->($val);
     $lsb += ($msb & 0x80000000) ? -1.0 : +1.0;
     if($lsb == 4_294_967_296.0) {
         $lsb  = 0.0;
