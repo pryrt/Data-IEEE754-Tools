@@ -5,12 +5,23 @@ v0.017 internal development version
       automatic signatures, etc.
     - v0.017_002_namingconvention: start changing names per the naming-
       convention issue#6
-      - rename :floatingpoint, to_hex_floatingpoint(), to_dec_floatingpoint()
-        to :convertToCharacter, convertToHexCharacter(), convertToDecimalCharacter()
+      - make
+        :floatingpoint, to_hex_floatingpoint(), to_dec_floatingpoint()
+        aliases to
+        :convertToCharacter, convertToHexCharacter(),
+        convertToDecimalCharacter()
+      - make
+        :raw754, hexstr754_from_double(), binstr754_from_double(),
+        hexstr754_to_double(), binstr754_to_double()
+        aliases to
+        :internalString, convertToInternalHexString(),
+        convertToInternalBinaryString(), convertFromInternalHexString(),
+        convertFromInternalBinaryString()
       - figured out a framework for issue#7's multiple bitness, but disable
         for now
       - improve error messages, and stop module compile on mixed-endianness
       - add test coverage for aliases
+      - add author test coverage for import-tags
 
 v0.016 2016-Aug-29
     - had a bug in v0.014 Makefile which caused CPAN to not

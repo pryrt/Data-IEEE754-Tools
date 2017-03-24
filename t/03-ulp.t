@@ -24,8 +24,6 @@ sub fntest {
     my $n = shift || "$fn(0x$h => $v)";
     my $tada = shift;
     my $r = undef;
-    note '';
-    note "===== ${n} =====";
     if($tada) {
         TODO: {
             local $TODO = $tada;
@@ -50,7 +48,6 @@ sub fntest {
         diag sprintf "ANSWER:   hex(%-30s) = %s", convertToDecimalCharacter($u), hexstr754_from_double($u);
         diag '';
     }
-    note '-'x80;
 }
 
 my @tests = ();

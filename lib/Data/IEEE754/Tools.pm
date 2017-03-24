@@ -152,6 +152,16 @@ a transition to v2.
 
 =item * C<to_dec_floatingpoint()> renamed to C<convertToDecimalCharacter()>
 
+=item * C<:raw754> renamed to C<:internalString>
+
+=item * C<hexstr754_from_double()> renamed to C<convertToInternalHexString()>
+
+=item * C<binstr754_from_double()> renamed to C<convertToInternalBinaryString()>
+
+=item * C<hexstr754_to_double()> renamed to C<convertFromInternalHexString()>
+
+=item * C<binstr754_to_double()> renamed to C<convertFromInternalBinaryString()>
+
 =back
 
 For backward compatibility, the old names are available, but the new names are recommended.
@@ -198,6 +208,8 @@ my @EXPORT_BINARY64 = qw(
     binary64_convertFromInternalHexString
     binary64_convertToInternalBinaryString
     binary64_convertFromInternalBinaryString
+    binary64_convertToHexCharacter
+    binary64_convertToDecimalCharacter
 );
 
 our @EXPORT = ();
@@ -206,7 +218,7 @@ our %EXPORT_TAGS = (
     convertToCharacter  => [@EXPORT_CONVERT2CHAR],
     floating            => [@EXPORT_FLOATING],      # deprecated
     floatingpoint       => [@EXPORT_FLOATING],      # deprecated
-    internalstring      => [@EXPORT_INTERNALS],
+    internalString      => [@EXPORT_INTERNALS],
     raw754              => [@EXPORT_RAW754],        # deprecated
     ulp                 => [@EXPORT_ULP],
     constants           => [@EXPORT_CONST],
@@ -216,23 +228,23 @@ our %EXPORT_TAGS = (
     all                 => [@EXPORT_OK],
 );
 
-=head2 :raw754
+=head2 :internalString
 
 These are the functions to do raw conversion from a floating-point value to a hexadecimal or binary
 string of the underlying IEEE754 encoded value, and back.
 
-=head3 binary64_convertToInternalHexString( I<value> )
+=head3 convertToInternalHexString( I<value> )
 
 Converts the floating-point I<value> into a big-endian hexadecimal representation of the underlying
 IEEE754 encoding.
 
-    binary64_convertToInternalHexString(12.875);      #  4029C00000000000
-                                        #  ^^^
-                                        #  :  ^^^^^^^^^^^^^
-                                        #  :  :
-                                        #  :  `- fraction
-                                        #  :
-                                        #  `- sign+exponent
+    convertToInternalHexString(12.875);     #  4029C00000000000
+                                            #  ^^^
+                                            #  :  ^^^^^^^^^^^^^
+                                            #  :  :
+                                            #  :  `- fraction
+                                            #  :
+                                            #  `- sign+exponent
 
 The first three nibbles (hexadecimal digits) encode the sign and the exponent.  The sign is
 the most significant bit of the three nibbles (so AND the first nibble with 8; if it's true,
@@ -246,45 +258,45 @@ by zero or the logarithm of a zero or negative value) (NaN).
 The final thirteen nibbles are the encoding of the fractional value (usually C<1 + thirteennibbles /
 16**13>, unless it's zero, denormal, infinite, or not a number).
 
-Of course, this is easier to decode using the L</convertToDecimalString()> function, which interprets
+Of course, this is easier to decode using the L</convertToDecimalCharacter()> function, which interprets
 the sign, fraction, and exponent for you.  (See below for more details.)
 
-    convertToDecimalString(12.875);     # +0d1.6093750000000000p+0003
+    convertToDecimalCharacter(12.875);  # +0d1.6093750000000000p+0003
                                         # ^  ^^^^^^^^^^^^^^^^^^  ^^^^
                                         # :  :                   :
                                         # :  `- coefficient      `- exponent (power of 2)
                                         # :
                                         # `- sign
 
-=head3 binary64_convertToInternalBinaryString( I<value> )
+=head3 convertToInternalBinaryString( I<value> )
 
 Converts the floating-point I<value> into a big-endian binary representation of the underlying
 IEEE754 encoding.
 
-    binary64_convertToInternalBinaryString(12.875);      # 0100000000101001110000000000000000000000000000000000000000000000
-                                        # ^
-                                        # `- sign
-                                        #  ^^^^^^^^^^^
-                                        #  `- exponent
-                                        #             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-                                        #             `- fraction
+    convertToInternalBinaryString(12.875);  # 0100000000101001110000000000000000000000000000000000000000000000
+                                            # ^
+                                            # `- sign
+                                            #  ^^^^^^^^^^^
+                                            #  `- exponent
+                                            #             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+                                            #             `- fraction
 
 The first bit is the sign, the next 11 are the exponent's encoding
 
-=head3 binary64_convertFromInternalHexString( I<str> )
+=head3 convertFromInternalHexString( I<str> )
 
-The inverse of C<binary64_convertToInternalHexString()>: it takes a string representing the 16 nibbles
+The inverse of C<convertToInternalHexString()>: it takes a string representing the 16 nibbles
 of the IEEE754 double value, and converts it back to a perl floating-point value.
 
-    print binary64_convertFromInternalHexString('4029C00000000000');
+    print convertFromInternalHexString('4029C00000000000');
     12.875
 
-=head3 binary64_convertFromInternalBinaryString( I<str> )
+=head3 convertFromInternalBinaryString( I<str> )
 
-The inverse of C<binary64_convertToInternalBinaryString()>: it takes a string representing the 64 bits
+The inverse of C<convertToInternalBinaryString()>: it takes a string representing the 64 bits
 of the IEEE754 double value, and converts it back to a perl floating-point value.
 
-    print binary64_convertFromInternalBinaryString('0100000000101001110000000000000000000000000000000000000000000000');
+    print convertFromInternalBinaryString('0100000000101001110000000000000000000000000000000000000000000000');
     12.875
 
 =cut
@@ -378,6 +390,10 @@ It displays the value as (sign)(0base)(implied).(fraction)p(exponent):
 
 =cut
 
+# TODO = issue#6: might want to rename the exportable functions to convertToHexString,
+#   and alias <type>_convertToHexCharacter() as the official IEEE-754 naming-scheme, but not exportable
+#   (so Data::IEEE754::Tools::<type>_convertToHexCharacter(v) as the only calling mechanism)
+
 sub binary64_convertToHexCharacter {
     # thanks to BrowserUK @ http://perlmonks.org/?node_id=1167146 for slighly better decision factors
     # I tweaked it to use the two 32bit words instead of one 64bit word (which wouldn't work on some systems)
@@ -399,7 +415,7 @@ sub binary64_convertToHexCharacter {
     }
     sprintf '%s0x%1u.%13.13sp%+05d', $sign, $implied, $mant, $exp;
 }
-*convertToHexCharacter = \*binary64_convertToHexCharacter;
+*convertToHexCharacter = \&binary64_convertToHexCharacter;
 my $__glue_dispatch;    # issue#7 TODO
 if(0) { # issue#7 TODO
     $__glue_dispatch = sub {    # only use this subref in the glue code, not in any subroutine
@@ -416,12 +432,12 @@ if(0) { # issue#7 TODO
     };
 
     *convertToHexCharacter = $__glue_dispatch->( $Config{nvsize},
-        4  => \*binary32_convertToHexCharacter,
-        8  => \*binary64_convertToHexCharacter,
-        16 => \*binary128_convertToHexCharacter,
+        4  => \&binary32_convertToHexCharacter,
+        8  => \&binary64_convertToHexCharacter,
+        16 => \&binary128_convertToHexCharacter,
     );
 }
-*to_hex_floatingpoint = \*convertToHexCharacter;
+*to_hex_floatingpoint = \&convertToHexCharacter;
 
 sub binary64_convertToDecimalCharacter {
     # derived from binary64_convertToHexCharacter
@@ -446,15 +462,15 @@ sub binary64_convertToDecimalCharacter {
     my $other = abs($v) / (2.0**$exp);
     sprintf '%s0d%.16fp%+05d', $sign, $other, $exp;
 }
-*convertToDecimalCharacter = \*binary64_convertToDecimalCharacter;
+*convertToDecimalCharacter = \&binary64_convertToDecimalCharacter;
 if(0) { # issue#7 TODO
     *convertToDecimalCharacter = $__glue_dispatch->( $Config{nvsize},
-        4  => \*binary32_convertToDecimalCharacter,
-        8  => \*binary64_convertToDecimalCharacter,
-        16 => \*binary128_convertToDecimalCharacter,
+        4  => \&binary32_convertToDecimalCharacter,
+        8  => \&binary64_convertToDecimalCharacter,
+        16 => \&binary128_convertToDecimalCharacter,
     );
 }
-*to_dec_floatingpoint = \*convertToDecimalCharacter;
+*to_dec_floatingpoint = \&convertToDecimalCharacter;
 
 
 =over
