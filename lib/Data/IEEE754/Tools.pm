@@ -163,9 +163,14 @@ For backward compatibility, the old names are available, but the new names are r
 =cut
 
 my  @EXPORT_RAW754 = qw(
-    hexstr754_from_double binstr754_from_double
-    hexstr754_to_double binstr754_to_double
+    hexstr754_from_double   hexstr754_to_double
+    binstr754_from_double   binstr754_to_double
 );
+my @EXPORT_INTERNALS = qw(
+    convertToInternalHexString      convertToInternalBinaryString
+    convertFromInternalHexString    convertFromInternalBinaryString
+);
+
 my  @EXPORT_FLOATING = qw(to_hex_floatingpoint to_dec_floatingpoint);           # deprecated
 my  @EXPORT_CONVERT2CHAR = qw(convertToHexCharacter convertToDecimalCharacter);
 my  @EXPORT_ULP = qw(ulp toggle_ulp nextUp nextDown nextAfter);
@@ -188,16 +193,26 @@ my @EXPORT_INFO = qw(isSignMinus isNormal isFinite isZero isSubnormal
     class radix totalOrder totalOrderMag compareFloatingValue compareFloatingMag);
 my @EXPORT_SIGNBIT = qw(copy negate abs copySign isSignMinus);
 
-our @EXPORT_OK = (@EXPORT_FLOATING, @EXPORT_CONVERT2CHAR, @EXPORT_RAW754, @EXPORT_ULP, @EXPORT_CONST, @EXPORT_INFO, @EXPORT_SIGNBIT);
+my @EXPORT_BINARY64 = qw(
+    binary64_convertToInternalHexString
+    binary64_convertFromInternalHexString
+    binary64_convertToInternalBinaryString
+    binary64_convertFromInternalBinaryString
+);
+
+our @EXPORT = ();
+our @EXPORT_OK = (@EXPORT_FLOATING, @EXPORT_CONVERT2CHAR, @EXPORT_RAW754, @EXPORT_INTERNALS, @EXPORT_ULP, @EXPORT_CONST, @EXPORT_INFO, @EXPORT_SIGNBIT, @EXPORT_BINARY64);
 our %EXPORT_TAGS = (
     convertToCharacter  => [@EXPORT_CONVERT2CHAR],
     floating            => [@EXPORT_FLOATING],      # deprecated
     floatingpoint       => [@EXPORT_FLOATING],      # deprecated
-    raw754              => [@EXPORT_RAW754],
+    internalstring      => [@EXPORT_INTERNALS],
+    raw754              => [@EXPORT_RAW754],        # deprecated
     ulp                 => [@EXPORT_ULP],
     constants           => [@EXPORT_CONST],
     info                => [@EXPORT_INFO],
     signbit             => [@EXPORT_SIGNBIT],
+    binary64            => [@EXPORT_BINARY64],
     all                 => [@EXPORT_OK],
 );
 
@@ -206,12 +221,12 @@ our %EXPORT_TAGS = (
 These are the functions to do raw conversion from a floating-point value to a hexadecimal or binary
 string of the underlying IEEE754 encoded value, and back.
 
-=head3 hexstr754_from_double( I<value> )
+=head3 binary64_convertToInternalHexString( I<value> )
 
 Converts the floating-point I<value> into a big-endian hexadecimal representation of the underlying
 IEEE754 encoding.
 
-    hexstr754_from_double(12.875);      #  4029C00000000000
+    binary64_convertToInternalHexString(12.875);      #  4029C00000000000
                                         #  ^^^
                                         #  :  ^^^^^^^^^^^^^
                                         #  :  :
@@ -241,12 +256,12 @@ the sign, fraction, and exponent for you.  (See below for more details.)
                                         # :
                                         # `- sign
 
-=head3 binstr754_from_double( I<value> )
+=head3 binary64_convertToInternalBinaryString( I<value> )
 
 Converts the floating-point I<value> into a big-endian binary representation of the underlying
 IEEE754 encoding.
 
-    binstr754_from_double(12.875);      # 0100000000101001110000000000000000000000000000000000000000000000
+    binary64_convertToInternalBinaryString(12.875);      # 0100000000101001110000000000000000000000000000000000000000000000
                                         # ^
                                         # `- sign
                                         #  ^^^^^^^^^^^
@@ -256,20 +271,20 @@ IEEE754 encoding.
 
 The first bit is the sign, the next 11 are the exponent's encoding
 
-=head3 hexstr754_to_double( I<str> )
+=head3 binary64_convertFromInternalHexString( I<str> )
 
-The inverse of C<hexstr754_from_double()>: it takes a string representing the 16 nibbles
+The inverse of C<binary64_convertToInternalHexString()>: it takes a string representing the 16 nibbles
 of the IEEE754 double value, and converts it back to a perl floating-point value.
 
-    print hexstr754_to_double('4029C00000000000');
+    print binary64_convertFromInternalHexString('4029C00000000000');
     12.875
 
-=head3 binstr754_to_double( I<str> )
+=head3 binary64_convertFromInternalBinaryString( I<str> )
 
-The inverse of C<binstr754_from_double()>: it takes a string representing the 64 bits
+The inverse of C<binary64_convertToInternalBinaryString()>: it takes a string representing the 64 bits
 of the IEEE754 double value, and converts it back to a perl floating-point value.
 
-    print binstr754_to_double('0100000000101001110000000000000000000000000000000000000000000000');
+    print binary64_convertFromInternalBinaryString('0100000000101001110000000000000000000000000000000000000000000000');
     12.875
 
 =cut
@@ -281,27 +296,27 @@ my ($_helper64_arr2x32b,$_helper128_arr4x32b);
 if( $] lt '5.010' ) {
     my $str = join('', unpack("H*", pack 'L' => 0x12345678));
     if('78563412' eq $str) {        # little endian, so reverse byteorder
-        *binary64_hexstr754_from_double  = sub { return uc unpack('H*' => reverse pack 'd'  => shift); };
-        *binary64_binstr754_from_double  = sub { return uc unpack('B*' => reverse pack 'd'  => shift); };
+        *binary64_convertToInternalHexString        = sub { return uc unpack('H*' => reverse pack 'd'  => shift); };
+        *binary64_convertToInternalBinaryString     = sub { return uc unpack('B*' => reverse pack 'd'  => shift); };
 
-        *binary64_hexstr754_to_double    = sub { return    unpack('d'  => reverse pack 'H*' => shift); };
-        *binary64_binstr754_to_double    = sub { return    unpack('d'  => reverse pack 'B*' => shift); };
+        *binary64_convertFromInternalHexString      = sub { return    unpack('d'  => reverse pack 'H*' => shift); };
+        *binary64_convertFromInternalBinaryString   = sub { return    unpack('d'  => reverse pack 'B*' => shift); };
 
-        $_helper64_arr2x32b     = sub { return    unpack('N2' => reverse pack 'd'  => shift); };
-        $_helper128_arr4x32b    = ($Config{d_longdbl})
-                                ? sub { return    unpack('N4' => reverse pack 'D'  => shift); }     # long doubles are a "thing"
-                                : sub { undef };                                                    # else don't know how to do this
+        $_helper64_arr2x32b                         = sub { return    unpack('N2' => reverse pack 'd'  => shift); };
+        $_helper128_arr4x32b                        = ($Config{d_longdbl})
+                                                    ? sub { return    unpack('N4' => reverse pack 'D'  => shift); }     # long doubles are a "thing"
+                                                    : sub { undef };                                                    # else don't know how to do this
     } elsif('12345678' eq $str) {   # big endian, so keep default byteorder
-        *binary64_hexstr754_from_double  = sub { return uc unpack('H*' =>         pack 'd'  => shift); };
-        *binary64_binstr754_from_double  = sub { return uc unpack('B*' =>         pack 'd'  => shift); };
+        *binary64_convertToInternalHexString        = sub { return uc unpack('H*' =>         pack 'd'  => shift); };
+        *binary64_convertToInternalBinaryString     = sub { return uc unpack('B*' =>         pack 'd'  => shift); };
 
-        *binary64_hexstr754_to_double    = sub { return    unpack('d'  =>         pack 'H*' => shift); };
-        *binary64_binstr754_to_double    = sub { return    unpack('d'  =>         pack 'B*' => shift); };
+        *binary64_convertFromInternalHexString      = sub { return    unpack('d'  =>         pack 'H*' => shift); };
+        *binary64_convertFromInternalBinaryString   = sub { return    unpack('d'  =>         pack 'B*' => shift); };
 
-        $_helper64_arr2x32b     = sub { return    unpack('N2' =>         pack 'd'  => shift); };
-        $_helper128_arr4x32b    = ($Config{d_longdbl})
-                                ? sub { return    unpack('N4' =>         pack 'D'  => shift); }     # long doubles are a "thing"
-                                : sub { undef };                                                    # else don't know how to do this
+        $_helper64_arr2x32b                         = sub { return    unpack('N2' =>         pack 'd'  => shift); };
+        $_helper128_arr4x32b                        = ($Config{d_longdbl})
+                                                    ? sub { return    unpack('N4' =>         pack 'D'  => shift); }     # long doubles are a "thing"
+                                                    : sub { undef };                                                    # else don't know how to do this
     } else {
         # I don't handle middle-endian / mixed-endian; sorry
         carp sprintf "\n\n%s %s configuration error:\n"
@@ -314,36 +329,37 @@ if( $] lt '5.010' ) {
             ."\n",
             __PACKAGE__, $VERSION, $VERSION, (caller)[2], defined $str ? $str : '<undef>';
 
-        *binary64_hexstr754_from_double  = sub { 'UNKNOWN ENDIANNESS' };
-        *binary64_binstr754_from_double  = sub { 'UNKNOWN ENDIANNESS' };
+        *binary64_convertToInternalHexString        = sub { 'UNKNOWN ENDIANNESS' };
+        *binary64_convertToInternalBinaryString     = sub { 'UNKNOWN ENDIANNESS' };
 
-        *binary64_hexstr754_to_double    = sub { undef };
-        *binary64_binstr754_to_double    = sub { undef };
-        $_helper64_arr2x32b     = sub { undef };
-        $_helper128_arr4x32b    = sub { undef };
+        *binary64_convertFromInternalHexString      = sub { undef };
+        *binary64_convertFromInternalBinaryString   = sub { undef };
+        $_helper64_arr2x32b                         = sub { undef };
+        $_helper128_arr4x32b                        = sub { undef };
     }
 } else {
-        *binary64_hexstr754_from_double  = sub { return uc unpack('H*' =>         pack 'd>' => shift); };
-        *binary64_binstr754_from_double  = sub { return uc unpack('B*' =>         pack 'd>' => shift); };
+        *binary64_convertToInternalHexString        = sub { return uc unpack('H*' =>         pack 'd>' => shift); };
+        *binary64_convertToInternalBinaryString     = sub { return uc unpack('B*' =>         pack 'd>' => shift); };
 
-        *binary64_hexstr754_to_double    = sub { return    unpack('d>' =>         pack 'H*' => shift); };
-        *binary64_binstr754_to_double    = sub { return    unpack('d>' =>         pack 'B*' => shift); };
+        *binary64_convertFromInternalHexString      = sub { return    unpack('d>' =>         pack 'H*' => shift); };
+        *binary64_convertFromInternalBinaryString   = sub { return    unpack('d>' =>         pack 'B*' => shift); };
 
-        $_helper64_arr2x32b     = sub { return    unpack('N2' =>         pack 'd>' => shift); };
-        $_helper128_arr4x32b    = sub { return    unpack('N4' =>         pack 'D>' => shift); };
+        $_helper64_arr2x32b                         = sub { return    unpack('N2' =>         pack 'd>' => shift); };
+        $_helper128_arr4x32b                        = sub { return    unpack('N4' =>         pack 'D>' => shift); };
 }
 
-# TODO: issue#6: still trying to determine canonical camelCase name:
-#   ? <type>_ieee754stringBinaryFromFloat, <type>_ieee754stringBinaryToFloat, <type>_ieee754stringHexFromFloat, <type>_ieee754stringHexToFloat
-#   ? <type>_binaryStringFromFloat, <type>_binaryStringToFloat, <type>_hexStringFromFloat, <type>_hexStringToFloat
-#   ? <bin/hex>str754_<from/to>_<type> (ie, stay almost the same as now)
-#   ? <type>_<from/to>Binary754string, <type>_<from/to>Hex754string;    generic = float_<from/to><Binary/Hex>754string
-#   ? <type>_from/toInternal<Binary/Hex>String;                         generic = float_<from/to>Internal<Binary/Hex>String
-*hexstr754_from_double = \*binary64_hexstr754_from_double;
-*binstr754_from_double = \*binary64_binstr754_from_double;
-*hexstr754_to_double   = \*binary64_hexstr754_to_double;
-*binstr754_to_double   = \*binary64_binstr754_to_double;
+# issue#6: canonical camelCase name, generic versions
+*convertToInternalHexString         = \&binary64_convertToInternalHexString;
+*convertToInternalBinaryString      = \&binary64_convertToInternalBinaryString;
+*convertFromInternalHexString       = \&binary64_convertFromInternalHexString;
+*convertFromInternalBinaryString    = \&binary64_convertFromInternalBinaryString;
 # TODO: issue#7 switch, per below
+
+# backward compatibility:
+*hexstr754_from_double              = \&convertToInternalHexString;
+*binstr754_from_double              = \&convertToInternalBinaryString;
+*hexstr754_to_double                = \&convertFromInternalHexString;
+*binstr754_to_double                = \&convertFromInternalBinaryString;
 
 =head2 :convertToCharacter
 
@@ -523,28 +539,28 @@ zeroes, infinities, a variety of signaling and quiet NAN values.
 
 =cut
 
-{ my $local; sub POS_ZERO           () { $local = hexstr754_to_double('000'.'0000000000000') unless defined $local; return $local; } }
-{ my $local; sub POS_DENORM_SMALLEST() { $local = hexstr754_to_double('000'.'0000000000001') unless defined $local; return $local; } }
-{ my $local; sub POS_DENORM_BIGGEST () { $local = hexstr754_to_double('000'.'FFFFFFFFFFFFF') unless defined $local; return $local; } }
-{ my $local; sub POS_NORM_SMALLEST  () { $local = hexstr754_to_double('001'.'0000000000000') unless defined $local; return $local; } }
-{ my $local; sub POS_NORM_BIGGEST   () { $local = hexstr754_to_double('7FE'.'FFFFFFFFFFFFF') unless defined $local; return $local; } }
-{ my $local; sub POS_INF            () { $local = hexstr754_to_double('7FF'.'0000000000000') unless defined $local; return $local; } }
-{ my $local; sub POS_SNAN_FIRST     () { $local = hexstr754_to_double('7FF'.'0000000000001') unless defined $local; return $local; } }
-{ my $local; sub POS_SNAN_LAST      () { $local = hexstr754_to_double('7FF'.'7FFFFFFFFFFFF') unless defined $local; return $local; } }
-{ my $local; sub POS_IND            () { $local = hexstr754_to_double('7FF'.'8000000000000') unless defined $local; return $local; } }
-{ my $local; sub POS_QNAN_FIRST     () { $local = hexstr754_to_double('7FF'.'8000000000001') unless defined $local; return $local; } }
-{ my $local; sub POS_QNAN_LAST      () { $local = hexstr754_to_double('7FF'.'FFFFFFFFFFFFF') unless defined $local; return $local; } }
-{ my $local; sub NEG_ZERO           () { $local = hexstr754_to_double('800'.'0000000000000') unless defined $local; return $local; } }
-{ my $local; sub NEG_DENORM_SMALLEST() { $local = hexstr754_to_double('800'.'0000000000001') unless defined $local; return $local; } }
-{ my $local; sub NEG_DENORM_BIGGEST () { $local = hexstr754_to_double('800'.'FFFFFFFFFFFFF') unless defined $local; return $local; } }
-{ my $local; sub NEG_NORM_SMALLEST  () { $local = hexstr754_to_double('801'.'0000000000000') unless defined $local; return $local; } }
-{ my $local; sub NEG_NORM_BIGGEST   () { $local = hexstr754_to_double('FFE'.'FFFFFFFFFFFFF') unless defined $local; return $local; } }
-{ my $local; sub NEG_INF            () { $local = hexstr754_to_double('FFF'.'0000000000000') unless defined $local; return $local; } }
-{ my $local; sub NEG_SNAN_FIRST     () { $local = hexstr754_to_double('FFF'.'0000000000001') unless defined $local; return $local; } }
-{ my $local; sub NEG_SNAN_LAST      () { $local = hexstr754_to_double('FFF'.'7FFFFFFFFFFFF') unless defined $local; return $local; } }
-{ my $local; sub NEG_IND            () { $local = hexstr754_to_double('FFF'.'8000000000000') unless defined $local; return $local; } }
-{ my $local; sub NEG_QNAN_FIRST     () { $local = hexstr754_to_double('FFF'.'8000000000001') unless defined $local; return $local; } }
-{ my $local; sub NEG_QNAN_LAST      () { $local = hexstr754_to_double('FFF'.'FFFFFFFFFFFFF') unless defined $local; return $local; } }
+{ my $local; sub POS_ZERO           () { $local = binary64_convertFromInternalHexString('000'.'0000000000000') unless defined $local; return $local; } }
+{ my $local; sub POS_DENORM_SMALLEST() { $local = binary64_convertFromInternalHexString('000'.'0000000000001') unless defined $local; return $local; } }
+{ my $local; sub POS_DENORM_BIGGEST () { $local = binary64_convertFromInternalHexString('000'.'FFFFFFFFFFFFF') unless defined $local; return $local; } }
+{ my $local; sub POS_NORM_SMALLEST  () { $local = binary64_convertFromInternalHexString('001'.'0000000000000') unless defined $local; return $local; } }
+{ my $local; sub POS_NORM_BIGGEST   () { $local = binary64_convertFromInternalHexString('7FE'.'FFFFFFFFFFFFF') unless defined $local; return $local; } }
+{ my $local; sub POS_INF            () { $local = binary64_convertFromInternalHexString('7FF'.'0000000000000') unless defined $local; return $local; } }
+{ my $local; sub POS_SNAN_FIRST     () { $local = binary64_convertFromInternalHexString('7FF'.'0000000000001') unless defined $local; return $local; } }
+{ my $local; sub POS_SNAN_LAST      () { $local = binary64_convertFromInternalHexString('7FF'.'7FFFFFFFFFFFF') unless defined $local; return $local; } }
+{ my $local; sub POS_IND            () { $local = binary64_convertFromInternalHexString('7FF'.'8000000000000') unless defined $local; return $local; } }
+{ my $local; sub POS_QNAN_FIRST     () { $local = binary64_convertFromInternalHexString('7FF'.'8000000000001') unless defined $local; return $local; } }
+{ my $local; sub POS_QNAN_LAST      () { $local = binary64_convertFromInternalHexString('7FF'.'FFFFFFFFFFFFF') unless defined $local; return $local; } }
+{ my $local; sub NEG_ZERO           () { $local = binary64_convertFromInternalHexString('800'.'0000000000000') unless defined $local; return $local; } }
+{ my $local; sub NEG_DENORM_SMALLEST() { $local = binary64_convertFromInternalHexString('800'.'0000000000001') unless defined $local; return $local; } }
+{ my $local; sub NEG_DENORM_BIGGEST () { $local = binary64_convertFromInternalHexString('800'.'FFFFFFFFFFFFF') unless defined $local; return $local; } }
+{ my $local; sub NEG_NORM_SMALLEST  () { $local = binary64_convertFromInternalHexString('801'.'0000000000000') unless defined $local; return $local; } }
+{ my $local; sub NEG_NORM_BIGGEST   () { $local = binary64_convertFromInternalHexString('FFE'.'FFFFFFFFFFFFF') unless defined $local; return $local; } }
+{ my $local; sub NEG_INF            () { $local = binary64_convertFromInternalHexString('FFF'.'0000000000000') unless defined $local; return $local; } }
+{ my $local; sub NEG_SNAN_FIRST     () { $local = binary64_convertFromInternalHexString('FFF'.'0000000000001') unless defined $local; return $local; } }
+{ my $local; sub NEG_SNAN_LAST      () { $local = binary64_convertFromInternalHexString('FFF'.'7FFFFFFFFFFFF') unless defined $local; return $local; } }
+{ my $local; sub NEG_IND            () { $local = binary64_convertFromInternalHexString('FFF'.'8000000000000') unless defined $local; return $local; } }
+{ my $local; sub NEG_QNAN_FIRST     () { $local = binary64_convertFromInternalHexString('FFF'.'8000000000001') unless defined $local; return $local; } }
+{ my $local; sub NEG_QNAN_LAST      () { $local = binary64_convertFromInternalHexString('FFF'.'FFFFFFFFFFFFF') unless defined $local; return $local; } }
 
 =head2 :ulp
 
@@ -569,7 +585,7 @@ my $FIFTYTWOZEROES  = sub { '0'x52 };
 
 sub ulp {   # ulp_by_div
     my $val = shift;
-    my $rawbin = binstr754_from_double($val);
+    my $rawbin = binary64_convertToInternalBinaryString($val);
     my ($sgn, $exp, $frac) = ($rawbin =~ /(.)(.{11})(.{52})/);
 
     return $val             if $exp eq '11111111111';   # return SELF for INF or NAN
@@ -578,7 +594,7 @@ sub ulp {   # ulp_by_div
     # this method will multiply by 2**-52 (as a constant) after
     $sgn  = '0';
     $frac = $FIFTYTWOZEROES->();
-    $val  = binstr754_to_double( $sgn . $exp . $frac );
+    $val  = binary64_convertFromInternalBinaryString( $sgn . $exp . $frac );
     $val *= $TWONEG52->();
 }
 
@@ -597,7 +613,7 @@ of the way they are handled, C<toggle_ulp($val) != $val> no longer makes sense.
 
 sub toggle_ulp {
     my $val = shift;
-    my $rawbin = binstr754_from_double($val);
+    my $rawbin = binary64_convertToInternalBinaryString($val);
     my ($sign, $exp, $fract) = ($rawbin =~ /(.)(.{11})(.{52})/);
 
     # INF and NAN do not have a meaningful ULP; just return SELF
@@ -609,7 +625,7 @@ sub toggle_ulp {
     my $ulp_bit = substr $fract, -1;
     substr $fract, -1, 1, (1-$ulp_bit);
     $rawbin = join '', $sign, $exp, $fract;
-    return binstr754_to_double($rawbin);
+    return binary64_convertFromInternalBinaryString($rawbin);
 }
 
 =head3 nextUp( I<value> )
@@ -627,10 +643,10 @@ sub nextUp {
     # thanks again to BrowserUK: http://perlmonks.org/?node_id=1167146
     my $val = shift;
     return $val                                     if $val != $val;                # interestingly, NAN != NAN
-    my $h754 = hexstr754_from_double($val);
+    my $h754 = binary64_convertToInternalHexString($val);
     return $val                                     if $h754 eq '7FF0000000000000'; # return self               for +INF
-    return hexstr754_to_double('FFEFFFFFFFFFFFFF')  if $h754 eq 'FFF0000000000000'; # return largest negative   for -INF
-    return hexstr754_to_double('0000000000000001')  if $h754 eq '8000000000000000'; # return +SmallestDenormal  for -ZERO
+    return binary64_convertFromInternalHexString('FFEFFFFFFFFFFFFF')  if $h754 eq 'FFF0000000000000'; # return largest negative   for -INF
+    return binary64_convertFromInternalHexString('0000000000000001')  if $h754 eq '8000000000000000'; # return +SmallestDenormal  for -ZERO
     my ($msb,$lsb) = $_helper64_arr2x32b->($val);
     $lsb += ($msb & 0x80000000) ? -1.0 : +1.0;
     if($lsb == 4_294_967_296.0) {
@@ -642,7 +658,7 @@ sub nextUp {
     }
     $msb &= 0xFFFFFFFF;     # v0.011_001: bugfix: ensure 32bit MSB <https://rt.cpan.org/Public/Bug/Display.html?id=116006>
     $lsb &= 0xFFFFFFFF;     # v0.011_001: bugfix: ensure 32bit MSB <https://rt.cpan.org/Public/Bug/Display.html?id=116006>
-    return hexstr754_to_double( sprintf '%08X%08X', $msb, $lsb );
+    return binary64_convertFromInternalHexString( sprintf '%08X%08X', $msb, $lsb );
 }
 
 =head3 nextDown( I<value> )
@@ -690,7 +706,7 @@ Returns 1 if I<value> has negative sign (even applies to zeroes and NaNs); other
 
 sub isSignMinus {
     # look at leftmost nibble, and determine whether it has the 8-bit or not (which is the sign bit)
-    return (hex(substr(hexstr754_from_double(shift),0,1)) & 8) >> 3;
+    return (hex(substr(binary64_convertToInternalHexString(shift),0,1)) & 8) >> 3;
 }
 
 =head3 isNormal( I<value> )
@@ -701,7 +717,7 @@ Returns 1 if I<value> is a normal number (not zero, subnormal, infinite, or NaN)
 
 sub isNormal {
     # it's normal if the leftmost three nibbles (excluding sign bit) are not 000 or 7FF
-    my $exp = hex(substr(hexstr754_from_double(shift),0,3)) & 0x7FF;
+    my $exp = hex(substr(binary64_convertToInternalHexString(shift),0,3)) & 0x7FF;
     return (0 < $exp) && ($exp < 0x7FF) || 0;
 }
 
@@ -713,7 +729,7 @@ Returns 1 if I<value> is a finite number (zero, subnormal, or normal; not infini
 
 sub isFinite {
     # it's finite if the leftmost three nibbles (excluding sign bit) are not 7FF
-    my $exp = hex(substr(hexstr754_from_double(shift),0,3)) & 0x7FF;
+    my $exp = hex(substr(binary64_convertToInternalHexString(shift),0,3)) & 0x7FF;
     return ($exp < 0x7FF) || 0;
 }
 
@@ -725,7 +741,7 @@ Returns 1 if I<value> is positive or negative zero; otherwise, returns 0.
 
 sub isZero {
     # it's zero if it's 0x[80]000000000000000
-    my $str = substr(hexstr754_from_double(shift),1,15);
+    my $str = substr(binary64_convertToInternalHexString(shift),1,15);
     return ($str eq '0'x15) || 0;
 }
 
@@ -737,7 +753,7 @@ Returns 1 if I<value> is subnormal (not zero, normal, infinite, nor NaN); otherw
 
 sub isSubnormal {
     # it's subnormal if it's 0x[80]00___ and the last 13 digits are not all zero
-    my $h   = hexstr754_from_double(shift);
+    my $h   = binary64_convertToInternalHexString(shift);
     my $exp = substr($h,0,3);
     my $frc = substr($h,3,13);
     return ($exp eq '000' || $exp eq '800') && ($frc ne '0'x13) || 0;
@@ -751,7 +767,7 @@ Returns 1 if I<value> is positive or negative infinity (not zero, subnormal, nor
 
 sub isInfinite {
     # it's infinite if it's 0x[F7]FF_0000000000000
-    my $h   = hexstr754_from_double(shift);
+    my $h   = binary64_convertToInternalHexString(shift);
     my $exp = substr($h,0,3);
     my $frc = substr($h,3,13);
     return ($exp eq '7FF' || $exp eq 'FFF') && ($frc eq '0'x13) || 0;
@@ -765,7 +781,7 @@ Returns 1 if I<value> is NaN (not zero, subnormal, normal, nor infinite); otherw
 
 sub isNaN {
     # it's infinite if it's 0x[F7]FF_0000000000000
-    my $h   = hexstr754_from_double(shift);
+    my $h   = binary64_convertToInternalHexString(shift);
     my $exp = substr($h,0,3);
     my $frc = substr($h,3,13);
     return ($exp eq '7FF' || $exp eq 'FFF') && ($frc ne '0'x13) || 0;
@@ -782,7 +798,7 @@ C<isSignaling> might return only 0.
 
 sub isSignaling {
     # it's signaling if isNaN and MSB of fractional portion is 1
-    my $h   = hexstr754_from_double(shift);
+    my $h   = binary64_convertToInternalHexString(shift);
     my $exp = substr($h,0,3);
     my $frc = substr($h,3,13);
     my $qbit = (0x8 && hex(substr($h,3,1))) >> 3;   # 1: quiet, 0: signaling
@@ -871,7 +887,7 @@ Special cases are ordered as below:
 
 sub totalOrder {
     my ($x, $y) = @_[0,1];
-    my ($bx,$by) = map { binstr754_from_double($_) } $x, $y;        # convert to binary strings
+    my ($bx,$by) = map { binary64_convertToInternalBinaryString($_) } $x, $y;        # convert to binary strings
     my @xsegs = ($bx =~ /(.)(.{11})(.{20})(.{32})/);                # split into sign, exponent, MSB, LSB
     my @ysegs = ($by =~ /(.)(.{11})(.{20})(.{32})/);                # split into sign, exponent, MSB, LSB
     my ($xin, $yin) = map { isNaN($_) } $x, $y;                     # determine if NaN: used twice each, so save the values rather than running twice each during if-switch
@@ -880,7 +896,7 @@ sub totalOrder {
         # use a trick: the rules for both-NaN treat it as if it's just another floating point,
         #  so lie about the exponent and do a normal comparison
         ($bx, $by) = map { $_->[1] = '1' . '0'x10; join '', @$_ } \@xsegs, \@ysegs;
-        ($x, $y) = map { binstr754_to_double($_) } $bx, $by;
+        ($x, $y) = map { binary64_convertFromInternalBinaryString($_) } $bx, $by;
         return (($x <= $y) || 0);
     } elsif ( $xin ) {                                              # just x NaN: TRUE if x is NEG
         return ( ($xsegs[0]) || 0 );
@@ -909,8 +925,8 @@ Special cases are ordered as below:
 
 sub totalOrderMag {
     my ($x, $y)     = @_[0,1];
-    my ($bx,$by)    = map { binstr754_from_double($_) } $x, $y;                         # convert to binary strings
-    ($x,  $y)       = map { substr $_, 0, 1, '0'; binstr754_to_double($_) } $bx, $by;   # set sign bit to 0, and convert back to number
+    my ($bx,$by)    = map { binary64_convertToInternalBinaryString($_) } $x, $y;                         # convert to binary strings
+    ($x,  $y)       = map { substr $_, 0, 1, '0'; binary64_convertFromInternalBinaryString($_) } $bx, $by;   # set sign bit to 0, and convert back to number
     return totalOrder( $x, $y );                                                        # compare normally
 }
 
@@ -928,7 +944,7 @@ These are not in IEEE 754-2008, but are included as functions to replace the per
 
 sub compareFloatingValue {
     my ($x, $y) = @_[0,1];
-    my ($bx,$by) = map { binstr754_from_double($_) } $x, $y;        # convert to binary strings
+    my ($bx,$by) = map { binary64_convertToInternalBinaryString($_) } $x, $y;        # convert to binary strings
     my @xsegs = ($bx =~ /(.)(.{11})(.{20})(.{32})/);                # split into sign, exponent, MSB, LSB
     my @ysegs = ($by =~ /(.)(.{11})(.{20})(.{32})/);                # split into sign, exponent, MSB, LSB
     my ($xin, $yin) = map { isNaN($_) } $x, $y;                     # determine if NaN: used twice each, so save the values rather than running twice each during if-switch
@@ -937,7 +953,7 @@ sub compareFloatingValue {
         # use a trick: the rules for both-NaN treat it as if it's just another floating point,
         #  so lie about the exponent and do a normal comparison
         ($bx, $by) = map { $_->[1] = '1' . '0'x10; join '', @$_ } \@xsegs, \@ysegs;
-        ($x, $y) = map { binstr754_to_double($_) } $bx, $by;
+        ($x, $y) = map { binary64_convertFromInternalBinaryString($_) } $bx, $by;
         return ($x <=> $y);
     } elsif ( $xin ) {                                              # just x NaN: if isNaN(x) && isNegative(x) THEN -1 (x<y) ELSE (x>y)
         return ( ($xsegs[0])*-1 || +1 );
@@ -953,8 +969,8 @@ sub compareFloatingValue {
 
 sub compareFloatingMag {
     my ($x, $y)     = @_[0,1];
-    my ($bx,$by)    = map { binstr754_from_double($_) } $x, $y;                         # convert to binary strings
-    ($x,  $y)       = map { substr $_, 0, 1, '0'; binstr754_to_double($_) } $bx, $by;   # set sign bit to 0, and convert back to number
+    my ($bx,$by)    = map { binary64_convertToInternalBinaryString($_) } $x, $y;                         # convert to binary strings
+    ($x,  $y)       = map { substr $_, 0, 1, '0'; binary64_convertFromInternalBinaryString($_) } $bx, $by;   # set sign bit to 0, and convert back to number
     return compareFloatingValue( $x, $y );                                              # compare normally
 }
 
@@ -987,10 +1003,10 @@ signed zeroes, on infinities, and on NaNs.)
 =cut
 
 sub negate {
-    my $b = binstr754_from_double(shift);                                               # convert to binary string
+    my $b = binary64_convertToInternalBinaryString(shift);                                               # convert to binary string
     my $s = 1 - substr $b, 0, 1;                                                        # toggle sign
     substr $b, 0, 1, $s;                                                                # replace sign
-    return binstr754_to_double($b);                                                     # convert to floating-point
+    return binary64_convertFromInternalBinaryString($b);                                                     # convert to floating-point
 }
 
 =head3 abs( I<value> )
@@ -1013,9 +1029,9 @@ the absolute value of a signed NaN), then you may call it as C<CORE::abs>.
 =cut
 
 sub abs {
-    my $b = binstr754_from_double(shift);                                               # convert to binary string
+    my $b = binary64_convertToInternalBinaryString(shift);                                               # convert to binary string
     substr $b, 0, 1, '0';                                                               # replace sign
-    return binstr754_to_double($b);                                                     # convert to floating-point
+    return binary64_convertFromInternalBinaryString($b);                                                     # convert to floating-point
 }
 
 =head3 copySign( I<x>, I<y> )
@@ -1028,9 +1044,9 @@ Copies the sign from I<y>, but uses the value from I<x>.  For example,
 
 sub copySign {
     my ($x, $y)         = @_[0,1];
-    my ($bx,$by)        = map { binstr754_from_double($_) } $x, $y;                     # convert to binary strings
+    my ($bx,$by)        = map { binary64_convertToInternalBinaryString($_) } $x, $y;                     # convert to binary strings
     substr($bx, 0, 1)   = substr($by, 0, 1);                                            # copy the sign bit from y to x
-    return binstr754_to_double($bx);                                                    # convert binary-x (with modified sign) back to double
+    return binary64_convertFromInternalBinaryString($bx);                                                    # convert binary-x (with modified sign) back to double
 }
 
 =head3 also exports C<isSignMinus(> I<value> C<)> (see :info)
