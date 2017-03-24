@@ -4,6 +4,7 @@ use warnings;
 use strict;
 use Carp;
 use Exporter 'import';  # just use the import() function, without the rest of the overhead of ISA
+use Config;
 
 use version 0.77; our $VERSION = version->declare('0.017_002');
     # use rrr.mmm_aaa, where rrr is major revision, mmm is ODD minor revision, and aaa is alpha sub-revision (for ALPHA code)
@@ -317,9 +318,26 @@ sub binary64_convertToHexCharacter {
     sprintf '%s0x%1u.%13.13sp%+05d', $sign, $implied, $mant, $exp;
 }
 *convertToHexCharacter = \*binary64_convertToHexCharacter;
+my $__glue_dispatch;    # issue#7 TODO
+if(0) { # issue#7 TODO
+    $__glue_dispatch = sub {    # only use this subref in the glue code, not in any subroutine
+        my ($arg, %h) = @_;
+        croak sprintf "\n\n%s %s configuration error: could not determine the right function for your system.\n"
+            ."Please report a bug in %s.DISPATCH_TABLE#%d('%s').\n"
+            ."It would be helpful to include the output of perl -V in the bug report\n"
+            ."\n",
+            __PACKAGE__, $VERSION, $VERSION, (caller)[2], defined $arg ? $arg : '<undef>'
+        unless exists $h{$arg};
+        return $h{$arg};
+    };
+
+    *convertToHexCharacter = $__glue_dispatch->( $Config{nvsize},
+        4  => \*binary32_convertToHexCharacter,
+        8  => \*binary64_convertToHexCharacter,
+        16 => \*binary128_convertToHexCharacter,
+    );
+}
 *to_hex_floatingpoint = \*convertToHexCharacter;
-    # TODO = update POD and @EXPORT* to use the canonical-based names
-    # TODO: switch($Config{nvsize}) { 4 => \*binary32_convertToDecimalCharacter, 8 => \*binary64, 16 => \*binary128}
 
 sub binary64_convertToDecimalCharacter {
     # derived from binary64_convertToHexCharacter
@@ -345,8 +363,14 @@ sub binary64_convertToDecimalCharacter {
     sprintf '%s0d%.16fp%+05d', $sign, $other, $exp;
 }
 *convertToDecimalCharacter = \*binary64_convertToDecimalCharacter;
+if(0) { # issue#7 TODO
+    *convertToDecimalCharacter = $__glue_dispatch->( $Config{nvsize},
+        4  => \*binary32_convertToDecimalCharacter,
+        8  => \*binary64_convertToDecimalCharacter,
+        16 => \*binary128_convertToDecimalCharacter,
+    );
+}
 *to_dec_floatingpoint = \*convertToDecimalCharacter;
-    # TODO = same as above
 
 
 =over

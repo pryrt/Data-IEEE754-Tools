@@ -13,6 +13,7 @@ use 5.006;
         'warnings'      => 0,
         'strict'        => 0,
         'Carp'          => 0,
+        'Config'        => 0,
     },
 );
 
