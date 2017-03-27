@@ -6,9 +6,10 @@ use Carp;
 use Exporter 'import';  # just use the import() function, without the rest of the overhead of ISA
 use Config;
 
-use version 0.77; our $VERSION = version->declare('0.017_002');
+our $VERSION = '0.017_002';
+#use v------- 0.77; our $V------ = version->declare('0.017_002');   # part of 0.017_002 alpha release will be to see if a plain string works better: it works better for automating {provides}{version}
     # use rrr.mmm_aaa, where rrr is major revision, mmm is ODD minor revision, and aaa is alpha sub-revision (for ALPHA code)
-    # use rrr.mmm,     where rrr is major revision, mmm is EVEN minor revision (for releases)
+    # use rrr.mmmsss,  where rrr is major revision, mmm is EVEN minor revision, and sss is a sub-revision (usually sss=000) (for releases)
 
 =pod
 
@@ -18,11 +19,11 @@ Data::IEEE754::Tools - Various tools for understanding and manipulating the unde
 
 =head1 SYNOPSIS
 
-    use Data::IEEE754::Tools qw/:convertToCharacter :ulp/;
+    use Data::IEEE754::Tools qw/:convertToString :ulp/;
 
-    # return -12.875 as decimal and hexadecimal floating point numbers ("convertToCharacter" in IEEE-754 parlance)
-    convertToDecimalCharacter(-12.875);      # -0d1.6093750000000000p+0003
-    convertToHexCharacter(-12.875);          # -0x1.9c00000000000p+0003
+    # return -12.875 as strings of decimal or hexadecimal floating point numbers ("convertTo*Character" in IEEE-754 parlance)
+    convertToDecimalString(-12.875);        # -0d1.6093750000000000p+0003
+    convertToHexString(-12.875);            # -0x1.9c00000000000p+0003
 
     # shows the smallest value you can add or subtract to 16.16 (ulp = "Unit in the Last Place")
     print ulp( 16.16 );                     # 3.5527136788005e-015
@@ -30,8 +31,8 @@ Data::IEEE754::Tools - Various tools for understanding and manipulating the unde
     # toggles the ulp: returns a float that has the ULP of 16.16 toggled
     #   (if it was a 1, it will be 0, and vice versa);
     #   running it twice should give the original value
-    print $t16 = toggle_ulp( 16.16 );   # 16.159999999999997
-    print $v16 = toggle_ulp( $t16 );    # 16.160000000000000
+    print $t16 = toggle_ulp( 16.16 );       # 16.159999999999997
+    print $v16 = toggle_ulp( $t16 );        # 16.160000000000000
 
 =head1 DESCRIPTION
 
@@ -146,11 +147,11 @@ a transition to v2.
 
 =over
 
-=item * C<:floatingpoint> renamed to C<:convertToCharacter>
+=item * C<:floatingpoint> renamed to C<:convertToString>
 
-=item * C<to_hex_floatingpoint()> renamed to C<convertToHexCharacter()>
+=item * C<to_hex_floatingpoint()> renamed to C<convertToHexString()> (or C<Data::Tools::IEEE754::binary64_convertToHexCharacter()>)
 
-=item * C<to_dec_floatingpoint()> renamed to C<convertToDecimalCharacter()>
+=item * C<to_dec_floatingpoint()> renamed to C<convertToDecimalString()> (or C<Data::Tools::IEEE754::binary64_convertToDecimalCharacter()>)
 
 =item * C<:raw754> renamed to C<:internalString>
 
@@ -182,7 +183,7 @@ my @EXPORT_INTERNALS = qw(
 );
 
 my  @EXPORT_FLOATING = qw(to_hex_floatingpoint to_dec_floatingpoint);           # deprecated
-my  @EXPORT_CONVERT2CHAR = qw(convertToHexCharacter convertToDecimalCharacter);
+my  @EXPORT_CONVERT2STR = qw(convertToHexString convertToDecimalString);
 my  @EXPORT_ULP = qw(ulp toggle_ulp nextUp nextDown nextAfter);
 my  @EXPORT_CONST = qw(
     POS_ZERO
@@ -208,14 +209,14 @@ my @EXPORT_BINARY64 = qw(
     binary64_convertFromInternalHexString
     binary64_convertToInternalBinaryString
     binary64_convertFromInternalBinaryString
-    binary64_convertToHexCharacter
-    binary64_convertToDecimalCharacter
+    binary64_convertToHexString
+    binary64_convertToDecimalString
 );
 
 our @EXPORT = ();
-our @EXPORT_OK = (@EXPORT_FLOATING, @EXPORT_CONVERT2CHAR, @EXPORT_RAW754, @EXPORT_INTERNALS, @EXPORT_ULP, @EXPORT_CONST, @EXPORT_INFO, @EXPORT_SIGNBIT, @EXPORT_BINARY64);
+our @EXPORT_OK = (@EXPORT_FLOATING, @EXPORT_CONVERT2STR, @EXPORT_RAW754, @EXPORT_INTERNALS, @EXPORT_ULP, @EXPORT_CONST, @EXPORT_INFO, @EXPORT_SIGNBIT, @EXPORT_BINARY64);
 our %EXPORT_TAGS = (
-    convertToCharacter  => [@EXPORT_CONVERT2CHAR],
+    convertToString     => [@EXPORT_CONVERT2STR],
     floating            => [@EXPORT_FLOATING],      # deprecated
     floatingpoint       => [@EXPORT_FLOATING],      # deprecated
     internalString      => [@EXPORT_INTERNALS],
@@ -258,15 +259,15 @@ by zero or the logarithm of a zero or negative value) (NaN).
 The final thirteen nibbles are the encoding of the fractional value (usually C<1 + thirteennibbles /
 16**13>, unless it's zero, denormal, infinite, or not a number).
 
-Of course, this is easier to decode using the L</convertToDecimalCharacter()> function, which interprets
+Of course, this is easier to decode using the L</convertToDecimalString()> function, which interprets
 the sign, fraction, and exponent for you.  (See below for more details.)
 
-    convertToDecimalCharacter(12.875);  # +0d1.6093750000000000p+0003
-                                        # ^  ^^^^^^^^^^^^^^^^^^  ^^^^
-                                        # :  :                   :
-                                        # :  `- coefficient      `- exponent (power of 2)
-                                        # :
-                                        # `- sign
+    convertToDecimalString(12.875);         # +0d1.6093750000000000p+0003
+                                            # ^  ^^^^^^^^^^^^^^^^^^  ^^^^
+                                            # :  :                   :
+                                            # :  `- coefficient      `- exponent (power of 2)
+                                            # :
+                                            # `- sign
 
 =head3 convertToInternalBinaryString( I<value> )
 
@@ -373,18 +374,18 @@ if( $] lt '5.010' ) {
 *hexstr754_to_double                = \&convertFromInternalHexString;
 *binstr754_to_double                = \&convertFromInternalBinaryString;
 
-=head2 :convertToCharacter
+=head2 :convertToString
 
-=head3 convertToHexCharacter( I<value> )
+=head3 convertToHexString( I<value> )
 
-=head3 convertToDecimalCharacter( I<value> )
+=head3 convertToDecimalString( I<value> )
 
 Converts value to a hexadecimal or decimal floating-point notation that indicates the sign and
 the coefficient and the power of two, with the coefficient either in hexadecimal or decimal
 notation.
 
-    convertToHexCharacter(-3.9999999999999996)      # -0x1.fffffffffffffp+0001
-    convertToDecimalCharacter(-3.9999999999999996)  # -0d1.9999999999999998p+0001
+    convertToHexString(-3.9999999999999996)         # -0x1.fffffffffffffp+0001
+    convertToDecimalString(-3.9999999999999996)     # -0d1.9999999999999998p+0001
 
 It displays the value as (sign)(0base)(implied).(fraction)p(exponent):
 
@@ -394,7 +395,7 @@ It displays the value as (sign)(0base)(implied).(fraction)p(exponent):
 #   and alias <type>_convertToHexCharacter() as the official IEEE-754 naming-scheme, but not exportable
 #   (so Data::IEEE754::Tools::<type>_convertToHexCharacter(v) as the only calling mechanism)
 
-sub binary64_convertToHexCharacter {
+sub binary64_convertToHexString {
     # thanks to BrowserUK @ http://perlmonks.org/?node_id=1167146 for slighly better decision factors
     # I tweaked it to use the two 32bit words instead of one 64bit word (which wouldn't work on some systems)
     my $v = shift;
@@ -415,7 +416,7 @@ sub binary64_convertToHexCharacter {
     }
     sprintf '%s0x%1u.%13.13sp%+05d', $sign, $implied, $mant, $exp;
 }
-*convertToHexCharacter = \&binary64_convertToHexCharacter;
+*convertToHexString = \&binary64_convertToHexString;
 my $__glue_dispatch;    # issue#7 TODO
 if(0) { # issue#7 TODO
     $__glue_dispatch = sub {    # only use this subref in the glue code, not in any subroutine
@@ -431,16 +432,16 @@ if(0) { # issue#7 TODO
         return $h{$arg};
     };
 
-    *convertToHexCharacter = $__glue_dispatch->( $Config{nvsize},
-        4  => \&binary32_convertToHexCharacter,
-        8  => \&binary64_convertToHexCharacter,
-        16 => \&binary128_convertToHexCharacter,
+    *convertToHexString = $__glue_dispatch->( $Config{nvsize},
+        4  => \&binary32_convertToHexString,
+        8  => \&binary64_convertToHexString,
+        16 => \&binary128_convertToHexString,
     );
 }
-*to_hex_floatingpoint = \&convertToHexCharacter;
+*to_hex_floatingpoint = \&convertToHexString;
 
-sub binary64_convertToDecimalCharacter {
-    # derived from binary64_convertToHexCharacter
+sub binary64_convertToDecimalString {
+    # derived from binary64_convertToHexString
     my $v = shift;
     my ($msb,$lsb) = $_helper64_arr2x32b->($v);
     my $sbit = ($msb & 0x80000000) >> 31;
@@ -462,15 +463,15 @@ sub binary64_convertToDecimalCharacter {
     my $other = abs($v) / (2.0**$exp);
     sprintf '%s0d%.16fp%+05d', $sign, $other, $exp;
 }
-*convertToDecimalCharacter = \&binary64_convertToDecimalCharacter;
+*convertToDecimalString = \&binary64_convertToDecimalString;
 if(0) { # issue#7 TODO
-    *convertToDecimalCharacter = $__glue_dispatch->( $Config{nvsize},
-        4  => \&binary32_convertToDecimalCharacter,
-        8  => \&binary64_convertToDecimalCharacter,
-        16 => \&binary128_convertToDecimalCharacter,
+    *convertToDecimalString = $__glue_dispatch->( $Config{nvsize},
+        4  => \&binary32_convertToDecimalString,
+        8  => \&binary64_convertToDecimalString,
+        16 => \&binary128_convertToDecimalString,
     );
 }
-*to_dec_floatingpoint = \&convertToDecimalCharacter;
+*to_dec_floatingpoint = \&convertToDecimalString;
 
 
 =over
@@ -519,6 +520,19 @@ they are really multiples of 2**-1022, not 2**-1023.
 
 For backward compatibility, if you use the older tag C<:floatingpoint>, you can refer to these
 functions as C<to_hex_floatingpoint()> and C<to_dec_floatingpoint()>.
+
+=head3 Data::IEEE754::Tools::binary64_convertToHexCharacter( I<value> )
+
+=head3 Data::IEEE754::Tools::binary64_convertToDecimalCharacter( I<value> )
+
+These are the same functions, but under the official IEEE 754 nomenclature of
+C<E<lt>typeE<gt>_convertTo*Character()>.  These are included for the "canonical"
+naming convention, but are not exportable.
+
+=cut
+
+*binary64_convertToHexCharacter     = \&binary64_convertToHexString;
+*binary64_convertToDecimalCharacter = \&binary64_convertToDecimalString;
 
 =head2 :constants
 
@@ -1060,9 +1074,9 @@ Copies the sign from I<y>, but uses the value from I<x>.  For example,
 
 sub copySign {
     my ($x, $y)         = @_[0,1];
-    my ($bx,$by)        = map { binary64_convertToInternalBinaryString($_) } $x, $y;                     # convert to binary strings
+    my ($bx,$by)        = map { binary64_convertToInternalBinaryString($_) } $x, $y;    # convert to binary strings
     substr($bx, 0, 1)   = substr($by, 0, 1);                                            # copy the sign bit from y to x
-    return binary64_convertFromInternalBinaryString($bx);                                                    # convert binary-x (with modified sign) back to double
+    return binary64_convertFromInternalBinaryString($bx);                               # convert binary-x (with modified sign) back to double
 }
 
 =head3 also exports C<isSignMinus(> I<value> C<)> (see :info)
@@ -1101,7 +1115,7 @@ signaling and quiet L<NaNs (Not-A-Number)|https://en.wikipedia.org/wiki/NaN>.
 
 =item * L<Data::IEEE754>: I really wanted to use this module, but it didn't get me very far down the "Tools" track,
 and included a lot of overhead modules for its install/test that I didn't want to require for B<Data::IEEE754::Tools>.
-However, I was inspired by his byteorder-dependent anonymous subs (which were in turn derived from L<Data::MessagePack::PP>);
+However, I was inspired by its byteorder-dependent anonymous subs (which were in turn derived from L<Data::MessagePack::PP>);
 they were more efficient, on a per-call-to-subroutine basis, than my original inclusion of the if(byteorder) in every call to
 the sub.
 

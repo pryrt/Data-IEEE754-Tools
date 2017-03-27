@@ -14,8 +14,8 @@ my @SUBS = qw(
     binary64_convertToInternalBinaryString      convertToInternalBinaryString       binstr754_from_double
     binary64_convertFromInternalHexString       convertFromInternalHexString        hexstr754_to_double
     binary64_convertFromInternalBinaryString    convertFromInternalBinaryString     binstr754_to_double
-    binary64_convertToHexCharacter              convertToHexCharacter               to_hex_floatingpoint
-    binary64_convertToDecimalCharacter          convertToDecimalCharacter           to_dec_floatingpoint
+    binary64_convertToHexString                 convertToHexString                  to_hex_floatingpoint
+    binary64_convertToDecimalString             convertToDecimalString              to_dec_floatingpoint
     POS_ZERO
     POS_DENORM_SMALLEST
     POS_DENORM_BIGGEST
@@ -80,9 +80,9 @@ sub run_test {
 }
 
 my @tests = ();
-push @tests, [':convertToCharacter' => [sort qw(
-    convertToHexCharacter
-    convertToDecimalCharacter
+push @tests, [':convertToString'    => [sort qw(
+    convertToHexString
+    convertToDecimalString
 )]];
 push @tests, [':floating'           => [sort qw(
     to_hex_floatingpoint
@@ -165,9 +165,9 @@ push @tests, [':binary64'           => [sort qw(
     binary64_convertFromInternalHexString
     binary64_convertToInternalBinaryString
     binary64_convertFromInternalBinaryString
-    binary64_convertToHexCharacter
-    binary64_convertToDecimalCharacter
+    binary64_convertToHexString
+    binary64_convertToDecimalString
 )]];
-push @tests, [':all'                => [sort @SUBS]];
+push @tests, [':all'                => [grep {!/::/} sort @SUBS]];
 
 run_test(@$_) foreach @tests;

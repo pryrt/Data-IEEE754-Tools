@@ -7,7 +7,7 @@ README
 RELEASE.md
 t/00-load.t
 t/01-internalstring.t
-t/02-converttochar.t
+t/02-converttostr.t
 t/03-ulp.t
 t/04-nextupdown.t
 t/05-nextafter.t

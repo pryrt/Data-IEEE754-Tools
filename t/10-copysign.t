@@ -8,7 +8,7 @@ use 5.006;
 use warnings;
 use strict;
 use Test::More;
-use Data::IEEE754::Tools qw/:raw754 :convertToCharacter :constants :info :signbit/;
+use Data::IEEE754::Tools qw/:raw754 :convertToString :constants :info :signbit/;
 
 my @constants = (
     NEG_QNAN_LAST      ,
@@ -45,10 +45,10 @@ foreach my $x (@constants) {
         my $z = copySign($x, $y);
         my $zsign = isSignMinus($z);
 
-		my $pre = sprintf('copySign(%-25.25s,%-25.25s): ', convertToHexCharacter($x), convertToHexCharacter($y));
+		my $pre = sprintf('copySign(%-25.25s,%-25.25s): ', convertToHexString($x), convertToHexString($y));
 
         is( $zsign , $ysign , $pre . 'sign compare' );
-        is( convertToHexCharacter(abs($z)), convertToHexCharacter(abs($x)), $pre . 'abs compare' );
+        is( convertToHexString(abs($z)), convertToHexString(abs($x)), $pre . 'abs compare' );
     }
 }
 

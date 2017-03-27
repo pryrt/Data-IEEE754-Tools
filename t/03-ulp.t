@@ -43,9 +43,9 @@ sub fntest {
     unless($r) {
         diag '';
         diag "$n:";
-        diag sprintf "ORIGINAL: hex(%-30s) = %s", convertToDecimalCharacter($v), $h;
-        diag sprintf "EXPECT:   hex(%-30s) = %s", convertToDecimalCharacter($x), hexstr754_from_double($x);
-        diag sprintf "ANSWER:   hex(%-30s) = %s", convertToDecimalCharacter($u), hexstr754_from_double($u);
+        diag sprintf "ORIGINAL: hex(%-30s) = %s", convertToDecimalString($v), $h;
+        diag sprintf "EXPECT:   hex(%-30s) = %s", convertToDecimalString($x), hexstr754_from_double($x);
+        diag sprintf "ANSWER:   hex(%-30s) = %s", convertToDecimalString($u), hexstr754_from_double($u);
         diag '';
     }
 }

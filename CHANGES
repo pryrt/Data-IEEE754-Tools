@@ -8,8 +8,8 @@ v0.017 internal development version
       - make
         :floatingpoint, to_hex_floatingpoint(), to_dec_floatingpoint()
         aliases to
-        :convertToCharacter, convertToHexCharacter(),
-        convertToDecimalCharacter()
+        :convertToString, convertToHexString(),
+        convertToDecimalString()
       - make
         :raw754, hexstr754_from_double(), binstr754_from_double(),
         hexstr754_to_double(), binstr754_to_double()
@@ -22,6 +22,9 @@ v0.017 internal development version
       - improve error messages, and stop module compile on mixed-endianness
       - add test coverage for aliases
       - add author test coverage for import-tags
+      - change VERSION from a version.pm object to a plain old string '0.017_002',
+        which allows the Makefile.PL to properly extract the {provides}{version}
+        for META files
 
 v0.016 2016-Aug-29
     - had a bug in v0.014 Makefile which caused CPAN to not

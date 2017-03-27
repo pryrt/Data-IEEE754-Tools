@@ -28,6 +28,9 @@ I use a local svn client to checkout the GitHub repo.  All these things can be d
     * **Verify Documentation:**
         * make sure versioning is correct
         * verify POD and README
+            * `pod2text lib/Data/IEEE754/Tools.pm README`, then edit so that only
+            NAME, DESCRIPTION, COMPATIBILITY, INSTALLATION, AUTHOR, COPYRIGHT, LICENSE
+            remain
         * verify HISTORY
 
     * **Build Distribution**

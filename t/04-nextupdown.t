@@ -9,7 +9,7 @@ use 5.006;
 use warnings;
 use strict;
 use Test::More;
-use Data::IEEE754::Tools qw/:raw754 :ulp :convertToCharacter/;
+use Data::IEEE754::Tools qw/:raw754 :ulp :convertToString/;
 
 my ($h,$u,$v);
 
@@ -45,17 +45,17 @@ sub fntest {
     unless($r) {
         diag '';
         diag "$n:";
-        diag sprintf "ORIGINAL: hex(%-30s) = %s", convertToDecimalCharacter($v), $h;
-        diag sprintf "EXPECT:   hex(%-30s) = %s", convertToDecimalCharacter($x), hexstr754_from_double($x);
-        diag sprintf "ANSWER:   hex(%-30s) = %s", convertToDecimalCharacter($u), hexstr754_from_double($u);
+        diag sprintf "ORIGINAL: hex(%-30s) = %s", convertToDecimalString($v), $h;
+        diag sprintf "EXPECT:   hex(%-30s) = %s", convertToDecimalString($x), hexstr754_from_double($x);
+        diag sprintf "ANSWER:   hex(%-30s) = %s", convertToDecimalString($u), hexstr754_from_double($u);
         diag '';
         SWITCHFUNCTION: foreach ($fn) {
             my $val = /^nextDown$/ ? - $v : $v;     # choose nextUp or nextDown
             if( $val != $val ) {    # NAN
-                diag( "DEBUG($fn): IS NAN\t" . convertToDecimalCharacter($val) );
+                diag( "DEBUG($fn): IS NAN\t"    . convertToDecimalString($val) );
                 last SWITCHFUNCTION;
             } else {
-                diag( "DEBUG($fn): ISN'T NAN\t" . convertToDecimalCharacter($val) );
+                diag( "DEBUG($fn): ISN'T NAN\t" . convertToDecimalString($val) );
             }
             my $h754 = hexstr754_from_double($val);
             diag( "DEBUG($fn): h754 = $h754" );
@@ -79,8 +79,8 @@ sub fntest {
             $lsb &= 0xFFFFFFFF;     # v0.011_001: potential bugfix: ensure 32bit MSB <https://rt.cpan.org/Public/Bug/Display.html?id=116006>
             diag( "DEBUG($fn): MASKED msb,lsb = $msb,$lsb" );
             diag( "DEBUG($fn): FINAL HEXSTR = " .sprintf('%08X%08X', $msb, $lsb ));
-            diag( "DEBUG($fn): FINAL DOUBLE = " .convertToDecimalCharacter(hexstr754_to_double( sprintf '%08X%08X', $msb, $lsb )));
-            diag( "DEBUG($fn): FINAL NEG DOUBLE = " .convertToDecimalCharacter(-hexstr754_to_double( sprintf '%08X%08X', $msb, $lsb )))
+            diag( "DEBUG($fn): FINAL DOUBLE = "     .convertToDecimalString(hexstr754_to_double( sprintf '%08X%08X', $msb, $lsb )));
+            diag( "DEBUG($fn): FINAL NEG DOUBLE = " .convertToDecimalString(-hexstr754_to_double( sprintf '%08X%08X', $msb, $lsb )))
                 if (/^nextDown$/);
             last SWITCHFUNCTION;
         }

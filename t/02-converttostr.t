@@ -1,14 +1,14 @@
 ########################################################################
 # Verifies the following functions:
-#   :convertToCharacter
-#       convertToHexCharacter(v)
-#       convertToDecimalCharacter(v)
+#   :convertToString
+#       convertToHexString(v)
+#       convertToDecimalString(v)
 ########################################################################
 use 5.006;
 use warnings;
 use strict;
 use Test::More;
-use Data::IEEE754::Tools qw/:raw754 :convertToCharacter/;
+use Data::IEEE754::Tools qw/:raw754 :convertToString/;
 
 sub fptest {
     local $\ = "\n";
@@ -17,11 +17,11 @@ sub fptest {
     my ($got, $exp, $name);
     $exp = quotemeta( $h->{exp_hex} );
     $exp =~ s/SNAN/[SQ]NAN/;
-    like( $got = convertToHexCharacter($val), qr/$exp/, $name = sprintf('convertToHexCharacter(ieee754(%-16.16s) = %-+24.16e)', $h->{src}, $val) );
+    like( $got = convertToHexString($val), qr/$exp/, $name = sprintf('convertToHexString(ieee754(%-16.16s) = %-+24.16e)', $h->{src}, $val) );
     print( "$name() = $got" );
     $exp = quotemeta( $h->{exp_dec} );
     $exp =~ s/SNAN/[SQ]NAN/;
-    like( $got = convertToDecimalCharacter($val), qr/$exp/, $name = sprintf('convertToDecimalCharacter(ieee754(%-16.16s) = %-+24.16e)', $h->{src}, $val) );
+    like( $got = convertToDecimalString($val), qr/$exp/, $name = sprintf('convertToDecimalString(ieee754(%-16.16s) = %-+24.16e)', $h->{src}, $val) );
     print( "$name() = $got" );
 }
 

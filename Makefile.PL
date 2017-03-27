@@ -43,10 +43,16 @@ use 5.006;
         },
         # automatically determine the versions for 'provides'; MM->parse_version exists as of MM v6.31, so not a problem with >= 6.46
         #   => this comes out right when printed... but MYMETA.* shows values that look wrong
+            #my $vstr = MM->parse_version( $mm_args{VERSION_FROM} );
+            #print STDERR $vstr, $/;
+            #my $qstr = "'$vstr'";
+            #print STDERR $qstr, $/;
+            #(my $novstr = $qstr) =~ s/v//;
+            #print STDERR $novstr, $/;
         $mm_args{META_MERGE}{provides} = {
             $mm_args{NAME} => {
                 file => $mm_args{VERSION_FROM},
-                version => ''.MM->parse_version( $mm_args{VERSION_FROM} ),
+                version => MM->parse_version( $mm_args{VERSION_FROM} ),
             }
         };
     }
@@ -89,7 +95,7 @@ sub MY::postamble {
 TEST_D = $(ABSPERLRUN) -MExtUtils::Command -e test_d --
 
 # run a test coverage report
-testcover :: lib/Math/PRBS.pm
+testcover ::
 	$(NOECHO) cover -test -report html
 
 # run author-tests on the original
