@@ -1,14 +1,37 @@
 Revision history for Perl module Data::IEEE754::Tools.
 
 v0.017 internal development version
-    - v0.017_001: META = adding Travis-CI, coveralls.io, automatic signatures, etc.
+    - v0.017_001_github_integrations: META = adding Travis-CI, coveralls.io,
+      automatic signatures, etc.
+    - v0.017_002_namingconvention: start changing names per the naming-
+      convention issue#6
+      - make
+        :floatingpoint, to_hex_floatingpoint(), to_dec_floatingpoint()
+        aliases to
+        :convertToString, convertToHexString(),
+        convertToDecimalString()
+      - make
+        :raw754, hexstr754_from_double(), binstr754_from_double(),
+        hexstr754_to_double(), binstr754_to_double()
+        aliases to
+        :internalString, convertToInternalHexString(),
+        convertToInternalBinaryString(), convertFromInternalHexString(),
+        convertFromInternalBinaryString()
+      - figured out a framework for issue#7's multiple bitness, but disable
+        for now
+      - improve error messages, and stop module compile on mixed-endianness
+      - add test coverage for aliases
+      - add author test coverage for import-tags
+      - change VERSION from a version.pm object to a plain old string '0.017_002',
+        which allows the Makefile.PL to properly extract the {provides}{version}
+        for META files
 
 v0.016 2016-Aug-29
     - had a bug in v0.014 Makefile which caused CPAN to not
       index; tried a couple of submissions, none of which
       really did what I wanted.  Will try to move up to next
       public release version number (v0.016), and ask PAUSE
-      to forget the incorrect v0.14001.0 release, and hopefully
+      to forget the incorrect v0.14003.0 release, and hopefully
       re-index to this release.
 
 v0.014 2016-Aug-29

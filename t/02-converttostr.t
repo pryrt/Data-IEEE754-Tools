@@ -1,14 +1,14 @@
 ########################################################################
 # Verifies the following functions:
-#   :floatingpoint
-#       to_hex_floatingpoint(v)
-#       to_dec_floatingpoint(v)
+#   :convertToString
+#       convertToHexString(v)
+#       convertToDecimalString(v)
 ########################################################################
 use 5.006;
 use warnings;
 use strict;
 use Test::More;
-use Data::IEEE754::Tools qw/:raw754 :floatingpoint/;
+use Data::IEEE754::Tools qw/:raw754 :convertToString/;
 
 sub fptest {
     local $\ = "\n";
@@ -17,11 +17,11 @@ sub fptest {
     my ($got, $exp, $name);
     $exp = quotemeta( $h->{exp_hex} );
     $exp =~ s/SNAN/[SQ]NAN/;
-    like( $got = to_hex_floatingpoint($val), qr/$exp/, $name = sprintf('to_hex_floatingpoint(ieee754(%-16.16s) = %-+24.16e)', $h->{src}, $val) );
+    like( $got = convertToHexString($val), qr/$exp/, $name = sprintf('convertToHexString(ieee754(%-16.16s) = %-+24.16e)', $h->{src}, $val) );
     print( "$name() = $got" );
     $exp = quotemeta( $h->{exp_dec} );
     $exp =~ s/SNAN/[SQ]NAN/;
-    like( $got = to_dec_floatingpoint($val), qr/$exp/, $name = sprintf('to_dec_floatingpoint(ieee754(%-16.16s) = %-+24.16e)', $h->{src}, $val) );
+    like( $got = convertToDecimalString($val), qr/$exp/, $name = sprintf('convertToDecimalString(ieee754(%-16.16s) = %-+24.16e)', $h->{src}, $val) );
     print( "$name() = $got" );
 }
 
