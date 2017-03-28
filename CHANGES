@@ -28,6 +28,7 @@ v0.017 internal development version
     - v0.017_003_charSpec: for convertTo<Decimal/Hex>String(), add in optional
         conversionSpecification -- it specifiers the number of digits after the
         fractional-point.
+      - don't guarantee conversionSpecification > default giving correct digits
 
 v0.016 2016-Aug-29
     - had a bug in v0.014 Makefile which caused CPAN to not

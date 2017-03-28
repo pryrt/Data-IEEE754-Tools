@@ -384,17 +384,19 @@ the coefficient and the power of two, with the coefficient either in hexadecimal
 notation.
 
     convertToHexString(-3.9999999999999996)         # -0x1.fffffffffffffp+0001
-    convertToHexString(-3.9999999999999996, 16)     # -0x1.fffffffffffff000p+0001
-    convertToHexString(-3.9999999999999996, 10)     # -0x2.0000000000p+0001
-
     convertToDecimalString(-3.9999999999999996)     # -0d1.9999999999999998p+0001
-    convertToDecimalString(-3.9999999999999996, 18) # -0d1.999999999999999800p+0001
-    convertToDecimalString(-3.9999999999999996, 10) # -0d2.0000000000p+0001
 
 The optional I<conversionSpecification> argument is an integer specifying the number of digits
 after the fractional-point.  By default, C<convertToHexString()> uses 13 hex-digits and
 C<convertToDecimalString()> uses 16 decimal-digits, because those are the minimum number of
-digits to always distinguish one ULP.
+digits to always distinguish one ULP; if you choose the I<conversionSpecification> below default,
+it will round your results; if you choose the I<conversionSpecification> above default,
+the correctness of digits beyond the default is B<not> guaranteed.
+
+    convertToHexString(-3.9999999999999996, 16)     # -0x1.fffffffffffff000p+0001
+    convertToHexString(-3.9999999999999996, 10)     # -0x2.0000000000p+0001
+    convertToDecimalString(-3.9999999999999996, 18) # -0d1.999999999999999778p+0001 (the last three digits may be different on your system)
+    convertToDecimalString(-3.9999999999999996, 10) # -0d2.0000000000p+0001
 
 =cut
 
@@ -402,6 +404,7 @@ sub binary64_convertToHexString {
     # thanks to BrowserUK @ http://perlmonks.org/?node_id=1167146 for slighly better decision factors
     # I tweaked it to use the two 32bit words instead of one 64bit word (which wouldn't work on some systems)
     my $v = shift;
+    my $p = defined $_[0] ? shift : 13;
     my ($msb,$lsb) = $_helper64_arr2x32b->($v);
     my $sbit = ($msb & 0x80000000) >> 31;
     my $sign = $sbit ? '-' : '+';

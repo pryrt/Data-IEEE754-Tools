@@ -1,15 +1,6 @@
 TODO
     - immediate:
-      - build error
-        convertTo<Dec/Hex>String( 0010000000000001 | 8010000000000001 | 001FFFFFFFFFFFFF | 801FFFFFFFFFFFFF, 17)
-        -> round off is thus different on my system then on theirs.  I have to figure out a way to convert it
-        without the round-off error -- or, more likely, I have to declare that accuracy beyond 16 decimal places
-        or 13 hexadecimal places is _not_ guaranteed.
-            One idea is to turn the fractional part into a bigint, multiply by 5**52, then shift the decimal
-            point 52 to the left
-                1 + 1/2**52 = 1 + 1*5**52 / 10**52         = 1.000_000_000_000_000_222_044_604_92(5)...
-                1 + 2**51/2**52 = 1 + 2**51 * 5**52 / 2**52 = 1 + 5e51/1e52 = 1.5
-                1 + (2**52-1)/2**52 = 1.999999999999999(8) = 1.999_999_999_999_999_777_955_395_17(5)
+      - change the DECIMAL output for NAN/INF using the conversionSpec argument
       - continue to implement and test conversionSpec optional argument
 
     - long-term: implement more functions from IEEE754-2007, especially
