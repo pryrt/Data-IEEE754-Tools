@@ -6,8 +6,7 @@ use Carp;
 use Exporter 'import';  # just use the import() function, without the rest of the overhead of ISA
 use Config;
 
-our $VERSION = '0.017_002';
-#use v------- 0.77; our $V------ = version->declare('0.017_002');   # part of 0.017_002 alpha release will be to see if a plain string works better: it works better for automating {provides}{version}
+our $VERSION = '0.017_003';
     # use rrr.mmm_aaa, where rrr is major revision, mmm is ODD minor revision, and aaa is alpha sub-revision (for ALPHA code)
     # use rrr.mmmsss,  where rrr is major revision, mmm is EVEN minor revision, and sss is a sub-revision (usually sss=000) (for releases)
 
@@ -376,24 +375,28 @@ if( $] lt '5.010' ) {
 
 =head2 :convertToString
 
-=head3 convertToHexString( I<value> )
+=head3 convertToHexString( I<value> [, I<conversionSpecification>] )
 
-=head3 convertToDecimalString( I<value> )
+=head3 convertToDecimalString( I<value> [, I<conversionSpecification>] )
 
 Converts value to a hexadecimal or decimal floating-point notation that indicates the sign and
 the coefficient and the power of two, with the coefficient either in hexadecimal or decimal
 notation.
 
     convertToHexString(-3.9999999999999996)         # -0x1.fffffffffffffp+0001
-    convertToDecimalString(-3.9999999999999996)     # -0d1.9999999999999998p+0001
+    convertToHexString(-3.9999999999999996, 16)     # -0x1.fffffffffffff000p+0001
+    convertToHexString(-3.9999999999999996, 10)     # -0x2.0000000000p+0001
 
-It displays the value as (sign)(0base)(implied).(fraction)p(exponent):
+    convertToDecimalString(-3.9999999999999996)     # -0d1.9999999999999998p+0001
+    convertToDecimalString(-3.9999999999999996, 18) # -0d1.999999999999999800p+0001
+    convertToDecimalString(-3.9999999999999996, 10) # -0d2.0000000000p+0001
+
+The optional I<conversionSpecification> argument is an integer specifying the number of digits
+after the fractional-point.  By default, C<convertToHexString()> uses 13 hex-digits and
+C<convertToDecimalString()> uses 16 decimal-digits, because those are the minimum number of
+digits to always distinguish one ULP.
 
 =cut
-
-# TODO = issue#6: might want to rename the exportable functions to convertToHexString,
-#   and alias <type>_convertToHexCharacter() as the official IEEE-754 naming-scheme, but not exportable
-#   (so Data::IEEE754::Tools::<type>_convertToHexCharacter(v) as the only calling mechanism)
 
 sub binary64_convertToHexString {
     # thanks to BrowserUK @ http://perlmonks.org/?node_id=1167146 for slighly better decision factors
@@ -443,6 +446,7 @@ if(0) { # issue#7 TODO
 sub binary64_convertToDecimalString {
     # derived from binary64_convertToHexString
     my $v = shift;
+    my $p = defined $_[0] ? shift : 16;
     my ($msb,$lsb) = $_helper64_arr2x32b->($v);
     my $sbit = ($msb & 0x80000000) >> 31;
     my $sign = $sbit ? '-' : '+';
@@ -461,7 +465,7 @@ sub binary64_convertToDecimalString {
     #$mant = (($msb & 0x000FFFFF)*4_294_967_296.0 + ($lsb & 0xFFFFFFFF)*1.0) / (2.0**52);
     #sprintf '%s0d%1u.%.16fp%+05d', $sign, $implied, $mant, $exp;
     my $other = abs($v) / (2.0**$exp);
-    sprintf '%s0d%.16fp%+05d', $sign, $other, $exp;
+    sprintf '%s0d%.*fp%+05d', $sign, $p, $other, $exp;
 }
 *convertToDecimalString = \&binary64_convertToDecimalString;
 if(0) { # issue#7 TODO
@@ -473,6 +477,9 @@ if(0) { # issue#7 TODO
 }
 *to_dec_floatingpoint = \&convertToDecimalString;
 
+=head4 interpretation
+
+It displays the value as (sign)(0base)(implied).(fraction)p(exponent):
 
 =over
 

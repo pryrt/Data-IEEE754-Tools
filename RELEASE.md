@@ -65,5 +65,7 @@ I use a local svn client to checkout the GitHub repo.  All these things can be d
 
     * **PAUSE:** [upload distribution tarball to CPAN/PAUSE](https://pause.perl.org/pause/authenquery?ACTION=add_uri) by browsing to the file on my computer.
         * Watch <https://metacpan.org/author/PETERCJ> and <http://search.cpan.org/~petercj/> for when it updates
-        * Clear out any [GitHub issues](https://github.com/pryrt/Data-IEEE754-Tools/issues/)
+        * Watch CPAN Testers
+
+    * **GitHub:** Clear out any [issues](https://github.com/pryrt/Data-IEEE754-Tools/issues/) that were resolved by this release
 
