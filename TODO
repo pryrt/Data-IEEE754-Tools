@@ -1,6 +1,5 @@
 TODO
     - immediate:
-      - change the DECIMAL output for NAN/INF using the conversionSpec argument
       - continue to implement and test conversionSpec optional argument
 
     - long-term: implement more functions from IEEE754-2007, especially

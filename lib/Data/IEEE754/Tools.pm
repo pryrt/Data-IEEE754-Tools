@@ -411,16 +411,26 @@ sub binary64_convertToHexString {
     my $exp  = (($msb & 0x7FF00000) >> 20) - 1023;
     my $mant = sprintf '%05x%08x', $msb & 0x000FFFFF, $lsb & 0xFFFFFFFF;
     if($exp == 1024) {
-        return $sign . "0x1.#INF000000000p+0000"    if $mant eq '0000000000000';
-        return $sign . "0x1.#IND000000000p+0000"    if $mant eq '8000000000000' and $sign eq '-';
-        return $sign . ( (($msb & 0x00080000) != 0x00080000) ? "0x1.#SNAN00000000p+0000" : "0x1.#QNAN00000000p+0000");  # v0.012 coverage note: '!=' condition only triggered on systems with SNAN; ignore Devel::Cover failures on this line on systems which quiet all SNAN to QNAN
+        my $z = "0"x (($p<5?4:$p)-4);
+        return $sign . "0x1.#INF${z}p+0000"    if $mant eq '0000000000000';
+        return $sign . "0x1.#IND${z}p+0000"    if $mant eq '8000000000000' and $sign eq '-';
+        $z = "0"x (($p<6?5:$p)-5);
+        return $sign . ( (($msb & 0x00080000) != 0x00080000) ? "0x1.#SNAN${z}p+0000" : "0x1.#QNAN${z}p+0000");  # v0.012 coverage note: '!=' condition only triggered on systems with SNAN; ignore Devel::Cover failures on this line on systems which quiet all SNAN to QNAN
     }
     my $implied = 1;
     if( $exp == -1023 ) { # zero or denormal
         $implied = 0;
         $exp = $mant eq '0000000000000' ? 0 : -1022;   # 0 for zero, -1022 for denormal
     }
-    sprintf '%s0x%1u.%13.13sp%+05d', $sign, $implied, $mant, $exp;
+    if($p<13) {
+        my $l = hex substr $mant, 0, $p;
+        my $r = hex substr $mant, $p, 1;
+        $l += 1 if $r > 7;
+        # BAD: need to take the values from $msb and $lsb
+        return sprintf '%s0x%1u.%0*xp%+05d', $sign, $implied, $p, $l, $exp;
+    } else {
+        return sprintf '%s0x%1u.%13.13sp%+05d', $sign, $implied, $mant . '0'x($p-13), $exp;
+    }
 }
 *convertToHexString = \&binary64_convertToHexString;
 my $__glue_dispatch;    # issue#7 TODO
@@ -456,9 +466,11 @@ sub binary64_convertToDecimalString {
     my $exp  = (($msb & 0x7FF00000) >> 20) - 1023;
     my $mant = sprintf '%05x%08x', $msb & 0x000FFFFF, $lsb & 0xFFFFFFFF;
     if($exp == 1024) {
-        return $sign . "0d1.#INF000000000000p+0000"    if $mant eq '0000000000000';
-        return $sign . "0d1.#IND000000000000p+0000"    if $mant eq '8000000000000' and $sign eq '-';
-        return $sign . ( (($msb & 0x00080000) != 0x00080000) ? "0d1.#SNAN00000000000p+0000" : "0d1.#QNAN00000000000p+0000");  # v0.012 coverage note: '!=' condition only triggered on systems with SNAN; ignore Devel::Cover failures on this line on systems which quiet all SNAN to QNAN
+        my $z = "0"x (($p<5?4:$p)-4);
+        return $sign . "0d1.#INF${z}p+0000"    if $mant eq '0000000000000';
+        return $sign . "0d1.#IND${z}p+0000"    if $mant eq '8000000000000' and $sign eq '-';
+        $z = "0"x (($p<6?5:$p)-5);
+        return $sign . ( (($msb & 0x00080000) != 0x00080000) ? "0d1.#SNAN${z}p+0000" : "0d1.#QNAN${z}p+0000");  # v0.012 coverage note: '!=' condition only triggered on systems with SNAN; ignore Devel::Cover failures on this line on systems which quiet all SNAN to QNAN
     }
     my $implied = 1;
     if( $exp == -1023 ) { # zero or denormal

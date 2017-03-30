@@ -52,11 +52,11 @@ sub fptest {
 my @tests = ();
 push @tests, { src => '0000000000000000', exp_hex => '+0x0.0000000000000p+0000', exp_dec => '+0d0.0000000000000000p+0000' };
 push @tests, { src => '0000000000000000', exp_hex => '+0x0.0000000000000p+0000', exp_dec => '+0d0.0000000000000000p+0000'   , convSpec => undef };
-push @tests, { src => '0000000000000000', exp_hex => '+0x0.0000000000000p+0000', exp_dec => '+0d0.0000000000p+0000'         , convSpec => 10    };
+push @tests, { src => '0000000000000000', exp_hex => '+0x0.0000000000p+0000'   , exp_dec => '+0d0.0000000000p+0000'         , convSpec => 10    };
 push @tests, { src => '0000000000000000', exp_hex => '+0x0.0000000000000p+0000', exp_dec => '+0d0.0000000000000p+0000'      , convSpec => 13    };
 push @tests, { src => '8000000000000000', exp_hex => '-0x0.0000000000000p+0000', exp_dec => '-0d0.0000000000000000p+0000' };
 push @tests, { src => '8000000000000000', exp_hex => '-0x0.0000000000000p+0000', exp_dec => '-0d0.0000000000000000p+0000'   , convSpec => undef };
-push @tests, { src => '8000000000000000', exp_hex => '-0x0.0000000000000p+0000', exp_dec => '-0d0.0000000000p+0000'         , convSpec => 10    };
+push @tests, { src => '8000000000000000', exp_hex => '-0x0.0000000000p+0000'   , exp_dec => '-0d0.0000000000p+0000'         , convSpec => 10    };
 push @tests, { src => '8000000000000000', exp_hex => '-0x0.0000000000000p+0000', exp_dec => '-0d0.0000000000000p+0000'      , convSpec => 13    };
 
 push @tests, { src => '0000000000000001', exp_hex => '+0x0.0000000000001p-1022', exp_dec => '+0d0.0000000000000002p-1022' };
@@ -304,57 +304,69 @@ push @tests, { src => 'FFEFFFFFFFFFFFFF', exp_hex => '-0x1.fffffffffffffp+1023',
 
 push @tests, { src => '7FF0000000000000', exp_hex => '+0x1.#INF000000000p+0000', exp_dec => '+0d1.#INF000000000000p+0000' };
 push @tests, { src => '7FF0000000000000', exp_hex => '+0x1.#INF000000000p+0000', exp_dec => '+0d1.#INF000000000000p+0000'   , convSpec => undef };
-push @tests, { src => '7FF0000000000000', exp_hex => '+0x1.#INF000000000p+0000', exp_dec => '+0d1.#INF000000000000p+0000'   , convSpec => 10    };
-push @tests, { src => '7FF0000000000000', exp_hex => '+0x1.#INF000000000p+0000', exp_dec => '+0d1.#INF000000000000p+0000'   , convSpec => 13    };
+push @tests, { src => '7FF0000000000000', exp_hex => '+0x1.#INFp+0000'         , exp_dec => '+0d1.#INFp+0000'               , convSpec => 3     };
+push @tests, { src => '7FF0000000000000', exp_hex => '+0x1.#INF00p+0000'       , exp_dec => '+0d1.#INF00p+0000'             , convSpec => 6     };
+push @tests, { src => '7FF0000000000000', exp_hex => '+0x1.#INF000000000p+0000', exp_dec => '+0d1.#INF000000000p+0000'      , convSpec => 13    };
 push @tests, { src => 'FFF0000000000000', exp_hex => '-0x1.#INF000000000p+0000', exp_dec => '-0d1.#INF000000000000p+0000' };
 push @tests, { src => 'FFF0000000000000', exp_hex => '-0x1.#INF000000000p+0000', exp_dec => '-0d1.#INF000000000000p+0000'   , convSpec => undef };
-push @tests, { src => 'FFF0000000000000', exp_hex => '-0x1.#INF000000000p+0000', exp_dec => '-0d1.#INF000000000000p+0000'   , convSpec => 10    };
-push @tests, { src => 'FFF0000000000000', exp_hex => '-0x1.#INF000000000p+0000', exp_dec => '-0d1.#INF000000000000p+0000'   , convSpec => 13    };
+push @tests, { src => 'FFF0000000000000', exp_hex => '-0x1.#INFp+0000'         , exp_dec => '-0d1.#INFp+0000'               , convSpec => 3     };
+push @tests, { src => 'FFF0000000000000', exp_hex => '-0x1.#INF00p+0000'       , exp_dec => '-0d1.#INF00p+0000'             , convSpec => 6     };
+push @tests, { src => 'FFF0000000000000', exp_hex => '-0x1.#INF000000000p+0000', exp_dec => '-0d1.#INF000000000p+0000'      , convSpec => 13    };
 
 push @tests, { src => '7FF0000000000001', exp_hex => '+0x1.#SNAN00000000p+0000', exp_dec => '+0d1.#SNAN00000000000p+0000' };
 push @tests, { src => '7FF0000000000001', exp_hex => '+0x1.#SNAN00000000p+0000', exp_dec => '+0d1.#SNAN00000000000p+0000'   , convSpec => undef };
-push @tests, { src => '7FF0000000000001', exp_hex => '+0x1.#SNAN00000000p+0000', exp_dec => '+0d1.#SNAN00000000000p+0000'   , convSpec => 10    };
-push @tests, { src => '7FF0000000000001', exp_hex => '+0x1.#SNAN00000000p+0000', exp_dec => '+0d1.#SNAN00000000000p+0000'   , convSpec => 13    };
+push @tests, { src => '7FF0000000000001', exp_hex => '+0x1.#SNANp+0000'        , exp_dec => '+0d1.#SNANp+0000'              , convSpec => 3     };
+push @tests, { src => '7FF0000000000001', exp_hex => '+0x1.#SNAN0p+0000'       , exp_dec => '+0d1.#SNAN0p+0000'             , convSpec => 6     };
+push @tests, { src => '7FF0000000000001', exp_hex => '+0x1.#SNAN00000000p+0000', exp_dec => '+0d1.#SNAN00000000p+0000'      , convSpec => 13    };
 push @tests, { src => 'FFF0000000000001', exp_hex => '-0x1.#SNAN00000000p+0000', exp_dec => '-0d1.#SNAN00000000000p+0000' };
 push @tests, { src => 'FFF0000000000001', exp_hex => '-0x1.#SNAN00000000p+0000', exp_dec => '-0d1.#SNAN00000000000p+0000'   , convSpec => undef };
-push @tests, { src => 'FFF0000000000001', exp_hex => '-0x1.#SNAN00000000p+0000', exp_dec => '-0d1.#SNAN00000000000p+0000'   , convSpec => 10    };
-push @tests, { src => 'FFF0000000000001', exp_hex => '-0x1.#SNAN00000000p+0000', exp_dec => '-0d1.#SNAN00000000000p+0000'   , convSpec => 13    };
+push @tests, { src => 'FFF0000000000001', exp_hex => '-0x1.#SNANp+0000'        , exp_dec => '-0d1.#SNANp+0000'              , convSpec => 3     };
+push @tests, { src => 'FFF0000000000001', exp_hex => '-0x1.#SNAN0p+0000'       , exp_dec => '-0d1.#SNAN0p+0000'             , convSpec => 6     };
+push @tests, { src => 'FFF0000000000001', exp_hex => '-0x1.#SNAN00000000p+0000', exp_dec => '-0d1.#SNAN00000000p+0000'      , convSpec => 13    };
 
 push @tests, { src => '7FF7FFFFFFFFFFFF', exp_hex => '+0x1.#SNAN00000000p+0000', exp_dec => '+0d1.#SNAN00000000000p+0000' };
 push @tests, { src => '7FF7FFFFFFFFFFFF', exp_hex => '+0x1.#SNAN00000000p+0000', exp_dec => '+0d1.#SNAN00000000000p+0000'   , convSpec => undef };
-push @tests, { src => '7FF7FFFFFFFFFFFF', exp_hex => '+0x1.#SNAN00000000p+0000', exp_dec => '+0d1.#SNAN00000000000p+0000'   , convSpec => 10    };
-push @tests, { src => '7FF7FFFFFFFFFFFF', exp_hex => '+0x1.#SNAN00000000p+0000', exp_dec => '+0d1.#SNAN00000000000p+0000'   , convSpec => 13    };
+push @tests, { src => '7FF7FFFFFFFFFFFF', exp_hex => '+0x1.#SNANp+0000'        , exp_dec => '+0d1.#SNANp+0000'              , convSpec => 3     };
+push @tests, { src => '7FF7FFFFFFFFFFFF', exp_hex => '+0x1.#SNAN0p+0000'       , exp_dec => '+0d1.#SNAN0p+0000'             , convSpec => 6     };
+push @tests, { src => '7FF7FFFFFFFFFFFF', exp_hex => '+0x1.#SNAN00000000p+0000', exp_dec => '+0d1.#SNAN00000000p+0000'      , convSpec => 13    };
 push @tests, { src => 'FFF7FFFFFFFFFFFF', exp_hex => '-0x1.#SNAN00000000p+0000', exp_dec => '-0d1.#SNAN00000000000p+0000' };
 push @tests, { src => 'FFF7FFFFFFFFFFFF', exp_hex => '-0x1.#SNAN00000000p+0000', exp_dec => '-0d1.#SNAN00000000000p+0000'   , convSpec => undef };
-push @tests, { src => 'FFF7FFFFFFFFFFFF', exp_hex => '-0x1.#SNAN00000000p+0000', exp_dec => '-0d1.#SNAN00000000000p+0000'   , convSpec => 10    };
-push @tests, { src => 'FFF7FFFFFFFFFFFF', exp_hex => '-0x1.#SNAN00000000p+0000', exp_dec => '-0d1.#SNAN00000000000p+0000'   , convSpec => 13    };
+push @tests, { src => 'FFF7FFFFFFFFFFFF', exp_hex => '-0x1.#SNANp+0000'        , exp_dec => '-0d1.#SNANp+0000'              , convSpec => 3     };
+push @tests, { src => 'FFF7FFFFFFFFFFFF', exp_hex => '-0x1.#SNAN0p+0000'       , exp_dec => '-0d1.#SNAN0p+0000'             , convSpec => 6     };
+push @tests, { src => 'FFF7FFFFFFFFFFFF', exp_hex => '-0x1.#SNAN00000000p+0000', exp_dec => '-0d1.#SNAN00000000p+0000'      , convSpec => 13    };
 
 push @tests, { src => '7FF8000000000000', exp_hex => '+0x1.#QNAN00000000p+0000', exp_dec => '+0d1.#QNAN00000000000p+0000' };
 push @tests, { src => '7FF8000000000000', exp_hex => '+0x1.#QNAN00000000p+0000', exp_dec => '+0d1.#QNAN00000000000p+0000'   , convSpec => undef };
-push @tests, { src => '7FF8000000000000', exp_hex => '+0x1.#QNAN00000000p+0000', exp_dec => '+0d1.#QNAN00000000000p+0000'   , convSpec => 10    };
-push @tests, { src => '7FF8000000000000', exp_hex => '+0x1.#QNAN00000000p+0000', exp_dec => '+0d1.#QNAN00000000000p+0000'   , convSpec => 13    };
+push @tests, { src => '7FF8000000000000', exp_hex => '+0x1.#QNANp+0000'        , exp_dec => '+0d1.#QNANp+0000'              , convSpec => 3     };
+push @tests, { src => '7FF8000000000000', exp_hex => '+0x1.#QNAN0p+0000'       , exp_dec => '+0d1.#QNAN0p+0000'             , convSpec => 6     };
+push @tests, { src => '7FF8000000000000', exp_hex => '+0x1.#QNAN00000000p+0000', exp_dec => '+0d1.#QNAN00000000p+0000'      , convSpec => 13    };
 push @tests, { src => 'FFF8000000000000', exp_hex => '-0x1.#IND000000000p+0000', exp_dec => '-0d1.#IND000000000000p+0000' };
 push @tests, { src => 'FFF8000000000000', exp_hex => '-0x1.#IND000000000p+0000', exp_dec => '-0d1.#IND000000000000p+0000'   , convSpec => undef };
-push @tests, { src => 'FFF8000000000000', exp_hex => '-0x1.#IND000000000p+0000', exp_dec => '-0d1.#IND000000000000p+0000'   , convSpec => 10    };
-push @tests, { src => 'FFF8000000000000', exp_hex => '-0x1.#IND000000000p+0000', exp_dec => '-0d1.#IND000000000000p+0000'   , convSpec => 13    };
+push @tests, { src => 'FFF8000000000000', exp_hex => '-0x1.#INDp+0000'         , exp_dec => '-0d1.#INDp+0000'               , convSpec => 3     };
+push @tests, { src => 'FFF8000000000000', exp_hex => '-0x1.#IND00p+0000'       , exp_dec => '-0d1.#IND00p+0000'             , convSpec => 6     };
+push @tests, { src => 'FFF8000000000000', exp_hex => '-0x1.#IND000000000p+0000', exp_dec => '-0d1.#IND000000000p+0000'      , convSpec => 13    };
 
 push @tests, { src => '7FF8000000000001', exp_hex => '+0x1.#QNAN00000000p+0000', exp_dec => '+0d1.#QNAN00000000000p+0000' };
 push @tests, { src => '7FF8000000000001', exp_hex => '+0x1.#QNAN00000000p+0000', exp_dec => '+0d1.#QNAN00000000000p+0000'   , convSpec => undef };
-push @tests, { src => '7FF8000000000001', exp_hex => '+0x1.#QNAN00000000p+0000', exp_dec => '+0d1.#QNAN00000000000p+0000'   , convSpec => 10    };
-push @tests, { src => '7FF8000000000001', exp_hex => '+0x1.#QNAN00000000p+0000', exp_dec => '+0d1.#QNAN00000000000p+0000'   , convSpec => 13    };
+push @tests, { src => '7FF8000000000001', exp_hex => '+0x1.#QNANp+0000'        , exp_dec => '+0d1.#QNANp+0000'              , convSpec => 3     };
+push @tests, { src => '7FF8000000000001', exp_hex => '+0x1.#QNAN0p+0000'       , exp_dec => '+0d1.#QNAN0p+0000'             , convSpec => 6     };
+push @tests, { src => '7FF8000000000001', exp_hex => '+0x1.#QNAN00000000p+0000', exp_dec => '+0d1.#QNAN00000000p+0000'      , convSpec => 13    };
 push @tests, { src => 'FFF8000000000001', exp_hex => '-0x1.#QNAN00000000p+0000', exp_dec => '-0d1.#QNAN00000000000p+0000' };
 push @tests, { src => 'FFF8000000000001', exp_hex => '-0x1.#QNAN00000000p+0000', exp_dec => '-0d1.#QNAN00000000000p+0000'   , convSpec => undef };
-push @tests, { src => 'FFF8000000000001', exp_hex => '-0x1.#QNAN00000000p+0000', exp_dec => '-0d1.#QNAN00000000000p+0000'   , convSpec => 10    };
-push @tests, { src => 'FFF8000000000001', exp_hex => '-0x1.#QNAN00000000p+0000', exp_dec => '-0d1.#QNAN00000000000p+0000'   , convSpec => 13    };
+push @tests, { src => 'FFF8000000000001', exp_hex => '-0x1.#QNANp+0000'        , exp_dec => '-0d1.#QNANp+0000'              , convSpec => 3     };
+push @tests, { src => 'FFF8000000000001', exp_hex => '-0x1.#QNAN0p+0000'       , exp_dec => '-0d1.#QNAN0p+0000'             , convSpec => 6     };
+push @tests, { src => 'FFF8000000000001', exp_hex => '-0x1.#QNAN00000000p+0000', exp_dec => '-0d1.#QNAN00000000p+0000'      , convSpec => 13    };
 
 push @tests, { src => '7FFFFFFFFFFFFFFF', exp_hex => '+0x1.#QNAN00000000p+0000', exp_dec => '+0d1.#QNAN00000000000p+0000' };
 push @tests, { src => '7FFFFFFFFFFFFFFF', exp_hex => '+0x1.#QNAN00000000p+0000', exp_dec => '+0d1.#QNAN00000000000p+0000'   , convSpec => undef };
-push @tests, { src => '7FFFFFFFFFFFFFFF', exp_hex => '+0x1.#QNAN00000000p+0000', exp_dec => '+0d1.#QNAN00000000000p+0000'   , convSpec => 10    };
-push @tests, { src => '7FFFFFFFFFFFFFFF', exp_hex => '+0x1.#QNAN00000000p+0000', exp_dec => '+0d1.#QNAN00000000000p+0000'   , convSpec => 13    };
+push @tests, { src => '7FFFFFFFFFFFFFFF', exp_hex => '+0x1.#QNANp+0000'        , exp_dec => '+0d1.#QNANp+0000'              , convSpec => 3     };
+push @tests, { src => '7FFFFFFFFFFFFFFF', exp_hex => '+0x1.#QNAN0p+0000'       , exp_dec => '+0d1.#QNAN0p+0000'             , convSpec => 6     };
+push @tests, { src => '7FFFFFFFFFFFFFFF', exp_hex => '+0x1.#QNAN00000000p+0000', exp_dec => '+0d1.#QNAN00000000p+0000'      , convSpec => 13    };
 push @tests, { src => 'FFFFFFFFFFFFFFFF', exp_hex => '-0x1.#QNAN00000000p+0000', exp_dec => '-0d1.#QNAN00000000000p+0000' };
 push @tests, { src => 'FFFFFFFFFFFFFFFF', exp_hex => '-0x1.#QNAN00000000p+0000', exp_dec => '-0d1.#QNAN00000000000p+0000'   , convSpec => undef };
-push @tests, { src => 'FFFFFFFFFFFFFFFF', exp_hex => '-0x1.#QNAN00000000p+0000', exp_dec => '-0d1.#QNAN00000000000p+0000'   , convSpec => 10    };
-push @tests, { src => 'FFFFFFFFFFFFFFFF', exp_hex => '-0x1.#QNAN00000000p+0000', exp_dec => '-0d1.#QNAN00000000000p+0000'   , convSpec => 13    };
+push @tests, { src => 'FFFFFFFFFFFFFFFF', exp_hex => '-0x1.#QNANp+0000'        , exp_dec => '-0d1.#QNANp+0000'              , convSpec => 3     };
+push @tests, { src => 'FFFFFFFFFFFFFFFF', exp_hex => '-0x1.#QNAN0p+0000'       , exp_dec => '-0d1.#QNAN0p+0000'             , convSpec => 6     };
+push @tests, { src => 'FFFFFFFFFFFFFFFF', exp_hex => '-0x1.#QNAN00000000p+0000', exp_dec => '-0d1.#QNAN00000000p+0000'      , convSpec => 13    };
 
 plan tests => 2 * scalar @tests;
 

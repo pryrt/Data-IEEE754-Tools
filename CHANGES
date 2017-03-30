@@ -28,6 +28,8 @@ v0.017 internal development version
     - v0.017_003_charSpec: for convertTo<Decimal/Hex>String(), add in optional
         conversionSpecification -- it specifiers the number of digits after the
         fractional-point.
+        - finished conversionSpecification for Decimal
+        - implemented for *NAN/IND/INF for Hex
       - don't guarantee conversionSpecification > default giving correct digits
 
 v0.016 2016-Aug-29
