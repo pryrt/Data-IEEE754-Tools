@@ -423,11 +423,25 @@ sub binary64_convertToHexString {
         $exp = $mant eq '0000000000000' ? 0 : -1022;   # 0 for zero, -1022 for denormal
     }
     if($p<13) {
-        my $l = hex substr $mant, 0, $p;
+        my $m = $msb & 0xFFFFF;
+        my $l = $lsb;
+printf STDERR "Need to round up *.(%05x)(%08x) to %d hexits\n", $m, $l, $p;
+        if($p>5) {  # use all of MSB, and some of LSB
+            my $two = 1 << 4*( 8 - ($p-5) );
+            my $eff = $two - 1;
+            my $msk = 0xFFFFFFFF ^ $eff;
+printf STDERR "...................(%05x)(%08x)\n", $m, $eff;
+printf STDERR "...................(%05x)(%08x)\n", $m, $two;
+printf STDERR "...................(%05x)(%08x)\n", $m, $msk;
+        } else {
+        }
+
+
+        my $f = hex substr $mant, 0, $p;
         my $r = hex substr $mant, $p, 1;
-        $l += 1 if $r > 7;
+        $f += 1 if $r > 7;
         # BAD: need to take the values from $msb and $lsb
-        return sprintf '%s0x%1u.%0*xp%+05d', $sign, $implied, $p, $l, $exp;
+        return sprintf '%s0x%1u.%0*xp%+05d', $sign, $implied, $p, $f, $exp;
     } else {
         return sprintf '%s0x%1u.%13.13sp%+05d', $sign, $implied, $mant . '0'x($p-13), $exp;
     }
