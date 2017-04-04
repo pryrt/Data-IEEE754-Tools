@@ -425,15 +425,41 @@ sub binary64_convertToHexString {
     if($p<13) {
         my $m = $msb & 0xFFFFF;
         my $l = $lsb;
+        my $o = '...';
 printf STDERR "Need to round up *.(%05x)(%08x) to %d hexits\n", $m, $l, $p;
-        if($p>5) {  # use all of MSB, and some of LSB
-            my $two = 1 << 4*( 8 - ($p-5) );
-            my $eff = $two - 1;
+        if($p>=5) {  # use all of MSB, and move into LSB
+            my $one = 1 << 4*( 8 - ($p-5) );
+            my $haf = $one >> 1;
+            my $eff = $one - 1;
             my $msk = 0xFFFFFFFF ^ $eff;
-printf STDERR "...................(%05x)(%08x)\n", $m, $eff;
-printf STDERR "...................(%05x)(%08x)\n", $m, $two;
-printf STDERR "...................(%05x)(%08x)\n", $m, $msk;
+            #   printf STDERR "................%s(%05x)(%08x) eff\n",  $o ? '1' : '...', $m, $eff;
+            #   printf STDERR "................%s(%05x)(%08x) one\n",  $o ? '1' : '...', $m, $one;
+            #   printf STDERR "................%s(%05x)(%08x) half\n", $o ? '1' : '...', $m, $haf;
+            #   printf STDERR "................%s(%05x)(%08x) mask\n", $o ? '1' : '...', $m, $msk;
+            if( $l & $eff >= $haf) {
+                $l = ($l & $msk) + $one;
+printf STDERR "................%s(%05x)(%08x) after LSB mask (roundup)\n", $o ? '1' : '...', $m, $l;
+            } else {
+                $l = ($l & $msk);
+printf STDERR "................%s(%05x)(%08x) after LSB mask (rounddown)\n", $o ? '1' : '...', $m, $l;
+            }
+            if( $l == 0x1_0000_0000) {
+#TODO =  this comparison isn't safe; needs to move into the >haf, and
+                $l = 0;
+                $m++;
+printf STDERR "................%s(%05x)(%08x) after LSB-to-MSB carry\n", $o ? '1' : '...', $m, $l;
+            }
+            if($m >= 0x1_0_0000) {
+                $o = '(1)';
+                $m -= 0x1_0_0000;
+printf STDERR "................%s(%05x)(%08x) after MSB-to-overflow carry\n", $o ? '1' : '...', $m, $l;
+            }
+#TODO = propagate $o into $implied
+
+printf STDERR "................%s(%05x)(%08x) final\n", $o ? '1' : '...', $m, $l;
+
         } else {
+printf STDERR "................%s(%05x)(%08x) TODO p<5\n", $o ? '1' : '...', $m, $l;
         }
 
 

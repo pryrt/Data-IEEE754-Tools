@@ -61,19 +61,23 @@ push @tests, { src => '8000000000000000', exp_hex => '-0x0.0000000000000p+0000',
 
 push @tests, { src => '0000000000000001', exp_hex => '+0x0.0000000000001p-1022', exp_dec => '+0d0.0000000000000002p-1022' };
 push @tests, { src => '0000000000000001', exp_hex => '+0x0.0000000000001p-1022', exp_dec => '+0d0.0000000000000002p-1022'   , convSpec => undef };
+push @tests, { src => '0000000000000001', exp_hex => '+0x0.000p-1022'          , exp_dec => '+0d0.000p-1022'                , convSpec => 3     };  # extra: coverage for p<5
 push @tests, { src => '0000000000000001', exp_hex => '+0x0.0000000000p-1022'   , exp_dec => '+0d0.0000000000p-1022'         , convSpec => 10    };
 push @tests, { src => '0000000000000001', exp_hex => '+0x0.0000000000001p-1022', exp_dec => '+0d0.0000000000000p-1022'      , convSpec => 13    };
 push @tests, { src => '8000000000000001', exp_hex => '-0x0.0000000000001p-1022', exp_dec => '-0d0.0000000000000002p-1022' };
 push @tests, { src => '8000000000000001', exp_hex => '-0x0.0000000000001p-1022', exp_dec => '-0d0.0000000000000002p-1022'   , convSpec => undef };
+push @tests, { src => '8000000000000001', exp_hex => '-0x0.000p-1022'          , exp_dec => '-0d0.000p-1022'                , convSpec => 3     };  # extra: coverage for p<5
 push @tests, { src => '8000000000000001', exp_hex => '-0x0.0000000000p-1022'   , exp_dec => '-0d0.0000000000p-1022'         , convSpec => 10    };
 push @tests, { src => '8000000000000001', exp_hex => '-0x0.0000000000001p-1022', exp_dec => '-0d0.0000000000000p-1022'      , convSpec => 13    };
 
 push @tests, { src => '000FFFFFFFFFFFFF', exp_hex => '+0x0.fffffffffffffp-1022', exp_dec => '+0d0.9999999999999998p-1022' };
 push @tests, { src => '000FFFFFFFFFFFFF', exp_hex => '+0x0.fffffffffffffp-1022', exp_dec => '+0d0.9999999999999998p-1022'   , convSpec => undef };
+push @tests, { src => '000FFFFFFFFFFFFF', exp_hex => '+0x1.000p-1022'          , exp_dec => '+0d1.000p-1022'                , convSpec => 3     };  # extra: coverage for p<5
 push @tests, { src => '000FFFFFFFFFFFFF', exp_hex => '+0x1.0000000000p-1022'   , exp_dec => '+0d1.0000000000p-1022'         , convSpec => 10    };
 push @tests, { src => '000FFFFFFFFFFFFF', exp_hex => '+0x0.fffffffffffffp-1022', exp_dec => '+0d1.0000000000000p-1022'      , convSpec => 13    };
 push @tests, { src => '800FFFFFFFFFFFFF', exp_hex => '-0x0.fffffffffffffp-1022', exp_dec => '-0d0.9999999999999998p-1022' };
 push @tests, { src => '800FFFFFFFFFFFFF', exp_hex => '-0x0.fffffffffffffp-1022', exp_dec => '-0d0.9999999999999998p-1022'   , convSpec => undef };
+push @tests, { src => '800FFFFFFFFFFFFF', exp_hex => '-0x1.000p-1022'          , exp_dec => '-0d1.000p-1022'                , convSpec => 3     };  # extra: coverage for p<5
 push @tests, { src => '800FFFFFFFFFFFFF', exp_hex => '-0x1.0000000000p-1022'   , exp_dec => '-0d1.0000000000p-1022'         , convSpec => 10    };
 push @tests, { src => '800FFFFFFFFFFFFF', exp_hex => '-0x0.fffffffffffffp-1022', exp_dec => '-0d1.0000000000000p-1022'      , convSpec => 13    };
 
@@ -241,19 +245,23 @@ push @tests, { src => 'BFF8000000000000', exp_hex => '-0x1.8000000000000p+0000',
 
 push @tests, { src => '3FFFFFFFFFFFFFFF', exp_hex => '+0x1.fffffffffffffp+0000', exp_dec => '+0d1.9999999999999998p+0000' };
 push @tests, { src => '3FFFFFFFFFFFFFFF', exp_hex => '+0x1.fffffffffffffp+0000', exp_dec => '+0d1.9999999999999998p+0000'   , convSpec => undef };
+push @tests, { src => '3FFFFFFFFFFFFFFF', exp_hex => '+0x2.000p+0000'          , exp_dec => '+0d2.000p+0000'                , convSpec => 3     };  # extra: coverage for p<5
 push @tests, { src => '3FFFFFFFFFFFFFFF', exp_hex => '+0x2.0000000000p+0000'   , exp_dec => '+0d2.0000000000p+0000'         , convSpec => 10    };
 push @tests, { src => '3FFFFFFFFFFFFFFF', exp_hex => '+0x1.fffffffffffffp+0000', exp_dec => '+0d2.0000000000000p+0000'      , convSpec => 13    };
 push @tests, { src => 'BFFFFFFFFFFFFFFF', exp_hex => '-0x1.fffffffffffffp+0000', exp_dec => '-0d1.9999999999999998p+0000' };
 push @tests, { src => 'BFFFFFFFFFFFFFFF', exp_hex => '-0x1.fffffffffffffp+0000', exp_dec => '-0d1.9999999999999998p+0000'   , convSpec => undef };
+push @tests, { src => 'BFFFFFFFFFFFFFFF', exp_hex => '-0x2.000p+0000'          , exp_dec => '-0d2.000p+0000'                , convSpec => 3     };  # extra: coverage for p<5
 push @tests, { src => 'BFFFFFFFFFFFFFFF', exp_hex => '-0x2.0000000000p+0000'   , exp_dec => '-0d2.0000000000p+0000'         , convSpec => 10    };
 push @tests, { src => 'BFFFFFFFFFFFFFFF', exp_hex => '-0x1.fffffffffffffp+0000', exp_dec => '-0d2.0000000000000p+0000'      , convSpec => 13    };
 
 push @tests, { src => '4000000000000000', exp_hex => '+0x1.0000000000000p+0001', exp_dec => '+0d1.0000000000000000p+0001' };
 push @tests, { src => '4000000000000000', exp_hex => '+0x1.0000000000000p+0001', exp_dec => '+0d1.0000000000000000p+0001'   , convSpec => undef };
+push @tests, { src => '4000000000000000', exp_hex => '+0x1.0000000000p+0001'   , exp_dec => '+0d1.000p+0001'                , convSpec => 3     };  # extra: coverage for p>5
 push @tests, { src => '4000000000000000', exp_hex => '+0x1.0000000000p+0001'   , exp_dec => '+0d1.0000000000p+0001'         , convSpec => 10    };
 push @tests, { src => '4000000000000000', exp_hex => '+0x1.0000000000000p+0001', exp_dec => '+0d1.0000000000000p+0001'      , convSpec => 13    };
 push @tests, { src => 'C000000000000000', exp_hex => '-0x1.0000000000000p+0001', exp_dec => '-0d1.0000000000000000p+0001' };
 push @tests, { src => 'C000000000000000', exp_hex => '-0x1.0000000000000p+0001', exp_dec => '-0d1.0000000000000000p+0001'   , convSpec => undef };
+push @tests, { src => 'C000000000000000', exp_hex => '-0x1.0000000000p+0001'   , exp_dec => '-0d1.000p+0001'                , convSpec => 3     };  # extra: coverage for p>5
 push @tests, { src => 'C000000000000000', exp_hex => '-0x1.0000000000p+0001'   , exp_dec => '-0d1.0000000000p+0001'         , convSpec => 10    };
 push @tests, { src => 'C000000000000000', exp_hex => '-0x1.0000000000000p+0001', exp_dec => '-0d1.0000000000000p+0001'      , convSpec => 13    };
 
