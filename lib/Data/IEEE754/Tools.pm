@@ -422,10 +422,11 @@ sub binary64_convertToHexString {
         $implied = 0;
         $exp = $mant eq '0000000000000' ? 0 : -1022;   # 0 for zero, -1022 for denormal
     }
+printf STDERR "implied = %s\n", $implied;
     if($p<13) {
         my $m = $msb & 0xFFFFF;
         my $l = $lsb;
-        my $o = '...';
+        my $o = 0;
 printf STDERR "Need to round up *.(%05x)(%08x) to %d hexits\n", $m, $l, $p;
         if($p>=5) {  # use all of MSB, and move into LSB
             my $one = 1 << 4*( 8 - ($p-5) );
@@ -436,39 +437,47 @@ printf STDERR "Need to round up *.(%05x)(%08x) to %d hexits\n", $m, $l, $p;
             #   printf STDERR "................%s(%05x)(%08x) one\n",  $o ? '1' : '...', $m, $one;
             #   printf STDERR "................%s(%05x)(%08x) half\n", $o ? '1' : '...', $m, $haf;
             #   printf STDERR "................%s(%05x)(%08x) mask\n", $o ? '1' : '...', $m, $msk;
-            if( $l & $eff >= $haf) {
+            if( ($l & $eff) >= $haf) {
                 $l = ($l & $msk) + $one;
-printf STDERR "................%s(%05x)(%08x) after LSB mask (roundup)\n", $o ? '1' : '...', $m, $l;
+printf STDERR "................%s(%05x)(%08x) after LSB mask (roundup)\n", $o ? '[1]' : '...', $m, $l;
+                my $l32 = $l & 0xFFFFFFFF;
+printf STDERR "................%sl:%09x => l32:%08x < one:%08x == %d \n", $o ? '[1]' : '...', $l, $l32, $one, $l32 < $one;
+                if($l32 < $one) {
+                    $l = 0;
+                    $m++;
+printf STDERR "................%s(%05x)(%08x) after LSB-to-MSB carry [moved]\n", $o ? '[1]' : '...', $m, $l;
+                }
             } else {
                 $l = ($l & $msk);
-printf STDERR "................%s(%05x)(%08x) after LSB mask (rounddown)\n", $o ? '1' : '...', $m, $l;
-            }
-            if( $l == 0x1_0000_0000) {
-#TODO =  this comparison isn't safe; needs to move into the >haf, and
-                $l = 0;
-                $m++;
-printf STDERR "................%s(%05x)(%08x) after LSB-to-MSB carry\n", $o ? '1' : '...', $m, $l;
+printf STDERR "................%s(%05x)(%08x) after LSB mask (rounddown)\n", $o ? '[1]' : '...', $m, $l;
             }
             if($m >= 0x1_0_0000) {
-                $o = '(1)';
+                $o = 1;
                 $m -= 0x1_0_0000;
-printf STDERR "................%s(%05x)(%08x) after MSB-to-overflow carry\n", $o ? '1' : '...', $m, $l;
+printf STDERR "................%s(%05x)(%08x) after MSB-to-overflow carry\n", $o ? '[1]' : '...', $m, $l;
             }
-#TODO = propagate $o into $implied
+            if($o) {
+printf STDERR "................%s(%05x)(%08x) overflow: need to add to implied=%s\n", $o ? '[1]' : '...', $m, $l, $implied;
+                $implied++;
+printf STDERR "................%s(%05x)(%08x) overflow: completed    ++implied=%s\n", $o ? '[1]' : '...', $m, $l, $implied;
+            }
 
-printf STDERR "................%s(%05x)(%08x) final\n", $o ? '1' : '...', $m, $l;
+printf STDERR "................%s(%05x)(%08x) final\n", $o ? '[1]' : '...', $m, $l;
 
-        } else {
-printf STDERR "................%s(%05x)(%08x) TODO p<5\n", $o ? '1' : '...', $m, $l;
+        } else { # thus p<5
+printf STDERR "................%s(%05x)(%08x) TODO p<5\n", $o ? '[1]' : '...', $m, $l;
         }
 
+        my $f = substr( sprintf('%05x%08x', $m, $l), 0, $p);
+printf STDERR ">>>>> %s0x%1u.%*sp%+05d\n", $sign, $implied, $p, $f, $exp;
+        return sprintf '%s0x%1u.%*sp%+05d', $sign, $implied, $p, $f, $exp;
 
-        my $f = hex substr $mant, 0, $p;
-        my $r = hex substr $mant, $p, 1;
-        $f += 1 if $r > 7;
+        #my $f = hex substr $mant, 0, $p;
+        #my $r = hex substr $mant, $p, 1;
+        #$f += 1 if $r > 7;
         # BAD: need to take the values from $msb and $lsb
         return sprintf '%s0x%1u.%0*xp%+05d', $sign, $implied, $p, $f, $exp;
-    } else {
+    } else {    # thus, p>=13:
         return sprintf '%s0x%1u.%13.13sp%+05d', $sign, $implied, $mant . '0'x($p-13), $exp;
     }
 }
