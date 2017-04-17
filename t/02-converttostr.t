@@ -289,8 +289,8 @@ push @tests, { src => '7FE0000000000000', exp_hex => '+0x1.0000000000p+1023'   ,
 push @tests, { src => '7FE0000000000000', exp_hex => '+0x1.0000000000000p+1023', exp_dec => '+0d1.0000000000000p+1023'      , convSpec => 13    };
 push @tests, { src => 'FFE0000000000000', exp_hex => '-0x1.0000000000000p+1023', exp_dec => '-0d1.0000000000000000p+1023' };
 push @tests, { src => 'FFE0000000000000', exp_hex => '-0x1.0000000000000p+1023', exp_dec => '-0d1.0000000000000000p+1023'   , convSpec => undef };
-push @tests, { src => 'FFE0000000000000', exp_hex => '-0x1.0000000000000p+1023', exp_dec => '-0d1.0000000000p+1023'         , convSpec => 10    };
-push @tests, { src => 'FFE0000000000000', exp_hex => '-0x1.0000000000p+1023'   , exp_dec => '-0d1.0000000000000p+1023'      , convSpec => 13    };
+push @tests, { src => 'FFE0000000000000', exp_hex => '-0x1.0000000000p+1023'   , exp_dec => '-0d1.0000000000p+1023'         , convSpec => 10    };
+push @tests, { src => 'FFE0000000000000', exp_hex => '-0x1.0000000000000p+1023', exp_dec => '-0d1.0000000000000p+1023'      , convSpec => 13    };
 
 push @tests, { src => '7FE0000000000001', exp_hex => '+0x1.0000000000001p+1023', exp_dec => '+0d1.0000000000000002p+1023' };
 push @tests, { src => '7FE0000000000001', exp_hex => '+0x1.0000000000001p+1023', exp_dec => '+0d1.0000000000000002p+1023'   , convSpec => undef };
