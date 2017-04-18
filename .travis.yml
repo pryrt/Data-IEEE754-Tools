@@ -10,6 +10,9 @@ perl:
     - "5.10"
     - "5.8"
 
+env:
+    - DEVEL_COVER_UNSUPPORTED=1
+
 os:
     - linux
 

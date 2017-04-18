@@ -31,6 +31,7 @@ v0.017 internal development version
         - finished conversionSpecification for Decimal
         - implemented for *NAN/IND/INF for Hex
       - don't guarantee conversionSpecification > default giving correct digits
+      - finished coverage for conversionSpecification
 
 v0.016 2016-Aug-29
     - had a bug in v0.014 Makefile which caused CPAN to not

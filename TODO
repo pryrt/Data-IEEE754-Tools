@@ -1,6 +1,9 @@
 TODO
     - immediate:
-      - continue to implement and test conversionSpec optional argument
+      - conversionSpec appears to be working for Hex and Decimal
+      - conversionSpec appears to have coverage, except for the DEBUG prints
+      ☐ TODO = Devel::Cover missing from 5.8: it needs $DEVEL_COVER_UNSUPPORTED set;
+        trying to include it in .travis.yml
 
     - long-term: implement more functions from IEEE754-2007, especially
       + IEEE754 5.4.2 => 5.12
