@@ -8,10 +8,6 @@ perl:
     - "5.14"
     - "5.12"
     - "5.10"
-    - "5.8"
-
-env:
-    - DEVEL_COVER_UNSUPPORTED=1
 
 os:
     - linux
@@ -50,3 +46,5 @@ matrix:
   include:
     - perl: "5.20"
       env: COVERAGE=1
+    - perl: "5.8"
+      env: DEVEL_COVER_UNSUPPORTED=1
