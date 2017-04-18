@@ -422,84 +422,54 @@ sub binary64_convertToHexString {
         $implied = 0;
         $exp = $mant eq '0000000000000' ? 0 : -1022;   # 0 for zero, -1022 for denormal
     }
-printf STDERR "implied = %s\n", $implied;
     if($p<13) {
         my $m = $msb & 0xFFFFF;
         my $l = $lsb;
         my $o = 0;
-printf STDERR "Need to round up *.(%05x)(%08x) to %d hexits\n", $m, $l, $p;
         if($p>=5) {  # use all of MSB, and move into LSB
             my $one = 1 << 4*( 8 - ($p-5) );
             my $haf = $one >> 1;
             my $eff = $one - 1;
             my $msk = 0xFFFFFFFF ^ $eff;
-               #printf STDERR "................%s(%05x)(%08x) eff\n",  $o ? '[1]' : '...', $m, $eff;
-               #printf STDERR "................%s(%05x)(%08x) one\n",  $o ? '[1]' : '...', $m, $one;
-               #printf STDERR "................%s(%05x)(%08x) half\n", $o ? '[1]' : '...', $m, $haf;
-               #printf STDERR "................%s(%05x)(%08x) mask\n", $o ? '[1]' : '...', $m, $msk;
             if( ($l & $eff) >= $haf) {
                 $l = ($l & $msk) + $one;
-printf STDERR "................%s(%05x)(%08x) after LSB mask (roundup)\n", $o ? '[1]' : '...', $m, $l;
                 my $l32 = $l & 0xFFFFFFFF;
-printf STDERR "................%sl:%09x => l32:%08x < one:%08x == %d \n", $o ? '[1]' : '...', $l, $l32, $one, $l32 < $one;
                 if($l32 < $one) {
                     $l = 0;
                     $m++;
-printf STDERR "................%s(%05x)(%08x) after LSB-to-MSB carry [moved]\n", $o ? '[1]' : '...', $m, $l;
                 }
             } else {
                 $l = ($l & $msk);
-printf STDERR "................%s(%05x)(%08x) after LSB mask (rounddown)\n", $o ? '[1]' : '...', $m, $l;
             }
             if($m >= 0x1_0_0000) {
                 $o = 1;
                 $m -= 0x1_0_0000;
-printf STDERR "................%s(%05x)(%08x) after MSB-to-overflow carry\n", $o ? '[1]' : '...', $m, $l;
             }
             if($o) {
-printf STDERR "................%s(%05x)(%08x) overflow: need to add to implied=%s\n", $o ? '[1]' : '...', $m, $l, $implied;
                 $implied++;
-printf STDERR "................%s(%05x)(%08x) overflow: completed    ++implied=%s\n", $o ? '[1]' : '...', $m, $l, $implied;
             }
-
-printf STDERR "................%s(%05x)(%08x) final\n", $o ? '[1]' : '...', $m, $l;
-
         } else { # thus p<5
-printf STDERR "................%s(%05x)(%08x) TODO p<5\n", $o ? '[1]' : '...', $m, $l;
-#            $l = 0;     # don't need the lowest 8 nibbles...
-printf STDERR "................%s(%05x)(%08x) TODO p<5\n", $o ? '[1]' : '...', $m, $l;
+            $l = 0;     # don't need the lowest 8 nibbles...
             my $one = 1 << 4*( 5 - $p );
             my $haf = $one >> 1;
             my $eff = $one - 1;
             my $msk = 0xFFFFF ^ $eff;
-               printf STDERR "................%s(%05x)(%08x) m\n",    $o ? '[1]' : '...',   $m, $l;
-               printf STDERR "................%s(%05x)(%08x) eff\n",  $o ? '[1]' : '...', $eff, $l;
-               printf STDERR "................%s(%05x)(%08x) one\n",  $o ? '[1]' : '...', $one, $l;
-               printf STDERR "................%s(%05x)(%08x) half\n", $o ? '[1]' : '...', $haf, $l;
-               printf STDERR "................%s(%05x)(%08x) mask\n", $o ? '[1]' : '...', $msk, $l;
             if( ($m & $eff) >= $haf) {
                 $m = ($m & $msk) + $one;
-printf STDERR "................%s(%05x)(%08x) after MSB mask (roundup) [p<5]\n", $o ? '[1]' : '...', $m, $l;
                 my $m20 = $m & 0xFFFFF;
-printf STDERR "................%sm:%06x => m20:%05x < one:%05x == %d \n", $o ? '[1]' : '...', $m, $m20, $one, $m20 < $one;
                 if($m20 < $one) {
                     $m = 0;
                     $o++;
-printf STDERR "................%s(%05x)(%08x) after MSB-to-overflow carry [p<5]\n", $o ? '[1]' : '...', $m, $l;
                 }
             } else {
                 $m = ($m & $msk);
-printf STDERR "................%s(%05x)(%08x) after LSB mask (rounddown) [p<5]\n", $o ? '[1]' : '...', $m, $l;
             }
             if($o) {
-printf STDERR "................%s(%05x)(%08x) overflow: need to add to implied=%s\n", $o ? '[1]' : '...', $m, $l, $implied;
                 $implied++;
-printf STDERR "................%s(%05x)(%08x) overflow: completed    ++implied=%s\n", $o ? '[1]' : '...', $m, $l, $implied;
             }
         }
 
         my $f = substr( sprintf('%05x%08x', $m, $l), 0, $p);
-printf STDERR ">>>>> %s0x%1u%s%*sp%+05d\n", $sign, $implied, $p?'.':'', $p, $f, $exp;
         return sprintf '%s0x%1u%s%*sp%+05d', $sign, $implied, $p?'.':'', $p, $f, $exp;
     } else {    # thus, p>=13:
         return sprintf '%s0x%1u.%13.13sp%+05d', $sign, $implied, $mant . '0'x($p-13), $exp;
