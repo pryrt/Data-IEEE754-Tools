@@ -433,10 +433,10 @@ printf STDERR "Need to round up *.(%05x)(%08x) to %d hexits\n", $m, $l, $p;
             my $haf = $one >> 1;
             my $eff = $one - 1;
             my $msk = 0xFFFFFFFF ^ $eff;
-            #   printf STDERR "................%s(%05x)(%08x) eff\n",  $o ? '1' : '...', $m, $eff;
-            #   printf STDERR "................%s(%05x)(%08x) one\n",  $o ? '1' : '...', $m, $one;
-            #   printf STDERR "................%s(%05x)(%08x) half\n", $o ? '1' : '...', $m, $haf;
-            #   printf STDERR "................%s(%05x)(%08x) mask\n", $o ? '1' : '...', $m, $msk;
+               #printf STDERR "................%s(%05x)(%08x) eff\n",  $o ? '[1]' : '...', $m, $eff;
+               #printf STDERR "................%s(%05x)(%08x) one\n",  $o ? '[1]' : '...', $m, $one;
+               #printf STDERR "................%s(%05x)(%08x) half\n", $o ? '[1]' : '...', $m, $haf;
+               #printf STDERR "................%s(%05x)(%08x) mask\n", $o ? '[1]' : '...', $m, $msk;
             if( ($l & $eff) >= $haf) {
                 $l = ($l & $msk) + $one;
 printf STDERR "................%s(%05x)(%08x) after LSB mask (roundup)\n", $o ? '[1]' : '...', $m, $l;
@@ -466,17 +466,41 @@ printf STDERR "................%s(%05x)(%08x) final\n", $o ? '[1]' : '...', $m, 
 
         } else { # thus p<5
 printf STDERR "................%s(%05x)(%08x) TODO p<5\n", $o ? '[1]' : '...', $m, $l;
+#            $l = 0;     # don't need the lowest 8 nibbles...
+printf STDERR "................%s(%05x)(%08x) TODO p<5\n", $o ? '[1]' : '...', $m, $l;
+            my $one = 1 << 4*( 5 - $p );
+            my $haf = $one >> 1;
+            my $eff = $one - 1;
+            my $msk = 0xFFFFF ^ $eff;
+               printf STDERR "................%s(%05x)(%08x) m\n",    $o ? '[1]' : '...',   $m, $l;
+               printf STDERR "................%s(%05x)(%08x) eff\n",  $o ? '[1]' : '...', $eff, $l;
+               printf STDERR "................%s(%05x)(%08x) one\n",  $o ? '[1]' : '...', $one, $l;
+               printf STDERR "................%s(%05x)(%08x) half\n", $o ? '[1]' : '...', $haf, $l;
+               printf STDERR "................%s(%05x)(%08x) mask\n", $o ? '[1]' : '...', $msk, $l;
+            if( ($m & $eff) >= $haf) {
+                $m = ($m & $msk) + $one;
+printf STDERR "................%s(%05x)(%08x) after MSB mask (roundup) [p<5]\n", $o ? '[1]' : '...', $m, $l;
+                my $m20 = $m & 0xFFFFF;
+printf STDERR "................%sm:%06x => m20:%05x < one:%05x == %d \n", $o ? '[1]' : '...', $m, $m20, $one, $m20 < $one;
+                if($m20 < $one) {
+                    $m = 0;
+                    $o++;
+printf STDERR "................%s(%05x)(%08x) after MSB-to-overflow carry [p<5]\n", $o ? '[1]' : '...', $m, $l;
+                }
+            } else {
+                $m = ($m & $msk);
+printf STDERR "................%s(%05x)(%08x) after LSB mask (rounddown) [p<5]\n", $o ? '[1]' : '...', $m, $l;
+            }
+            if($o) {
+printf STDERR "................%s(%05x)(%08x) overflow: need to add to implied=%s\n", $o ? '[1]' : '...', $m, $l, $implied;
+                $implied++;
+printf STDERR "................%s(%05x)(%08x) overflow: completed    ++implied=%s\n", $o ? '[1]' : '...', $m, $l, $implied;
+            }
         }
 
         my $f = substr( sprintf('%05x%08x', $m, $l), 0, $p);
-printf STDERR ">>>>> %s0x%1u.%*sp%+05d\n", $sign, $implied, $p, $f, $exp;
-        return sprintf '%s0x%1u.%*sp%+05d', $sign, $implied, $p, $f, $exp;
-
-        #my $f = hex substr $mant, 0, $p;
-        #my $r = hex substr $mant, $p, 1;
-        #$f += 1 if $r > 7;
-        # BAD: need to take the values from $msb and $lsb
-        return sprintf '%s0x%1u.%0*xp%+05d', $sign, $implied, $p, $f, $exp;
+printf STDERR ">>>>> %s0x%1u%s%*sp%+05d\n", $sign, $implied, $p?'.':'', $p, $f, $exp;
+        return sprintf '%s0x%1u%s%*sp%+05d', $sign, $implied, $p?'.':'', $p, $f, $exp;
     } else {    # thus, p>=13:
         return sprintf '%s0x%1u.%13.13sp%+05d', $sign, $implied, $mant . '0'x($p-13), $exp;
     }
