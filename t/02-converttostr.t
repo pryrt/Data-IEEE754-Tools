@@ -275,6 +275,23 @@ push @tests, { src => 'BFFFFFFFFFFFFFFF', exp_hex => '-0x2.00000000000p+0000'  ,
 push @tests, { src => 'BFFFFFFFFFFFFFFF', exp_hex => '-0x2.000000000000p+0000' , exp_dec => '-0d2.000000000000p+0000'       , convSpec => 12    };  # extra: coverage for low p
 push @tests, { src => 'BFFFFFFFFFFFFFFF', exp_hex => '-0x1.fffffffffffffp+0000', exp_dec => '-0d2.0000000000000p+0000'      , convSpec => 13    };
 
+push @tests, { src => '3FF0FFFFFFFFFFFF', exp_hex => '+0x1.1p+0000'            , exp_dec => '+0d1.1p+0000'                  , convSpec => 1     };  # extra: coverage for msb rounding
+push @tests, { src => '3FF1FFFFFFFFFFFF', exp_hex => '+0x1.2p+0000'            , exp_dec => '+0d1.1p+0000'                  , convSpec => 1     };  # extra: coverage for msb rounding
+push @tests, { src => '3FF2FFFFFFFFFFFF', exp_hex => '+0x1.3p+0000'            , exp_dec => '+0d1.2p+0000'                  , convSpec => 1     };  # extra: coverage for msb rounding
+push @tests, { src => '3FF3FFFFFFFFFFFF', exp_hex => '+0x1.4p+0000'            , exp_dec => '+0d1.2p+0000'                  , convSpec => 1     };  # extra: coverage for msb rounding
+push @tests, { src => '3FF4FFFFFFFFFFFF', exp_hex => '+0x1.5p+0000'            , exp_dec => '+0d1.3p+0000'                  , convSpec => 1     };  # extra: coverage for msb rounding
+push @tests, { src => '3FF5FFFFFFFFFFFF', exp_hex => '+0x1.6p+0000'            , exp_dec => '+0d1.4p+0000'                  , convSpec => 1     };  # extra: coverage for msb rounding
+push @tests, { src => '3FF6FFFFFFFFFFFF', exp_hex => '+0x1.7p+0000'            , exp_dec => '+0d1.4p+0000'                  , convSpec => 1     };  # extra: coverage for msb rounding
+push @tests, { src => '3FF7FFFFFFFFFFFF', exp_hex => '+0x1.8p+0000'            , exp_dec => '+0d1.5p+0000'                  , convSpec => 1     };  # extra: coverage for msb rounding
+push @tests, { src => '3FF8FFFFFFFFFFFF', exp_hex => '+0x1.9p+0000'            , exp_dec => '+0d1.6p+0000'                  , convSpec => 1     };  # extra: coverage for msb rounding
+push @tests, { src => '3FF9FFFFFFFFFFFF', exp_hex => '+0x1.ap+0000'            , exp_dec => '+0d1.6p+0000'                  , convSpec => 1     };  # extra: coverage for msb rounding
+push @tests, { src => '3FFAFFFFFFFFFFFF', exp_hex => '+0x1.bp+0000'            , exp_dec => '+0d1.7p+0000'                  , convSpec => 1     };  # extra: coverage for msb rounding
+push @tests, { src => '3FFBFFFFFFFFFFFF', exp_hex => '+0x1.cp+0000'            , exp_dec => '+0d1.7p+0000'                  , convSpec => 1     };  # extra: coverage for msb rounding
+push @tests, { src => '3FFCFFFFFFFFFFFF', exp_hex => '+0x1.dp+0000'            , exp_dec => '+0d1.8p+0000'                  , convSpec => 1     };  # extra: coverage for msb rounding
+push @tests, { src => '3FFDFFFFFFFFFFFF', exp_hex => '+0x1.ep+0000'            , exp_dec => '+0d1.9p+0000'                  , convSpec => 1     };  # extra: coverage for msb rounding
+push @tests, { src => '3FFEFFFFFFFFFFFF', exp_hex => '+0x1.fp+0000'            , exp_dec => '+0d1.9p+0000'                  , convSpec => 1     };  # extra: coverage for msb rounding
+
+
 push @tests, { src => '4000000000000000', exp_hex => '+0x1.0000000000000p+0001', exp_dec => '+0d1.0000000000000000p+0001' };
 push @tests, { src => '4000000000000000', exp_hex => '+0x1.0000000000000p+0001', exp_dec => '+0d1.0000000000000000p+0001'   , convSpec => undef };
 push @tests, { src => '4000000000000000', exp_hex => '+0x1.0p+0001'            , exp_dec => '+0d1.0p+0001'                  , convSpec => 1     };  # extra: coverage for low p
