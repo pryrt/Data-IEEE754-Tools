@@ -391,11 +391,12 @@ after the fractional-point.  By default, C<convertToHexString()> uses 13 hex-dig
 C<convertToDecimalString()> uses 16 decimal-digits, because those are the minimum number of
 digits to always distinguish one ULP; if you choose the I<conversionSpecification> below default,
 it will round your results; if you choose the I<conversionSpecification> above default,
-the correctness of digits beyond the default is B<not> guaranteed.
+the correctness of digits beyond the default is B<not> guaranteed (it may even round back to 13
+hex-digits or 16 decimal-digits).
 
     convertToHexString(-3.9999999999999996, 16)     # -0x1.fffffffffffff000p+0001
     convertToHexString(-3.9999999999999996, 10)     # -0x2.0000000000p+0001
-    convertToDecimalString(-3.9999999999999996, 18) # -0d1.999999999999999778p+0001 (the last three digits may be different on your system)
+    convertToDecimalString(-3.9999999999999996, 18) # -0d1.999999999999999778p+0001 (the last three digits may be different on your system, or may round to -0d1.9999999999999998p+0001)
     convertToDecimalString(-3.9999999999999996, 10) # -0d2.0000000000p+0001
 
 =cut
