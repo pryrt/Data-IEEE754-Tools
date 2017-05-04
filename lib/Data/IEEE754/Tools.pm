@@ -6,8 +6,7 @@ use Carp;
 use Exporter 'import';  # just use the import() function, without the rest of the overhead of ISA
 use Config;
 
-our $VERSION = '0.017_002';
-#use v------- 0.77; our $V------ = version->declare('0.017_002');   # part of 0.017_002 alpha release will be to see if a plain string works better: it works better for automating {provides}{version}
+our $VERSION = '0.017_003';
     # use rrr.mmm_aaa, where rrr is major revision, mmm is ODD minor revision, and aaa is alpha sub-revision (for ALPHA code)
     # use rrr.mmmsss,  where rrr is major revision, mmm is EVEN minor revision, and sss is a sub-revision (usually sss=000) (for releases)
 
@@ -376,9 +375,9 @@ if( $] lt '5.010' ) {
 
 =head2 :convertToString
 
-=head3 convertToHexString( I<value> )
+=head3 convertToHexString( I<value> [, I<conversionSpecification>] )
 
-=head3 convertToDecimalString( I<value> )
+=head3 convertToDecimalString( I<value> [, I<conversionSpecification>] )
 
 Converts value to a hexadecimal or decimal floating-point notation that indicates the sign and
 the coefficient and the power of two, with the coefficient either in hexadecimal or decimal
@@ -387,34 +386,94 @@ notation.
     convertToHexString(-3.9999999999999996)         # -0x1.fffffffffffffp+0001
     convertToDecimalString(-3.9999999999999996)     # -0d1.9999999999999998p+0001
 
-It displays the value as (sign)(0base)(implied).(fraction)p(exponent):
+The optional I<conversionSpecification> argument is an integer specifying the number of digits
+after the fractional-point.  By default, C<convertToHexString()> uses 13 hex-digits and
+C<convertToDecimalString()> uses 16 decimal-digits, because those are the minimum number of
+digits to always distinguish one ULP; if you choose the I<conversionSpecification> below default,
+it will round your results; if you choose the I<conversionSpecification> above default,
+the correctness of digits beyond the default is B<not> guaranteed.
+
+    convertToHexString(-3.9999999999999996, 16)     # -0x1.fffffffffffff000p+0001
+    convertToHexString(-3.9999999999999996, 10)     # -0x2.0000000000p+0001
+    convertToDecimalString(-3.9999999999999996, 18) # -0d1.999999999999999778p+0001 (the last three digits may be different on your system)
+    convertToDecimalString(-3.9999999999999996, 10) # -0d2.0000000000p+0001
 
 =cut
-
-# TODO = issue#6: might want to rename the exportable functions to convertToHexString,
-#   and alias <type>_convertToHexCharacter() as the official IEEE-754 naming-scheme, but not exportable
-#   (so Data::IEEE754::Tools::<type>_convertToHexCharacter(v) as the only calling mechanism)
 
 sub binary64_convertToHexString {
     # thanks to BrowserUK @ http://perlmonks.org/?node_id=1167146 for slighly better decision factors
     # I tweaked it to use the two 32bit words instead of one 64bit word (which wouldn't work on some systems)
     my $v = shift;
+    my $p = defined $_[0] ? shift : 13;
     my ($msb,$lsb) = $_helper64_arr2x32b->($v);
     my $sbit = ($msb & 0x80000000) >> 31;
     my $sign = $sbit ? '-' : '+';
     my $exp  = (($msb & 0x7FF00000) >> 20) - 1023;
     my $mant = sprintf '%05x%08x', $msb & 0x000FFFFF, $lsb & 0xFFFFFFFF;
     if($exp == 1024) {
-        return $sign . "0x1.#INF000000000p+0000"    if $mant eq '0000000000000';
-        return $sign . "0x1.#IND000000000p+0000"    if $mant eq '8000000000000' and $sign eq '-';
-        return $sign . ( (($msb & 0x00080000) != 0x00080000) ? "0x1.#SNAN00000000p+0000" : "0x1.#QNAN00000000p+0000");  # v0.012 coverage note: '!=' condition only triggered on systems with SNAN; ignore Devel::Cover failures on this line on systems which quiet all SNAN to QNAN
+        my $z = "0"x (($p<5?4:$p)-4);
+        return $sign . "0x1.#INF${z}p+0000"    if $mant eq '0000000000000';
+        return $sign . "0x1.#IND${z}p+0000"    if $mant eq '8000000000000' and $sign eq '-';
+        $z = "0"x (($p<6?5:$p)-5);
+        return $sign . ( (($msb & 0x00080000) != 0x00080000) ? "0x1.#SNAN${z}p+0000" : "0x1.#QNAN${z}p+0000");  # v0.012 coverage note: '!=' condition only triggered on systems with SNAN; ignore Devel::Cover failures on this line on systems which quiet all SNAN to QNAN
     }
     my $implied = 1;
     if( $exp == -1023 ) { # zero or denormal
         $implied = 0;
         $exp = $mant eq '0000000000000' ? 0 : -1022;   # 0 for zero, -1022 for denormal
     }
-    sprintf '%s0x%1u.%13.13sp%+05d', $sign, $implied, $mant, $exp;
+    if($p<13) {
+        my $m = $msb & 0xFFFFF;
+        my $l = $lsb;
+        my $o = 0;
+        if($p>=5) {  # use all of MSB, and move into LSB
+            my $one = 1 << 4*( 8 - ($p-5) );
+            my $haf = $one >> 1;
+            my $eff = $one - 1;
+            my $msk = 0xFFFFFFFF ^ $eff;
+            if( ($l & $eff) >= $haf) {
+                $l = ($l & $msk) + $one;
+                my $l32 = $l & 0xFFFFFFFF;
+                if($l32 < $one) {
+                    $l = 0;
+                    $m++;
+                }
+            } else {
+                $l = ($l & $msk);
+            }
+            if($m >= 0x1_0_0000) {
+                $o = 1;
+                $m -= 0x1_0_0000;
+            }
+            if($o) {
+                $implied++;
+            }
+        } else { # thus p<5
+            $l = 0;     # don't need the lowest 8 nibbles...
+            my $one = 1 << 4*( 5 - $p );
+            my $haf = $one >> 1;
+            my $eff = $one - 1;
+            my $msk = 0xFFFFF ^ $eff;
+            if( ($m & $eff) >= $haf) {
+                $m = ($m & $msk) + $one;
+                my $m20 = $m & 0xFFFFF;
+                if($m20 < $one) {
+                    $m = 0;
+                    $o++;
+                }
+            } else {
+                $m = ($m & $msk);
+            }
+            if($o) {
+                $implied++;
+            }
+        }
+
+        my $f = substr( sprintf('%05x%08x', $m, $l), 0, $p);
+        return sprintf '%s0x%1u%s%*sp%+05d', $sign, $implied, $p?'.':'', $p, $f, $exp;
+    } else {    # thus, p>=13:
+        return sprintf '%s0x%1u.%13.13sp%+05d', $sign, $implied, $mant . '0'x($p-13), $exp;
+    }
 }
 *convertToHexString = \&binary64_convertToHexString;
 my $__glue_dispatch;    # issue#7 TODO
@@ -443,15 +502,18 @@ if(0) { # issue#7 TODO
 sub binary64_convertToDecimalString {
     # derived from binary64_convertToHexString
     my $v = shift;
+    my $p = defined $_[0] ? shift : 16;
     my ($msb,$lsb) = $_helper64_arr2x32b->($v);
     my $sbit = ($msb & 0x80000000) >> 31;
     my $sign = $sbit ? '-' : '+';
     my $exp  = (($msb & 0x7FF00000) >> 20) - 1023;
     my $mant = sprintf '%05x%08x', $msb & 0x000FFFFF, $lsb & 0xFFFFFFFF;
     if($exp == 1024) {
-        return $sign . "0d1.#INF000000000000p+0000"    if $mant eq '0000000000000';
-        return $sign . "0d1.#IND000000000000p+0000"    if $mant eq '8000000000000' and $sign eq '-';
-        return $sign . ( (($msb & 0x00080000) != 0x00080000) ? "0d1.#SNAN00000000000p+0000" : "0d1.#QNAN00000000000p+0000");  # v0.012 coverage note: '!=' condition only triggered on systems with SNAN; ignore Devel::Cover failures on this line on systems which quiet all SNAN to QNAN
+        my $z = "0"x (($p<5?4:$p)-4);
+        return $sign . "0d1.#INF${z}p+0000"    if $mant eq '0000000000000';
+        return $sign . "0d1.#IND${z}p+0000"    if $mant eq '8000000000000' and $sign eq '-';
+        $z = "0"x (($p<6?5:$p)-5);
+        return $sign . ( (($msb & 0x00080000) != 0x00080000) ? "0d1.#SNAN${z}p+0000" : "0d1.#QNAN${z}p+0000");  # v0.012 coverage note: '!=' condition only triggered on systems with SNAN; ignore Devel::Cover failures on this line on systems which quiet all SNAN to QNAN
     }
     my $implied = 1;
     if( $exp == -1023 ) { # zero or denormal
@@ -461,7 +523,7 @@ sub binary64_convertToDecimalString {
     #$mant = (($msb & 0x000FFFFF)*4_294_967_296.0 + ($lsb & 0xFFFFFFFF)*1.0) / (2.0**52);
     #sprintf '%s0d%1u.%.16fp%+05d', $sign, $implied, $mant, $exp;
     my $other = abs($v) / (2.0**$exp);
-    sprintf '%s0d%.16fp%+05d', $sign, $other, $exp;
+    sprintf '%s0d%.*fp%+05d', $sign, $p, $other, $exp;
 }
 *convertToDecimalString = \&binary64_convertToDecimalString;
 if(0) { # issue#7 TODO
@@ -473,6 +535,9 @@ if(0) { # issue#7 TODO
 }
 *to_dec_floatingpoint = \&convertToDecimalString;
 
+=head4 interpretation
+
+It displays the value as (sign)(0base)(implied).(fraction)p(exponent):
 
 =over
 

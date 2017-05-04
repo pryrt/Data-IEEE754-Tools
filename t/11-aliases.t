@@ -8,7 +8,7 @@
 use 5.006;
 use warnings;
 use strict;
-use Test::More;
+use Test::More tests => 14;
 use Data::IEEE754::Tools qw/:all/;
 
 # :raw754
@@ -30,10 +30,5 @@ is( \&convertToHexString                                        , \&binary64_con
 is( \&convertToDecimalString                                    , \&binary64_convertToDecimalString             , 'alias:convertToDecimalString             ');
 is( \&Data::IEEE754::Tools::binary64_convertToHexCharacter      , \&binary64_convertToHexString                 , 'alias:convertToHexCharacter              ');
 is( \&Data::IEEE754::Tools::binary64_convertToDecimalCharacter  , \&binary64_convertToDecimalString             , 'alias:convertToDecimalCharacter          ');
-
-done_testing;exit;
-
-plan tests    => 555;
-
 
 exit;
