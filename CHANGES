@@ -1,37 +1,27 @@
 Revision history for Perl module Data::IEEE754::Tools.
 
-v0.017 internal development version
-    - v0.017_001_github_integrations: META = adding Travis-CI, coveralls.io,
-      automatic signatures, etc.
-    - v0.017_002_namingconvention: start changing names per the naming-
-      convention issue#6
-      - make
+v0.018 2017-Jun-14
+    - changing names per the naming-convention issue#6
+      + make
         :floatingpoint, to_hex_floatingpoint(), to_dec_floatingpoint()
         aliases to
         :convertToString, convertToHexString(),
         convertToDecimalString()
-      - make
+      + make
         :raw754, hexstr754_from_double(), binstr754_from_double(),
         hexstr754_to_double(), binstr754_to_double()
         aliases to
         :internalString, convertToInternalHexString(),
         convertToInternalBinaryString(), convertFromInternalHexString(),
         convertFromInternalBinaryString()
-      - figured out a framework for issue#7's multiple bitness, but disable
-        for now
-      - improve error messages, and stop module compile on mixed-endianness
-      - add test coverage for aliases
-      - add author test coverage for import-tags
-      - change VERSION from a version.pm object to a plain old string '0.017_002',
-        which allows the Makefile.PL to properly extract the {provides}{version}
-        for META files
-    - v0.017_003_charSpec: for convertTo<Decimal/Hex>String(), add in optional
+      + for convertToDecimalString() and convertToHexString, add in optional
         conversionSpecification -- it specifiers the number of digits after the
         fractional-point.
-        - finished conversionSpecification for Decimal
-        - implemented for *NAN/IND/INF for Hex
-      - don't guarantee conversionSpecification > default giving correct digits
-      - finished coverage for conversionSpecification
+    - meta: improve test coverage, documentation, development automation
+
+v0.017
+    - Odd versions are development versions.  Features to be released
+      in v0.018 were developed under the v0.017 revision
 
 v0.016 2016-Aug-29
     - had a bug in v0.014 Makefile which caused CPAN to not

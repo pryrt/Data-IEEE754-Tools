@@ -31,7 +31,9 @@ I use a local svn client to checkout the GitHub repo.  All these things can be d
             * `pod2text lib/Data/IEEE754/Tools.pm README`, then edit so that only
             NAME, DESCRIPTION, COMPATIBILITY, INSTALLATION, AUTHOR, COPYRIGHT, LICENSE
             remain
-        * verify HISTORY
+            * or, with README.pod instead: `podselect -section "NAME|SYNOPSIS|DESCRIPTION|COMPATIBILITY|INSTALLATION|AUTHOR|COPYRIGHT|LICENSE/!IEEE 754 Encoding" lib\Data\IEEE754\Tools.pm > README.pod`
+            * or `dmake README.pod`
+        * verify CHANGES (history)
 
     * **Build Distribution**
 

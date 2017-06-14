@@ -110,6 +110,10 @@ distauthtest :: disttest
 realclean ::
 	$(NOECHO) ( $(TEST_D) cover_db && $(RM_RF) cover_db ) || $(ECHO) realclean:: skip "rm -rf cover_db"
 
+# auto-generate the README from the lib/Data/IEEE754/Tools.pm
+README.pod ::
+	podselect -section "NAME|SYNOPSIS|DESCRIPTION|COMPATIBILITY|INSTALLATION|AUTHOR|COPYRIGHT|LICENSE/!IEEE 754 Encoding" lib\Data\IEEE754\Tools.pm > README.pod
+
 POSTAMBLE
 }
 

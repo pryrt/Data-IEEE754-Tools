@@ -6,7 +6,7 @@ use Carp;
 use Exporter 'import';  # just use the import() function, without the rest of the overhead of ISA
 use Config;
 
-our $VERSION = '0.017_003';
+our $VERSION = '0.018';
     # use rrr.mmm_aaa, where rrr is major revision, mmm is ODD minor revision, and aaa is alpha sub-revision (for ALPHA code)
     # use rrr.mmmsss,  where rrr is major revision, mmm is EVEN minor revision, and sss is a sub-revision (usually sss=000) (for releases)
 
@@ -1197,9 +1197,20 @@ Please report any bugs or feature requests emailing C<E<lt>bug-Data-IEEE754-Tool
 or thru the web interface at L<http://rt.cpan.org/NoAuth/ReportBug.html?Queue=Data-IEEE754-Tools>,
 or thru the repository's interface at L<https://github.com/pryrt/Data-IEEE754-Tools/issues>.
 
+=begin html
+
+<a href="https://metacpan.org/pod/Data::IEEE754::Tools><img src="https://img.shields.io/cpan/v/Data-IEEE754-Tools.svg?colorB=00CC00" alt="" title="metacpan"></a>
+<a href="http://matrix.cpantesters.org/?dist=Data-IEEE754-Tools"><img src="http://cpants.cpanauthors.org/dist/Data-IEEE754-Tools.png" alt="" title="cpan testers"></a>
+<a href="https://github.com/pryrt/Data-IEEE754-Tools/releases"><img src="https://img.shields.io/github/release/pryrt/Data-IEEE754-Tools.svg" alt="" title="github release"></a>
+<a href="https://github.com/pryrt/Data-IEEE754-Tools/issues"><img src="https://img.shields.io/github/issues/pryrt/Data-IEEE754-Tools.svg" alt="" title="issues"></a>
+<a href="https://travis-ci.org/pryrt/Data-IEEE754-Tools"><img src="https://travis-ci.org/pryrt/Data-IEEE754-Tools.svg?branch=master" alt="" title="build status"></a>
+<a href="https://coveralls.io/github/pryrt/Data-IEEE754-Tools?branch=master"><img src="https://coveralls.io/repos/github/pryrt/Data-IEEE754-Tools/badge.svg?branch=master" alt="" title="test coverage"></a>
+
+=end html
+
 =head1 COPYRIGHT
 
-Copyright (C) 2016 Peter C. Jones
+Copyright (C) 2016-2017 Peter C. Jones
 
 =head1 LICENSE
 
