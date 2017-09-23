@@ -1,5 +1,6 @@
 language: perl
 perl:
+    - "5.26"
     - "5.24"
     - "5.22"
     - "5.20"
@@ -34,9 +35,11 @@ before_script:
   - coverage-setup
 
 script:
-  - PERL5OPT=-MDevel::Cover=-coverage,statement,branch,condition,path,subroutine prove -lrv t
-  - cover
+#  - PERL5OPT=-MDevel::Cover=-coverage,statement,branch,condition,path,subroutine prove -lrv t
+#  - cover
+  - prove -lrv t
   - prove -lrv xt
+  - cover -test -coverage default,-pod
 
 after_success:
   - cover -report coveralls
@@ -44,7 +47,7 @@ after_success:
 
 matrix:
   include:
-    - perl: "5.20"
+    - perl: "5.24"
       env: COVERAGE=1
-    - perl: "5.8"
-      env: DEVEL_COVER_UNSUPPORTED=1
+#    - perl: "5.8"
+#      env: DEVEL_COVER_UNSUPPORTED=1
