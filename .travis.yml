@@ -39,7 +39,7 @@ script:
 #  - cover
   - prove -lrv t
   - prove -lrv xt
-  - cover -test -coverage=default,-pod
+  - cover -test #-coverage=default,-pod
 
 after_success:
   - cover -report coveralls
