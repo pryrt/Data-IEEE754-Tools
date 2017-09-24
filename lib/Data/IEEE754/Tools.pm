@@ -6,7 +6,7 @@ use Carp;
 use Exporter 'import';  # just use the import() function, without the rest of the overhead of ISA
 use Config;
 
-our $VERSION = '0.018';
+our $VERSION = '0.018001';
     # use rrr.mmm_aaa, where rrr is major revision, mmm is ODD minor revision, and aaa is alpha sub-revision (for ALPHA code)
     # use rrr.mmmsss,  where rrr is major revision, mmm is EVEN minor revision, and sss is a sub-revision (usually sss=000) (for releases)
 
@@ -1164,7 +1164,7 @@ For a manual install, type the following:
     make test
     make install
 
-(On Windows machines, you may need to use "dmake" instead of "make".)
+(On Windows machines, you may need to use "dmake" or "gmake" instead of "make", depending on your setup.)
 
 =head1 SEE ALSO
 

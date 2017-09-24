@@ -1,5 +1,8 @@
 Revision history for Perl module Data::IEEE754::Tools.
 
+v0.018001 2017-Sep-24
+    - for some reason, `make test` was invoking `make README.pod`: trying to fix
+
 v0.018 2017-Jun-14
     - changing names per the naming-convention issue#6
       + make

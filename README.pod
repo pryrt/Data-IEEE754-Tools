@@ -74,7 +74,7 @@ For a manual install, type the following:
     make test
     make install
 
-(On Windows machines, you may need to use "dmake" instead of "make".)
+(On Windows machines, you may need to use "dmake" or "gmake" instead of "make", depending on your setup.)
 
 =head1 AUTHOR
 
