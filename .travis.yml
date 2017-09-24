@@ -9,6 +9,8 @@ perl:
     - "5.14"
     - "5.12"
     - "5.10"
+    - "5.8"
+    - "5.6.2"
 
 os:
     - linux
@@ -26,8 +28,8 @@ before_install:
   - cd $BUILD_DIR             # $BUILD_DIR is set by the build-dist command
 
 install:
-  - cpan-install Devel::Cover
-  - cpan-install Devel::Cover::Report::Coveralls
+#  - cpan-install Devel::Cover
+#  - cpan-install Devel::Cover::Report::Coveralls
   - cpan-install --deps       # installs prereqs, including recommends
   - cpan-install --coverage   # installs converage prereqs, if enabled
 
@@ -35,20 +37,20 @@ before_script:
   - coverage-setup
 
 script:
-  - PERL5OPT=-MDevel::Cover=-coverage,statement,branch,condition,path,subroutine prove -lrv t
-#  - prove -lrv t
+#  - PERL5OPT=-MDevel::Cover=-coverage,statement,branch,condition,path,subroutine prove -lrv t
+  - prove -lrv t
   - prove -lrv xt
-  - cover
+#  - cover
 #  - cover -test #-coverage=default,-pod
 
 after_success:
-  - cover -report coveralls
+#  - cover -report coveralls
   - coverage-report
 
 matrix:
   include:
     - perl: "5.24"
       env: COVERAGE=1
-  allow_failures:
-    - perl: "5.8"
-      env: DEVEL_COVER_UNSUPPORTED=1
+#  allow_failures:
+#    - perl: "5.8"
+#      env: DEVEL_COVER_UNSUPPORTED=1
