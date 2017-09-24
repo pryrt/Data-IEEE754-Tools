@@ -49,5 +49,6 @@ matrix:
   include:
     - perl: "5.24"
       env: COVERAGE=1
+  allow_failures:
     - perl: "5.8"
       env: DEVEL_COVER_UNSUPPORTED=1
