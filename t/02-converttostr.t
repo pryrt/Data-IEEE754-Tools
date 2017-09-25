@@ -24,6 +24,17 @@ sub fptest {
                 $h->{src}, $val,
                 defined $h->{convSpec} ? $h->{convSpec} : '<undef>')
         );
+        if( $h->{src} eq '3FFFFFFFFFFFFFFF' or $h->{src} eq '3FF0000000000001') {
+            $Data::IEEE754::Tools::CPANTESTERS_DEBUG = 1;
+            my $s = convertToHexString($val, $h->{convSpec});
+            diag sprintf(qq(__%04d__\t/exited DEBUG:convertToHexString(ieee754(%-16.16s) = %-+24.16e, %s) = "%s"),
+                __LINE__, $h->{src}, $val,
+                defined $h->{convSpec} ? $h->{convSpec} : '<undef>',
+                $s
+            );
+            diag '';
+            undef $Data::IEEE754::Tools::CPANTESTERS_DEBUG;
+        }
     } else {
         like( $got = convertToHexString($val),
             qr/$exp/,

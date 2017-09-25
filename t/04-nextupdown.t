@@ -24,8 +24,8 @@ sub fntest {
     my $n = shift || "$fn(0x$h => $v)";
     my $tada = shift;
     my $r = undef;
-    note '';
-    note "===== ${n} =====";
+    #note '';
+    #note "===== ${n} =====";
     if($tada) {
         TODO: {
             local $TODO = $tada;
@@ -86,7 +86,7 @@ sub fntest {
         }
         diag '';
     }
-    note '-'x80;
+    # note '-'x80;
 }
 
 my @tests = ();

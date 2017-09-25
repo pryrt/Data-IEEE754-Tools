@@ -6,7 +6,7 @@ use Carp;
 use Exporter 'import';  # just use the import() function, without the rest of the overhead of ISA
 use Config;
 
-our $VERSION = '0.018001';
+our $VERSION = '0.018002';
     # use rrr.mmm_aaa, where rrr is major revision, mmm is ODD minor revision, and aaa is alpha sub-revision (for ALPHA code)
     # use rrr.mmmsss,  where rrr is major revision, mmm is EVEN minor revision, and sss is a sub-revision (usually sss=000) (for releases)
 
@@ -401,9 +401,32 @@ hex-digits or 16 decimal-digits).
 
 =cut
 
+sub DBG_SPRINTF {
+    return unless $Data::IEEE754::Tools::CPANTESTERS_DEBUG;
+    my $fmt = shift;
+    warn sprintf("# __%04d__\t", (caller)[2]), sprintf( $fmt, @_ ), "\n";
+}
+use Devel::Peek ();
+sub DBG_PEEK {
+    return unless $Data::IEEE754::Tools::CPANTESTERS_DEBUG;
+    my ($name, $var) = @_;
+    open( my $ek , '>&STDERR') or die "dup STDERR: $!";
+    close(STDERR);
+    my $txt;
+    open(STDERR, '>', \$txt) or die "STDERR to var: $!";
+    Devel::Peek::Dump($var);
+    close(STDERR);
+    open(STDERR, ">&", $ek) or die "STDERR back to orig: $!";
+    $txt =~ s/^/# \t\t# /gims;
+    $txt =~ s/\s*$//gims;
+    DBG_SPRINTF("Devel::Peek::Dump(%s):\n%s", $name, $txt);
+}
 sub binary64_convertToHexString {
     # thanks to BrowserUK @ http://perlmonks.org/?node_id=1167146 for slighly better decision factors
     # I tweaked it to use the two 32bit words instead of one 64bit word (which wouldn't work on some systems)
+print STDERR "#\n" if $Data::IEEE754::Tools::CPANTESTERS_DEBUG;
+DBG_SPRINTF('binary64_convertToHexString()');
+DBG_SPRINTF("\t%-16s = %d", $_ => $Config{$_}) foreach( qw/nvsize ivsize doublesize intsize longsize ptrsize/ );
     my $v = shift;
     my $p = defined $_[0] ? shift : 13;
     my ($msb,$lsb) = $_helper64_arr2x32b->($v);
@@ -411,6 +434,8 @@ sub binary64_convertToHexString {
     my $sign = $sbit ? '-' : '+';
     my $exp  = (($msb & 0x7FF00000) >> 20) - 1023;
     my $mant = sprintf '%05x%08x', $msb & 0x000FFFFF, $lsb & 0xFFFFFFFF;
+DBG_SPRINTF('[msb][lsb] = 0x%08x %08x => digits=%d', $msb, $lsb, $p);
+DBG_SPRINTF('... = %s %s . %s pwr %d', $sign, '?', $mant, $exp);
     if($exp == 1024) {
         my $z = "0"x (($p<5?4:$p)-4);
         return $sign . "0x1.#INF${z}p+0000"    if $mant eq '0000000000000';
@@ -419,28 +444,41 @@ sub binary64_convertToHexString {
         return $sign . ( (($msb & 0x00080000) != 0x00080000) ? "0x1.#SNAN${z}p+0000" : "0x1.#QNAN${z}p+0000");  # v0.012 coverage note: '!=' condition only triggered on systems with SNAN; ignore Devel::Cover failures on this line on systems which quiet all SNAN to QNAN
     }
     my $implied = 1;
+DBG_SPRINTF('... = %s %s . %s pwr %d', $sign, $implied, $mant, $exp);
     if( $exp == -1023 ) { # zero or denormal
         $implied = 0;
         $exp = $mant eq '0000000000000' ? 0 : -1022;   # 0 for zero, -1022 for denormal
     }
+DBG_SPRINTF('... = %s %s . %s pwr %d', $sign, $implied, $mant, $exp);
     if($p<13) {
         my $m = $msb & 0xFFFFF;
         my $l = $lsb;
         my $o = 0;
+DBG_SPRINTF('... = %s %s . left(%05x_%08x, digits:%d) pwr %d', $sign, $implied, $m, $l, $p, $exp);
         if($p>=5) {  # use all of MSB, and move into LSB
             my $one = 1 << 4*( 8 - ($p-5) );
             my $haf = $one >> 1;
             my $eff = $one - 1;
             my $msk = 0xFFFFFFFF ^ $eff;
+DBG_SPRINTF('... = (l:0x%08x & eff:0x%08x = and:0x%08x) vs (haf:0x%08x): %s', $l, $eff, $l & $eff, $haf, ((($l & $eff) >= $haf) ? '>=' : '<'));
+DBG_PEEK('l  ', $l);
+DBG_PEEK('eff', $eff);
+DBG_PEEK('haf', $haf);
             if( ($l & $eff) >= $haf) {
                 $l = ($l & $msk) + $one;
+DBG_PEEK('l  ', $l);
+DBG_SPRINTF('... = %s %s . left(%05x_%08x, digits:%d) pwr %d', $sign, $implied, $m, $l, $p, $exp);
                 my $l32 = $l & 0xFFFFFFFF;
+DBG_PEEK('l32', $l32);
+DBG_PEEK('one', $one);
                 if($l32 < $one) {
                     $l = 0;
                     $m++;
                 }
+DBG_SPRINTF('... = %s %s . left(%05x_%08x, digits:%d) pwr %d', $sign, $implied, $m, $l, $p, $exp);
             } else {
                 $l = ($l & $msk);
+DBG_SPRINTF('... = %s %s . left(%05x_%08x, digits:%d) pwr %d', $sign, $implied, $m, $l, $p, $exp);
             }
             if($m >= 0x1_0_0000) {
                 $o = 1;
@@ -455,24 +493,31 @@ sub binary64_convertToHexString {
             my $haf = $one >> 1;
             my $eff = $one - 1;
             my $msk = 0xFFFFF ^ $eff;
+DBG_SPRINTF('... = (m:0x%05x & eff:0x%05x = and:0x%05x) vs (haf:0x%05x): %s', $m, $eff, $m & $eff, $haf, ((($m & $eff) >= $haf) ? '>=' : '<'));
             if( ($m & $eff) >= $haf) {
                 $m = ($m & $msk) + $one;
+DBG_SPRINTF('... = %s %s . left(%05x_%08x, digits:%d) pwr %d', $sign, $implied, $m, $l, $p, $exp);
                 my $m20 = $m & 0xFFFFF;
                 if($m20 < $one) {
                     $m = 0;
                     $o++;
                 }
+DBG_SPRINTF('... = %s %s . left(%05x_%08x, digits:%d) pwr %d', $sign, $implied, $m, $l, $p, $exp);
             } else {
                 $m = ($m & $msk);
+DBG_SPRINTF('... = %s %s . left(%05x_%08x, digits:%d) pwr %d', $sign, $implied, $m, $l, $p, $exp);
             }
             if($o) {
                 $implied++;
             }
         }
+DBG_SPRINTF('... = %s %s . left(%05x_%08x, digits:%d) pwr %d', $sign, $implied, $m, $l, $p, $exp);
 
         my $f = substr( sprintf('%05x%08x', $m, $l), 0, $p);
+DBG_SPRINTF('%s0x%1u%s%*sp%+05d', $sign, $implied, $p?'.':'', $p, $f, $exp);
         return sprintf '%s0x%1u%s%*sp%+05d', $sign, $implied, $p?'.':'', $p, $f, $exp;
     } else {    # thus, p>=13:
+DBG_SPRINTF('%s0x%1u.%13.13sp%+05d', $sign, $implied, $mant . '0'x($p-13), $exp);
         return sprintf '%s0x%1u.%13.13sp%+05d', $sign, $implied, $mant . '0'x($p-13), $exp;
     }
 }
