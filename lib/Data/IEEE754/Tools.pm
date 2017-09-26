@@ -6,7 +6,7 @@ use Carp;
 use Exporter 'import';  # just use the import() function, without the rest of the overhead of ISA
 use Config;
 
-our $VERSION = '0.018002';
+our $VERSION = '0.018003';
     # use rrr.mmm_aaa, where rrr is major revision, mmm is ODD minor revision, and aaa is alpha sub-revision (for ALPHA code)
     # use rrr.mmmsss,  where rrr is major revision, mmm is EVEN minor revision, and sss is a sub-revision (usually sss=000) (for releases)
 
@@ -419,7 +419,7 @@ sub DBG_PEEK {
     open(STDERR, ">&", $ek) or die "STDERR back to orig: $!";
     $txt =~ s/^/# \t\t# /gims;
     $txt =~ s/\s*$//gims;
-    DBG_SPRINTF("Devel::Peek::Dump(%s):\n%s", $name, $txt);
+    DBG_SPRINTF("__%04d__\tDevel::Peek::Dump(%s):\n%s", (caller)[2], $name, $txt);
 }
 sub binary64_convertToHexString {
     # thanks to BrowserUK @ http://perlmonks.org/?node_id=1167146 for slighly better decision factors
@@ -457,20 +457,21 @@ DBG_SPRINTF('... = %s %s . %s pwr %d', $sign, $implied, $mant, $exp);
 DBG_SPRINTF('... = %s %s . left(%05x_%08x, digits:%d) pwr %d', $sign, $implied, $m, $l, $p, $exp);
         if($p>=5) {  # use all of MSB, and move into LSB
 DBG_PEEK(sprintf("%-6s = 0x%08x\t", 'l', $l), $l);
-            my $one = 1 << 4*( 8 - ($p-5) );
-DBG_PEEK(sprintf("%-6s = 0x%08x\t", 'one', $one), $one);        # for p==5, on a 32bit ivsize=4, I think there is overflow in $one beyond IV, which may be part of the culprit; but why on the higher p, where $one fits within ivsize?  Besides, shouldn't it just promote to NV if it overflows IV?  That's why I want the Devel::Peek
-            my $haf = $one >> 1;
-DBG_PEEK(sprintf("%-6s = 0x%08x\t", 'haf', $haf), $haf);
+            my $one = 1; $one *= 2 for 1 .. 4*( 8 - ($p-5) );  # was 1 << 4*(), but doesn't work on {ivsize}=4 (32bit)
+DBG_PEEK(sprintf("%-6s = 0x%08x or %.16e\t", 'one', $one, $one), $one);        # for p==5, on a 32bit ivsize=4, I think there is overflow in $one beyond IV, which may be part of the culprit; but why on the higher p, where $one fits within ivsize?  Besides, shouldn't it just promote to NV if it overflows IV?  That's why I want the Devel::Peek
+            my $haf = $one / 2.0;
+DBG_PEEK(sprintf("%-6s = 0x%08x or %.16e\t", 'haf', $haf, $haf), $haf);
             my $eff = $one - 1;
-DBG_PEEK(sprintf("%-6s = 0x%08x\t", 'eff', $eff), $eff);
+DBG_PEEK(sprintf("%-6s = 0x%08x or %.16e\t", 'eff', $eff, $eff), $eff);
             my $msk = 0xFFFFFFFF ^ $eff;
 DBG_SPRINTF('... = (l:0x%08x & eff:0x%08x = and:0x%08x) vs (haf:0x%08x): %s', $l, $eff, $l & $eff, $haf, ((($l & $eff) >= $haf) ? '>=' : '<'));
             if( ($l & $eff) >= $haf) {
+DBG_SPRINTF('... = (l:0x%08x & msk:0x%08x):0x%08x + one:0x%08x = 0x%08x', $l, $msk, $l & $msk, $one, ($l & $msk) + $one);
                 $l = ($l & $msk) + $one;
-DBG_PEEK(sprintf("%-6s = 0x%08x\t", 'l', $l), $l);              # maybe it was the (l&msk)+(one) ????
+DBG_PEEK(sprintf("%-6s = 0x%08x or %.16e\t", 'l', $l, $l), $l);              # maybe it was the (l&msk)+(one) ????
 DBG_SPRINTF('... = %s %s . left(%05x_%08x, digits:%d) pwr %d', $sign, $implied, $m, $l, $p, $exp);
                 my $l32 = $l & 0xFFFFFFFF;
-DBG_PEEK(sprintf("%-6s = 0x%08x\t", 'l32', $l32), $l32);
+DBG_PEEK(sprintf("%-6s = 0x%08x or %.16e\t", 'l32', $l32, $l32), $l32);
 DBG_SPRINTF('... : l32 < one = 0x%08x < 0x%08x = %x', $l32, $one, $l32 < $one);
                 if($l32 < $one) {
                     $l = 0;

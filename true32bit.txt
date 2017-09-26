@@ -1,0 +1,753 @@
+1..362
+ok 1 - convertToHexString    (ieee754(0000000000000000) = +0.0000000000000000e+00 )
+ok 2 - convertToDecimalString(ieee754(0000000000000000) = +0.0000000000000000e+00 )
+ok 3 - convertToHexString    (ieee754(0000000000000000) = +0.0000000000000000e+00 , <undef>)
+ok 4 - convertToDecimalString(ieee754(0000000000000000) = +0.0000000000000000e+00 , <undef>)
+ok 5 - convertToHexString    (ieee754(0000000000000000) = +0.0000000000000000e+00 , 10)
+ok 6 - convertToDecimalString(ieee754(0000000000000000) = +0.0000000000000000e+00 , 10)
+ok 7 - convertToHexString    (ieee754(0000000000000000) = +0.0000000000000000e+00 , 13)
+ok 8 - convertToDecimalString(ieee754(0000000000000000) = +0.0000000000000000e+00 , 13)
+ok 9 - convertToHexString    (ieee754(8000000000000000) = -0.0000000000000000e+00 )
+ok 10 - convertToDecimalString(ieee754(8000000000000000) = -0.0000000000000000e+00 )
+ok 11 - convertToHexString    (ieee754(8000000000000000) = -0.0000000000000000e+00 , <undef>)
+ok 12 - convertToDecimalString(ieee754(8000000000000000) = -0.0000000000000000e+00 , <undef>)
+ok 13 - convertToHexString    (ieee754(8000000000000000) = -0.0000000000000000e+00 , 10)
+ok 14 - convertToDecimalString(ieee754(8000000000000000) = -0.0000000000000000e+00 , 10)
+ok 15 - convertToHexString    (ieee754(8000000000000000) = -0.0000000000000000e+00 , 13)
+ok 16 - convertToDecimalString(ieee754(8000000000000000) = -0.0000000000000000e+00 , 13)
+ok 17 - convertToHexString    (ieee754(0000000000000001) = +4.9406564584124654e-324)
+ok 18 - convertToDecimalString(ieee754(0000000000000001) = +4.9406564584124654e-324)
+ok 19 - convertToHexString    (ieee754(0000000000000001) = +4.9406564584124654e-324, <undef>)
+ok 20 - convertToDecimalString(ieee754(0000000000000001) = +4.9406564584124654e-324, <undef>)
+ok 21 - convertToHexString    (ieee754(0000000000000001) = +4.9406564584124654e-324, 3)
+ok 22 - convertToDecimalString(ieee754(0000000000000001) = +4.9406564584124654e-324, 3)
+ok 23 - convertToHexString    (ieee754(0000000000000001) = +4.9406564584124654e-324, 10)
+ok 24 - convertToDecimalString(ieee754(0000000000000001) = +4.9406564584124654e-324, 10)
+ok 25 - convertToHexString    (ieee754(0000000000000001) = +4.9406564584124654e-324, 13)
+ok 26 - convertToDecimalString(ieee754(0000000000000001) = +4.9406564584124654e-324, 13)
+ok 27 - convertToHexString    (ieee754(8000000000000001) = -4.9406564584124654e-324)
+ok 28 - convertToDecimalString(ieee754(8000000000000001) = -4.9406564584124654e-324)
+ok 29 - convertToHexString    (ieee754(8000000000000001) = -4.9406564584124654e-324, <undef>)
+ok 30 - convertToDecimalString(ieee754(8000000000000001) = -4.9406564584124654e-324, <undef>)
+ok 31 - convertToHexString    (ieee754(8000000000000001) = -4.9406564584124654e-324, 3)
+ok 32 - convertToDecimalString(ieee754(8000000000000001) = -4.9406564584124654e-324, 3)
+ok 33 - convertToHexString    (ieee754(8000000000000001) = -4.9406564584124654e-324, 10)
+ok 34 - convertToDecimalString(ieee754(8000000000000001) = -4.9406564584124654e-324, 10)
+ok 35 - convertToHexString    (ieee754(8000000000000001) = -4.9406564584124654e-324, 13)
+ok 36 - convertToDecimalString(ieee754(8000000000000001) = -4.9406564584124654e-324, 13)
+ok 37 - convertToHexString    (ieee754(000FFFFFFFFFFFFF) = +2.2250738585072009e-308)
+ok 38 - convertToDecimalString(ieee754(000FFFFFFFFFFFFF) = +2.2250738585072009e-308)
+ok 39 - convertToHexString    (ieee754(000FFFFFFFFFFFFF) = +2.2250738585072009e-308, <undef>)
+ok 40 - convertToDecimalString(ieee754(000FFFFFFFFFFFFF) = +2.2250738585072009e-308, <undef>)
+ok 41 - convertToHexString    (ieee754(000FFFFFFFFFFFFF) = +2.2250738585072009e-308, 3)
+ok 42 - convertToDecimalString(ieee754(000FFFFFFFFFFFFF) = +2.2250738585072009e-308, 3)
+not ok 43 - convertToHexString    (ieee754(000FFFFFFFFFFFFF) = +2.2250738585072009e-308, 10)
+#   Failed test 'convertToHexString    (ieee754(000FFFFFFFFFFFFF) = +2.2250738585072009e-308, 10)'
+#   at t/02-converttostr.t line 21.
+#                   '+0x0.ffffffffffp-1022'
+#     doesn't match '(?-xism:\+0x1\.0000000000p\-1022)'
+ok 44 - convertToDecimalString(ieee754(000FFFFFFFFFFFFF) = +2.2250738585072009e-308, 10)
+ok 45 - convertToHexString    (ieee754(000FFFFFFFFFFFFF) = +2.2250738585072009e-308, 13)
+ok 46 - convertToDecimalString(ieee754(000FFFFFFFFFFFFF) = +2.2250738585072009e-308, 13)
+ok 47 - convertToHexString    (ieee754(800FFFFFFFFFFFFF) = -2.2250738585072009e-308)
+ok 48 - convertToDecimalString(ieee754(800FFFFFFFFFFFFF) = -2.2250738585072009e-308)
+ok 49 - convertToHexString    (ieee754(800FFFFFFFFFFFFF) = -2.2250738585072009e-308, <undef>)
+ok 50 - convertToDecimalString(ieee754(800FFFFFFFFFFFFF) = -2.2250738585072009e-308, <undef>)
+ok 51 - convertToHexString    (ieee754(800FFFFFFFFFFFFF) = -2.2250738585072009e-308, 3)
+ok 52 - convertToDecimalString(ieee754(800FFFFFFFFFFFFF) = -2.2250738585072009e-308, 3)
+not ok 53 - convertToHexString    (ieee754(800FFFFFFFFFFFFF) = -2.2250738585072009e-308, 10)
+#   Failed test 'convertToHexString    (ieee754(800FFFFFFFFFFFFF) = -2.2250738585072009e-308, 10)'
+#   at t/02-converttostr.t line 21.
+#                   '-0x0.ffffffffffp-1022'
+#     doesn't match '(?-xism:\-0x1\.0000000000p\-1022)'
+ok 54 - convertToDecimalString(ieee754(800FFFFFFFFFFFFF) = -2.2250738585072009e-308, 10)
+ok 55 - convertToHexString    (ieee754(800FFFFFFFFFFFFF) = -2.2250738585072009e-308, 13)
+ok 56 - convertToDecimalString(ieee754(800FFFFFFFFFFFFF) = -2.2250738585072009e-308, 13)
+ok 57 - convertToHexString    (ieee754(0010000000000000) = +2.2250738585072014e-308)
+ok 58 - convertToDecimalString(ieee754(0010000000000000) = +2.2250738585072014e-308)
+ok 59 - convertToHexString    (ieee754(0010000000000000) = +2.2250738585072014e-308, <undef>)
+ok 60 - convertToDecimalString(ieee754(0010000000000000) = +2.2250738585072014e-308, <undef>)
+ok 61 - convertToHexString    (ieee754(0010000000000000) = +2.2250738585072014e-308, 10)
+ok 62 - convertToDecimalString(ieee754(0010000000000000) = +2.2250738585072014e-308, 10)
+ok 63 - convertToHexString    (ieee754(0010000000000000) = +2.2250738585072014e-308, 13)
+ok 64 - convertToDecimalString(ieee754(0010000000000000) = +2.2250738585072014e-308, 13)
+ok 65 - convertToHexString    (ieee754(8010000000000000) = -2.2250738585072014e-308)
+ok 66 - convertToDecimalString(ieee754(8010000000000000) = -2.2250738585072014e-308)
+ok 67 - convertToHexString    (ieee754(8010000000000000) = -2.2250738585072014e-308, <undef>)
+ok 68 - convertToDecimalString(ieee754(8010000000000000) = -2.2250738585072014e-308, <undef>)
+ok 69 - convertToHexString    (ieee754(8010000000000000) = -2.2250738585072014e-308, 10)
+ok 70 - convertToDecimalString(ieee754(8010000000000000) = -2.2250738585072014e-308, 10)
+ok 71 - convertToHexString    (ieee754(8010000000000000) = -2.2250738585072014e-308, 13)
+ok 72 - convertToDecimalString(ieee754(8010000000000000) = -2.2250738585072014e-308, 13)
+ok 73 - convertToHexString    (ieee754(0010000000000001) = +2.2250738585072019e-308)
+ok 74 - convertToDecimalString(ieee754(0010000000000001) = +2.2250738585072019e-308)
+ok 75 - convertToHexString    (ieee754(0010000000000001) = +2.2250738585072019e-308, <undef>)
+ok 76 - convertToDecimalString(ieee754(0010000000000001) = +2.2250738585072019e-308, <undef>)
+ok 77 - convertToHexString    (ieee754(0010000000000001) = +2.2250738585072019e-308, 10)
+ok 78 - convertToDecimalString(ieee754(0010000000000001) = +2.2250738585072019e-308, 10)
+ok 79 - convertToHexString    (ieee754(0010000000000001) = +2.2250738585072019e-308, 13)
+ok 80 - convertToDecimalString(ieee754(0010000000000001) = +2.2250738585072019e-308, 13)
+ok 81 - convertToHexString    (ieee754(8010000000000001) = -2.2250738585072019e-308)
+ok 82 - convertToDecimalString(ieee754(8010000000000001) = -2.2250738585072019e-308)
+ok 83 - convertToHexString    (ieee754(8010000000000001) = -2.2250738585072019e-308, <undef>)
+ok 84 - convertToDecimalString(ieee754(8010000000000001) = -2.2250738585072019e-308, <undef>)
+ok 85 - convertToHexString    (ieee754(8010000000000001) = -2.2250738585072019e-308, 10)
+ok 86 - convertToDecimalString(ieee754(8010000000000001) = -2.2250738585072019e-308, 10)
+ok 87 - convertToHexString    (ieee754(8010000000000001) = -2.2250738585072019e-308, 13)
+ok 88 - convertToDecimalString(ieee754(8010000000000001) = -2.2250738585072019e-308, 13)
+ok 89 - convertToHexString    (ieee754(001FFFFFFFFFFFFF) = +4.4501477170144023e-308)
+ok 90 - convertToDecimalString(ieee754(001FFFFFFFFFFFFF) = +4.4501477170144023e-308)
+ok 91 - convertToHexString    (ieee754(001FFFFFFFFFFFFF) = +4.4501477170144023e-308, <undef>)
+ok 92 - convertToDecimalString(ieee754(001FFFFFFFFFFFFF) = +4.4501477170144023e-308, <undef>)
+not ok 93 - convertToHexString    (ieee754(001FFFFFFFFFFFFF) = +4.4501477170144023e-308, 10)
+#   Failed test 'convertToHexString    (ieee754(001FFFFFFFFFFFFF) = +4.4501477170144023e-308, 10)'
+#   at t/02-converttostr.t line 21.
+#                   '+0x1.ffffffffffp-1022'
+#     doesn't match '(?-xism:\+0x2\.0000000000p\-1022)'
+ok 94 - convertToDecimalString(ieee754(001FFFFFFFFFFFFF) = +4.4501477170144023e-308, 10)
+ok 95 - convertToHexString    (ieee754(001FFFFFFFFFFFFF) = +4.4501477170144023e-308, 13)
+ok 96 - convertToDecimalString(ieee754(001FFFFFFFFFFFFF) = +4.4501477170144023e-308, 13)
+ok 97 - convertToHexString    (ieee754(801FFFFFFFFFFFFF) = -4.4501477170144023e-308)
+ok 98 - convertToDecimalString(ieee754(801FFFFFFFFFFFFF) = -4.4501477170144023e-308)
+ok 99 - convertToHexString    (ieee754(801FFFFFFFFFFFFF) = -4.4501477170144023e-308, <undef>)
+ok 100 - convertToDecimalString(ieee754(801FFFFFFFFFFFFF) = -4.4501477170144023e-308, <undef>)
+not ok 101 - convertToHexString    (ieee754(801FFFFFFFFFFFFF) = -4.4501477170144023e-308, 10)
+#   Failed test 'convertToHexString    (ieee754(801FFFFFFFFFFFFF) = -4.4501477170144023e-308, 10)'
+#   at t/02-converttostr.t line 21.
+#                   '-0x1.ffffffffffp-1022'
+#     doesn't match '(?-xism:\-0x2\.0000000000p\-1022)'
+ok 102 - convertToDecimalString(ieee754(801FFFFFFFFFFFFF) = -4.4501477170144023e-308, 10)
+ok 103 - convertToHexString    (ieee754(801FFFFFFFFFFFFF) = -4.4501477170144023e-308, 13)
+ok 104 - convertToDecimalString(ieee754(801FFFFFFFFFFFFF) = -4.4501477170144023e-308, 13)
+ok 105 - convertToHexString    (ieee754(3FF0000000000000) = +1.0000000000000000e+00 )
+ok 106 - convertToDecimalString(ieee754(3FF0000000000000) = +1.0000000000000000e+00 )
+ok 107 - convertToHexString    (ieee754(3FF0000000000000) = +1.0000000000000000e+00 , <undef>)
+ok 108 - convertToDecimalString(ieee754(3FF0000000000000) = +1.0000000000000000e+00 , <undef>)
+ok 109 - convertToHexString    (ieee754(3FF0000000000000) = +1.0000000000000000e+00 , 10)
+ok 110 - convertToDecimalString(ieee754(3FF0000000000000) = +1.0000000000000000e+00 , 10)
+ok 111 - convertToHexString    (ieee754(3FF0000000000000) = +1.0000000000000000e+00 , 13)
+ok 112 - convertToDecimalString(ieee754(3FF0000000000000) = +1.0000000000000000e+00 , 13)
+ok 113 - convertToHexString    (ieee754(BFF0000000000000) = -1.0000000000000000e+00 )
+ok 114 - convertToDecimalString(ieee754(BFF0000000000000) = -1.0000000000000000e+00 )
+ok 115 - convertToHexString    (ieee754(BFF0000000000000) = -1.0000000000000000e+00 , <undef>)
+ok 116 - convertToDecimalString(ieee754(BFF0000000000000) = -1.0000000000000000e+00 , <undef>)
+ok 117 - convertToHexString    (ieee754(BFF0000000000000) = -1.0000000000000000e+00 , 10)
+ok 118 - convertToDecimalString(ieee754(BFF0000000000000) = -1.0000000000000000e+00 , 10)
+ok 119 - convertToHexString    (ieee754(BFF0000000000000) = -1.0000000000000000e+00 , 13)
+ok 120 - convertToDecimalString(ieee754(BFF0000000000000) = -1.0000000000000000e+00 , 13)
+ok 121 - convertToHexString    (ieee754(3FF0000000000001) = +1.0000000000000002e+00 )
+ok 122 - convertToDecimalString(ieee754(3FF0000000000001) = +1.0000000000000002e+00 )
+ok 123 - convertToHexString    (ieee754(3FF0000000000001) = +1.0000000000000002e+00 , <undef>)
+#
+
+# __0428__	binary64_convertToHexString()
+# __0429__		nvsize           = 8
+# __0429__		ivsize           = 4
+# __0429__		doublesize       = 8
+# __0429__		intsize          = 4
+# __0429__		longsize         = 4
+# __0429__		ptrsize          = 4
+# __0437__	[msb][lsb] = 0x3ff00000 00000001 => digits=13
+# __0438__	... = + ? . 0000000000001 pwr 0
+# __0447__	... = + 1 . 0000000000001 pwr 0
+# __0452__	... = + 1 . 0000000000001 pwr 0
+# __0522__	+0x1.0000000000001p+0000
+# __0031__	/exited DEBUG:convertToHexString(ieee754(3FF0000000000001) = +1.0000000000000002e+00 , <undef>) = "+0x1.0000000000001p+0000"
+# 
+ok 124 - convertToDecimalString(ieee754(3FF0000000000001) = +1.0000000000000002e+00 , <undef>)
+ok 125 - convertToHexString    (ieee754(3FF0000000000001) = +1.0000000000000002e+00 , 10)
+#
+
+# __0428__	binary64_convertToHexString()
+# __0429__		nvsize           = 8
+# __0429__		ivsize           = 4
+# __0429__		doublesize       = 8
+# __0429__		intsize          = 4
+# __0429__		longsize         = 4
+# __0429__		ptrsize          = 4
+# __0437__	[msb][lsb] = 0x3ff00000 00000001 => digits=10
+# __0438__	... = + ? . 0000000000001 pwr 0
+# __0447__	... = + 1 . 0000000000001 pwr 0
+# __0452__	... = + 1 . 0000000000001 pwr 0
+# __0457__	... = + 1 . left(00000_00000001, digits:10) pwr 0
+# __0422__	__0459__	Devel::Peek::Dump(l      = 0x00000001	):
+# 		# Use of uninitialized value in subroutine entry at lib/Data/IEEE754/Tools.pm line 417.
+# 		# SV = PVNV(0x91d7088) at 0x911cfd0
+# 		#   REFCNT = 1
+# 		#   FLAGS = (PADBUSY,PADMY,IOK,pIOK)
+# 		#   IV = 1
+# 		#   NV = 0
+# 		#   PV = 0
+# __0422__	__0461__	Devel::Peek::Dump(one    = 0x00001000 or 4.0960000000000000e+03	):
+# 		# Use of uninitialized value in subroutine entry at lib/Data/IEEE754/Tools.pm line 417.
+# 		# SV = PVNV(0x91d7088) at 0x911cfd0
+# 		#   REFCNT = 1
+# 		#   FLAGS = (PADBUSY,PADMY,IOK,NOK,pIOK,pNOK)
+# 		#   IV = 4096
+# 		#   NV = 4096
+# 		#   PV = 0
+# __0422__	__0463__	Devel::Peek::Dump(haf    = 0x00000800 or 2.0480000000000000e+03	):
+# 		# Use of uninitialized value in subroutine entry at lib/Data/IEEE754/Tools.pm line 417.
+# 		# SV = PVNV(0x91d7088) at 0x911cfd0
+# 		#   REFCNT = 1
+# 		#   FLAGS = (PADBUSY,PADMY,IOK,NOK,pIOK,pNOK)
+# 		#   IV = 2048
+# 		#   NV = 2048
+# 		#   PV = 0
+# __0422__	__0465__	Devel::Peek::Dump(eff    = 0x00000fff or 4.0950000000000000e+03	):
+# 		# Use of uninitialized value in subroutine entry at lib/Data/IEEE754/Tools.pm line 417.
+# 		# SV = PVNV(0x91d7088) at 0x911cfd0
+# 		#   REFCNT = 1
+# 		#   FLAGS = (PADBUSY,PADMY,IOK,NOK,pIOK,pNOK)
+# 		#   IV = 4095
+# 		#   NV = 4095
+# 		#   PV = 0
+# __0467__	... = (l:0x00000001 & eff:0x00000fff = and:0x00000001) vs (haf:0x00000800): <
+# __0483__	... = + 1 . left(00000_00000000, digits:10) pwr 0
+# __0516__	... = + 1 . left(00000_00000000, digits:10) pwr 0
+# __0519__	+0x1.0000000000p+0000
+# __0031__	/exited DEBUG:convertToHexString(ieee754(3FF0000000000001) = +1.0000000000000002e+00 , 10) = "+0x1.0000000000p+0000"
+# 
+ok 126 - convertToDecimalString(ieee754(3FF0000000000001) = +1.0000000000000002e+00 , 10)
+ok 127 - convertToHexString    (ieee754(3FF0000000000001) = +1.0000000000000002e+00 , 13)
+#
+
+# __0428__	binary64_convertToHexString()
+# __0429__		nvsize           = 8
+# __0429__		ivsize           = 4
+# __0429__		doublesize       = 8
+# __0429__		intsize          = 4
+# __0429__		longsize         = 4
+# __0429__		ptrsize          = 4
+# __0437__	[msb][lsb] = 0x3ff00000 00000001 => digits=13
+# __0438__	... = + ? . 0000000000001 pwr 0
+# __0447__	... = + 1 . 0000000000001 pwr 0
+# __0452__	... = + 1 . 0000000000001 pwr 0
+# __0522__	+0x1.0000000000001p+0000
+# __0031__	/exited DEBUG:convertToHexString(ieee754(3FF0000000000001) = +1.0000000000000002e+00 , 13) = "+0x1.0000000000001p+0000"
+# 
+ok 128 - convertToDecimalString(ieee754(3FF0000000000001) = +1.0000000000000002e+00 , 13)
+ok 129 - convertToHexString    (ieee754(BFF0000000000001) = -1.0000000000000002e+00 )
+ok 130 - convertToDecimalString(ieee754(BFF0000000000001) = -1.0000000000000002e+00 )
+ok 131 - convertToHexString    (ieee754(BFF0000000000001) = -1.0000000000000002e+00 , <undef>)
+ok 132 - convertToDecimalString(ieee754(BFF0000000000001) = -1.0000000000000002e+00 , <undef>)
+ok 133 - convertToHexString    (ieee754(BFF0000000000001) = -1.0000000000000002e+00 , 10)
+ok 134 - convertToDecimalString(ieee754(BFF0000000000001) = -1.0000000000000002e+00 , 10)
+ok 135 - convertToHexString    (ieee754(BFF0000000000001) = -1.0000000000000002e+00 , 13)
+ok 136 - convertToDecimalString(ieee754(BFF0000000000001) = -1.0000000000000002e+00 , 13)
+ok 137 - convertToHexString    (ieee754(3FF0000000000008) = +1.0000000000000018e+00 )
+ok 138 - convertToDecimalString(ieee754(3FF0000000000008) = +1.0000000000000018e+00 )
+ok 139 - convertToHexString    (ieee754(3FF0000000000008) = +1.0000000000000018e+00 , <undef>)
+ok 140 - convertToDecimalString(ieee754(3FF0000000000008) = +1.0000000000000018e+00 , <undef>)
+ok 141 - convertToHexString    (ieee754(3FF0000000000008) = +1.0000000000000018e+00 , 10)
+ok 142 - convertToDecimalString(ieee754(3FF0000000000008) = +1.0000000000000018e+00 , 10)
+ok 143 - convertToHexString    (ieee754(3FF0000000000008) = +1.0000000000000018e+00 , 13)
+ok 144 - convertToDecimalString(ieee754(3FF0000000000008) = +1.0000000000000018e+00 , 13)
+ok 145 - convertToHexString    (ieee754(BFF0000000000008) = -1.0000000000000018e+00 )
+ok 146 - convertToDecimalString(ieee754(BFF0000000000008) = -1.0000000000000018e+00 )
+ok 147 - convertToHexString    (ieee754(BFF0000000000008) = -1.0000000000000018e+00 , <undef>)
+ok 148 - convertToDecimalString(ieee754(BFF0000000000008) = -1.0000000000000018e+00 , <undef>)
+ok 149 - convertToHexString    (ieee754(BFF0000000000008) = -1.0000000000000018e+00 , 10)
+ok 150 - convertToDecimalString(ieee754(BFF0000000000008) = -1.0000000000000018e+00 , 10)
+ok 151 - convertToHexString    (ieee754(BFF0000000000008) = -1.0000000000000018e+00 , 13)
+ok 152 - convertToDecimalString(ieee754(BFF0000000000008) = -1.0000000000000018e+00 , 13)
+ok 153 - convertToHexString    (ieee754(3FF0000000000080) = +1.0000000000000284e+00 )
+ok 154 - convertToDecimalString(ieee754(3FF0000000000080) = +1.0000000000000284e+00 )
+ok 155 - convertToHexString    (ieee754(3FF0000000000080) = +1.0000000000000284e+00 , <undef>)
+ok 156 - convertToDecimalString(ieee754(3FF0000000000080) = +1.0000000000000284e+00 , <undef>)
+ok 157 - convertToHexString    (ieee754(3FF0000000000080) = +1.0000000000000284e+00 , 10)
+ok 158 - convertToDecimalString(ieee754(3FF0000000000080) = +1.0000000000000284e+00 , 10)
+ok 159 - convertToHexString    (ieee754(3FF0000000000080) = +1.0000000000000284e+00 , 13)
+ok 160 - convertToDecimalString(ieee754(3FF0000000000080) = +1.0000000000000284e+00 , 13)
+ok 161 - convertToHexString    (ieee754(BFF0000000000080) = -1.0000000000000284e+00 )
+ok 162 - convertToDecimalString(ieee754(BFF0000000000080) = -1.0000000000000284e+00 )
+ok 163 - convertToHexString    (ieee754(BFF0000000000080) = -1.0000000000000284e+00 , <undef>)
+ok 164 - convertToDecimalString(ieee754(BFF0000000000080) = -1.0000000000000284e+00 , <undef>)
+ok 165 - convertToHexString    (ieee754(BFF0000000000080) = -1.0000000000000284e+00 , 10)
+ok 166 - convertToDecimalString(ieee754(BFF0000000000080) = -1.0000000000000284e+00 , 10)
+ok 167 - convertToHexString    (ieee754(BFF0000000000080) = -1.0000000000000284e+00 , 13)
+ok 168 - convertToDecimalString(ieee754(BFF0000000000080) = -1.0000000000000284e+00 , 13)
+ok 169 - convertToHexString    (ieee754(3FF0000000000800) = +1.0000000000004547e+00 )
+ok 170 - convertToDecimalString(ieee754(3FF0000000000800) = +1.0000000000004547e+00 )
+ok 171 - convertToHexString    (ieee754(3FF0000000000800) = +1.0000000000004547e+00 , <undef>)
+ok 172 - convertToDecimalString(ieee754(3FF0000000000800) = +1.0000000000004547e+00 , <undef>)
+ok 173 - convertToHexString    (ieee754(3FF0000000000800) = +1.0000000000004547e+00 , 10)
+ok 174 - convertToDecimalString(ieee754(3FF0000000000800) = +1.0000000000004547e+00 , 10)
+ok 175 - convertToHexString    (ieee754(3FF0000000000800) = +1.0000000000004547e+00 , 13)
+ok 176 - convertToDecimalString(ieee754(3FF0000000000800) = +1.0000000000004547e+00 , 13)
+ok 177 - convertToHexString    (ieee754(BFF0000000000800) = -1.0000000000004547e+00 )
+ok 178 - convertToDecimalString(ieee754(BFF0000000000800) = -1.0000000000004547e+00 )
+ok 179 - convertToHexString    (ieee754(BFF0000000000800) = -1.0000000000004547e+00 , <undef>)
+ok 180 - convertToDecimalString(ieee754(BFF0000000000800) = -1.0000000000004547e+00 , <undef>)
+ok 181 - convertToHexString    (ieee754(BFF0000000000800) = -1.0000000000004547e+00 , 10)
+ok 182 - convertToDecimalString(ieee754(BFF0000000000800) = -1.0000000000004547e+00 , 10)
+ok 183 - convertToHexString    (ieee754(BFF0000000000800) = -1.0000000000004547e+00 , 13)
+ok 184 - convertToDecimalString(ieee754(BFF0000000000800) = -1.0000000000004547e+00 , 13)
+ok 185 - convertToHexString    (ieee754(3FF0000000008000) = +1.0000000000072760e+00 )
+ok 186 - convertToDecimalString(ieee754(3FF0000000008000) = +1.0000000000072760e+00 )
+ok 187 - convertToHexString    (ieee754(3FF0000000008000) = +1.0000000000072760e+00 , <undef>)
+ok 188 - convertToDecimalString(ieee754(3FF0000000008000) = +1.0000000000072760e+00 , <undef>)
+ok 189 - convertToHexString    (ieee754(3FF0000000008000) = +1.0000000000072760e+00 , 10)
+ok 190 - convertToDecimalString(ieee754(3FF0000000008000) = +1.0000000000072760e+00 , 10)
+ok 191 - convertToHexString    (ieee754(3FF0000000008000) = +1.0000000000072760e+00 , 13)
+ok 192 - convertToDecimalString(ieee754(3FF0000000008000) = +1.0000000000072760e+00 , 13)
+ok 193 - convertToHexString    (ieee754(BFF0000000008000) = -1.0000000000072760e+00 )
+ok 194 - convertToDecimalString(ieee754(BFF0000000008000) = -1.0000000000072760e+00 )
+ok 195 - convertToHexString    (ieee754(BFF0000000008000) = -1.0000000000072760e+00 , <undef>)
+ok 196 - convertToDecimalString(ieee754(BFF0000000008000) = -1.0000000000072760e+00 , <undef>)
+ok 197 - convertToHexString    (ieee754(BFF0000000008000) = -1.0000000000072760e+00 , 10)
+ok 198 - convertToDecimalString(ieee754(BFF0000000008000) = -1.0000000000072760e+00 , 10)
+ok 199 - convertToHexString    (ieee754(BFF0000000008000) = -1.0000000000072760e+00 , 13)
+ok 200 - convertToDecimalString(ieee754(BFF0000000008000) = -1.0000000000072760e+00 , 13)
+ok 201 - convertToHexString    (ieee754(3FF0000000080000) = +1.0000000001164153e+00 )
+ok 202 - convertToDecimalString(ieee754(3FF0000000080000) = +1.0000000001164153e+00 )
+ok 203 - convertToHexString    (ieee754(3FF0000000080000) = +1.0000000001164153e+00 , <undef>)
+ok 204 - convertToDecimalString(ieee754(3FF0000000080000) = +1.0000000001164153e+00 , <undef>)
+ok 205 - convertToHexString    (ieee754(3FF0000000080000) = +1.0000000001164153e+00 , 10)
+ok 206 - convertToDecimalString(ieee754(3FF0000000080000) = +1.0000000001164153e+00 , 10)
+ok 207 - convertToHexString    (ieee754(3FF0000000080000) = +1.0000000001164153e+00 , 13)
+ok 208 - convertToDecimalString(ieee754(3FF0000000080000) = +1.0000000001164153e+00 , 13)
+ok 209 - convertToHexString    (ieee754(BFF0000000080000) = -1.0000000001164153e+00 )
+ok 210 - convertToDecimalString(ieee754(BFF0000000080000) = -1.0000000001164153e+00 )
+ok 211 - convertToHexString    (ieee754(BFF0000000080000) = -1.0000000001164153e+00 , <undef>)
+ok 212 - convertToDecimalString(ieee754(BFF0000000080000) = -1.0000000001164153e+00 , <undef>)
+ok 213 - convertToHexString    (ieee754(BFF0000000080000) = -1.0000000001164153e+00 , 10)
+ok 214 - convertToDecimalString(ieee754(BFF0000000080000) = -1.0000000001164153e+00 , 10)
+ok 215 - convertToHexString    (ieee754(BFF0000000080000) = -1.0000000001164153e+00 , 13)
+ok 216 - convertToDecimalString(ieee754(BFF0000000080000) = -1.0000000001164153e+00 , 13)
+ok 217 - convertToHexString    (ieee754(3FF0000000800000) = +1.0000000018626451e+00 )
+ok 218 - convertToDecimalString(ieee754(3FF0000000800000) = +1.0000000018626451e+00 )
+ok 219 - convertToHexString    (ieee754(3FF0000000800000) = +1.0000000018626451e+00 , <undef>)
+ok 220 - convertToDecimalString(ieee754(3FF0000000800000) = +1.0000000018626451e+00 , <undef>)
+ok 221 - convertToHexString    (ieee754(3FF0000000800000) = +1.0000000018626451e+00 , 10)
+ok 222 - convertToDecimalString(ieee754(3FF0000000800000) = +1.0000000018626451e+00 , 10)
+ok 223 - convertToHexString    (ieee754(3FF0000000800000) = +1.0000000018626451e+00 , 13)
+ok 224 - convertToDecimalString(ieee754(3FF0000000800000) = +1.0000000018626451e+00 , 13)
+ok 225 - convertToHexString    (ieee754(BFF0000000800000) = -1.0000000018626451e+00 )
+ok 226 - convertToDecimalString(ieee754(BFF0000000800000) = -1.0000000018626451e+00 )
+ok 227 - convertToHexString    (ieee754(BFF0000000800000) = -1.0000000018626451e+00 , <undef>)
+ok 228 - convertToDecimalString(ieee754(BFF0000000800000) = -1.0000000018626451e+00 , <undef>)
+ok 229 - convertToHexString    (ieee754(BFF0000000800000) = -1.0000000018626451e+00 , 10)
+ok 230 - convertToDecimalString(ieee754(BFF0000000800000) = -1.0000000018626451e+00 , 10)
+ok 231 - convertToHexString    (ieee754(BFF0000000800000) = -1.0000000018626451e+00 , 13)
+ok 232 - convertToDecimalString(ieee754(BFF0000000800000) = -1.0000000018626451e+00 , 13)
+ok 233 - convertToHexString    (ieee754(3FF0000008000000) = +1.0000000298023224e+00 )
+ok 234 - convertToDecimalString(ieee754(3FF0000008000000) = +1.0000000298023224e+00 )
+ok 235 - convertToHexString    (ieee754(3FF0000008000000) = +1.0000000298023224e+00 , <undef>)
+ok 236 - convertToDecimalString(ieee754(3FF0000008000000) = +1.0000000298023224e+00 , <undef>)
+ok 237 - convertToHexString    (ieee754(3FF0000008000000) = +1.0000000298023224e+00 , 10)
+ok 238 - convertToDecimalString(ieee754(3FF0000008000000) = +1.0000000298023224e+00 , 10)
+ok 239 - convertToHexString    (ieee754(3FF0000008000000) = +1.0000000298023224e+00 , 13)
+ok 240 - convertToDecimalString(ieee754(3FF0000008000000) = +1.0000000298023224e+00 , 13)
+ok 241 - convertToHexString    (ieee754(BFF0000008000000) = -1.0000000298023224e+00 )
+ok 242 - convertToDecimalString(ieee754(BFF0000008000000) = -1.0000000298023224e+00 )
+ok 243 - convertToHexString    (ieee754(BFF0000008000000) = -1.0000000298023224e+00 , <undef>)
+ok 244 - convertToDecimalString(ieee754(BFF0000008000000) = -1.0000000298023224e+00 , <undef>)
+ok 245 - convertToHexString    (ieee754(BFF0000008000000) = -1.0000000298023224e+00 , 10)
+ok 246 - convertToDecimalString(ieee754(BFF0000008000000) = -1.0000000298023224e+00 , 10)
+ok 247 - convertToHexString    (ieee754(BFF0000008000000) = -1.0000000298023224e+00 , 13)
+ok 248 - convertToDecimalString(ieee754(BFF0000008000000) = -1.0000000298023224e+00 , 13)
+ok 249 - convertToHexString    (ieee754(3FF0000080000000) = +1.0000004768371582e+00 )
+ok 250 - convertToDecimalString(ieee754(3FF0000080000000) = +1.0000004768371582e+00 )
+ok 251 - convertToHexString    (ieee754(3FF0000080000000) = +1.0000004768371582e+00 , <undef>)
+ok 252 - convertToDecimalString(ieee754(3FF0000080000000) = +1.0000004768371582e+00 , <undef>)
+ok 253 - convertToHexString    (ieee754(3FF0000080000000) = +1.0000004768371582e+00 , 10)
+ok 254 - convertToDecimalString(ieee754(3FF0000080000000) = +1.0000004768371582e+00 , 10)
+ok 255 - convertToHexString    (ieee754(3FF0000080000000) = +1.0000004768371582e+00 , 13)
+ok 256 - convertToDecimalString(ieee754(3FF0000080000000) = +1.0000004768371582e+00 , 13)
+ok 257 - convertToHexString    (ieee754(BFF0000080000000) = -1.0000004768371582e+00 )
+ok 258 - convertToDecimalString(ieee754(BFF0000080000000) = -1.0000004768371582e+00 )
+ok 259 - convertToHexString    (ieee754(BFF0000080000000) = -1.0000004768371582e+00 , <undef>)
+ok 260 - convertToDecimalString(ieee754(BFF0000080000000) = -1.0000004768371582e+00 , <undef>)
+ok 261 - convertToHexString    (ieee754(BFF0000080000000) = -1.0000004768371582e+00 , 10)
+ok 262 - convertToDecimalString(ieee754(BFF0000080000000) = -1.0000004768371582e+00 , 10)
+ok 263 - convertToHexString    (ieee754(BFF0000080000000) = -1.0000004768371582e+00 , 13)
+ok 264 - convertToDecimalString(ieee754(BFF0000080000000) = -1.0000004768371582e+00 , 13)
+ok 265 - convertToHexString    (ieee754(3FF0000800000000) = +1.0000076293945312e+00 )
+ok 266 - convertToDecimalString(ieee754(3FF0000800000000) = +1.0000076293945312e+00 )
+ok 267 - convertToHexString    (ieee754(3FF0000800000000) = +1.0000076293945312e+00 , <undef>)
+ok 268 - convertToDecimalString(ieee754(3FF0000800000000) = +1.0000076293945312e+00 , <undef>)
+ok 269 - convertToHexString    (ieee754(3FF0000800000000) = +1.0000076293945312e+00 , 10)
+ok 270 - convertToDecimalString(ieee754(3FF0000800000000) = +1.0000076293945312e+00 , 10)
+ok 271 - convertToHexString    (ieee754(3FF0000800000000) = +1.0000076293945312e+00 , 13)
+ok 272 - convertToDecimalString(ieee754(3FF0000800000000) = +1.0000076293945312e+00 , 13)
+ok 273 - convertToHexString    (ieee754(BFF0000800000000) = -1.0000076293945312e+00 )
+ok 274 - convertToDecimalString(ieee754(BFF0000800000000) = -1.0000076293945312e+00 )
+ok 275 - convertToHexString    (ieee754(BFF0000800000000) = -1.0000076293945312e+00 , <undef>)
+ok 276 - convertToDecimalString(ieee754(BFF0000800000000) = -1.0000076293945312e+00 , <undef>)
+ok 277 - convertToHexString    (ieee754(BFF0000800000000) = -1.0000076293945312e+00 , 10)
+ok 278 - convertToDecimalString(ieee754(BFF0000800000000) = -1.0000076293945312e+00 , 10)
+ok 279 - convertToHexString    (ieee754(BFF0000800000000) = -1.0000076293945312e+00 , 13)
+ok 280 - convertToDecimalString(ieee754(BFF0000800000000) = -1.0000076293945312e+00 , 13)
+ok 281 - convertToHexString    (ieee754(3FF0008000000000) = +1.0001220703125000e+00 )
+ok 282 - convertToDecimalString(ieee754(3FF0008000000000) = +1.0001220703125000e+00 )
+ok 283 - convertToHexString    (ieee754(3FF0008000000000) = +1.0001220703125000e+00 , <undef>)
+ok 284 - convertToDecimalString(ieee754(3FF0008000000000) = +1.0001220703125000e+00 , <undef>)
+ok 285 - convertToHexString    (ieee754(3FF0008000000000) = +1.0001220703125000e+00 , 10)
+ok 286 - convertToDecimalString(ieee754(3FF0008000000000) = +1.0001220703125000e+00 , 10)
+ok 287 - convertToHexString    (ieee754(3FF0008000000000) = +1.0001220703125000e+00 , 13)
+ok 288 - convertToDecimalString(ieee754(3FF0008000000000) = +1.0001220703125000e+00 , 13)
+ok 289 - convertToHexString    (ieee754(BFF0008000000000) = -1.0001220703125000e+00 )
+ok 290 - convertToDecimalString(ieee754(BFF0008000000000) = -1.0001220703125000e+00 )
+ok 291 - convertToHexString    (ieee754(BFF0008000000000) = -1.0001220703125000e+00 , <undef>)
+ok 292 - convertToDecimalString(ieee754(BFF0008000000000) = -1.0001220703125000e+00 , <undef>)
+ok 293 - convertToHexString    (ieee754(BFF0008000000000) = -1.0001220703125000e+00 , 10)
+ok 294 - convertToDecimalString(ieee754(BFF0008000000000) = -1.0001220703125000e+00 , 10)
+ok 295 - convertToHexString    (ieee754(BFF0008000000000) = -1.0001220703125000e+00 , 13)
+ok 296 - convertToDecimalString(ieee754(BFF0008000000000) = -1.0001220703125000e+00 , 13)
+ok 297 - convertToHexString    (ieee754(3FF0080000000000) = +1.0019531250000000e+00 )
+ok 298 - convertToDecimalString(ieee754(3FF0080000000000) = +1.0019531250000000e+00 )
+ok 299 - convertToHexString    (ieee754(3FF0080000000000) = +1.0019531250000000e+00 , <undef>)
+ok 300 - convertToDecimalString(ieee754(3FF0080000000000) = +1.0019531250000000e+00 , <undef>)
+ok 301 - convertToHexString    (ieee754(3FF0080000000000) = +1.0019531250000000e+00 , 10)
+ok 302 - convertToDecimalString(ieee754(3FF0080000000000) = +1.0019531250000000e+00 , 10)
+ok 303 - convertToHexString    (ieee754(3FF0080000000000) = +1.0019531250000000e+00 , 13)
+ok 304 - convertToDecimalString(ieee754(3FF0080000000000) = +1.0019531250000000e+00 , 13)
+ok 305 - convertToHexString    (ieee754(BFF0080000000000) = -1.0019531250000000e+00 )
+ok 306 - convertToDecimalString(ieee754(BFF0080000000000) = -1.0019531250000000e+00 )
+ok 307 - convertToHexString    (ieee754(BFF0080000000000) = -1.0019531250000000e+00 , <undef>)
+ok 308 - convertToDecimalString(ieee754(BFF0080000000000) = -1.0019531250000000e+00 , <undef>)
+ok 309 - convertToHexString    (ieee754(BFF0080000000000) = -1.0019531250000000e+00 , 10)
+ok 310 - convertToDecimalString(ieee754(BFF0080000000000) = -1.0019531250000000e+00 , 10)
+ok 311 - convertToHexString    (ieee754(BFF0080000000000) = -1.0019531250000000e+00 , 13)
+ok 312 - convertToDecimalString(ieee754(BFF0080000000000) = -1.0019531250000000e+00 , 13)
+ok 313 - convertToHexString    (ieee754(3FF0800000000000) = +1.0312500000000000e+00 )
+ok 314 - convertToDecimalString(ieee754(3FF0800000000000) = +1.0312500000000000e+00 )
+ok 315 - convertToHexString    (ieee754(3FF0800000000000) = +1.0312500000000000e+00 , <undef>)
+ok 316 - convertToDecimalString(ieee754(3FF0800000000000) = +1.0312500000000000e+00 , <undef>)
+ok 317 - convertToHexString    (ieee754(3FF0800000000000) = +1.0312500000000000e+00 , 10)
+ok 318 - convertToDecimalString(ieee754(3FF0800000000000) = +1.0312500000000000e+00 , 10)
+ok 319 - convertToHexString    (ieee754(3FF0800000000000) = +1.0312500000000000e+00 , 13)
+ok 320 - convertToDecimalString(ieee754(3FF0800000000000) = +1.0312500000000000e+00 , 13)
+ok 321 - convertToHexString    (ieee754(BFF0800000000000) = -1.0312500000000000e+00 )
+ok 322 - convertToDecimalString(ieee754(BFF0800000000000) = -1.0312500000000000e+00 )
+ok 323 - convertToHexString    (ieee754(BFF0800000000000) = -1.0312500000000000e+00 , <undef>)
+ok 324 - convertToDecimalString(ieee754(BFF0800000000000) = -1.0312500000000000e+00 , <undef>)
+ok 325 - convertToHexString    (ieee754(BFF0800000000000) = -1.0312500000000000e+00 , 10)
+ok 326 - convertToDecimalString(ieee754(BFF0800000000000) = -1.0312500000000000e+00 , 10)
+ok 327 - convertToHexString    (ieee754(BFF0800000000000) = -1.0312500000000000e+00 , 13)
+ok 328 - convertToDecimalString(ieee754(BFF0800000000000) = -1.0312500000000000e+00 , 13)
+ok 329 - convertToHexString    (ieee754(3FF8000000000000) = +1.5000000000000000e+00 )
+ok 330 - convertToDecimalString(ieee754(3FF8000000000000) = +1.5000000000000000e+00 )
+ok 331 - convertToHexString    (ieee754(3FF8000000000000) = +1.5000000000000000e+00 , <undef>)
+ok 332 - convertToDecimalString(ieee754(3FF8000000000000) = +1.5000000000000000e+00 , <undef>)
+ok 333 - convertToHexString    (ieee754(3FF8000000000000) = +1.5000000000000000e+00 , 10)
+ok 334 - convertToDecimalString(ieee754(3FF8000000000000) = +1.5000000000000000e+00 , 10)
+ok 335 - convertToHexString    (ieee754(3FF8000000000000) = +1.5000000000000000e+00 , 13)
+ok 336 - convertToDecimalString(ieee754(3FF8000000000000) = +1.5000000000000000e+00 , 13)
+ok 337 - convertToHexString    (ieee754(BFF8000000000000) = -1.5000000000000000e+00 )
+ok 338 - convertToDecimalString(ieee754(BFF8000000000000) = -1.5000000000000000e+00 )
+ok 339 - convertToHexString    (ieee754(BFF8000000000000) = -1.5000000000000000e+00 , <undef>)
+ok 340 - convertToDecimalString(ieee754(BFF8000000000000) = -1.5000000000000000e+00 , <undef>)
+ok 341 - convertToHexString    (ieee754(BFF8000000000000) = -1.5000000000000000e+00 , 10)
+ok 342 - convertToDecimalString(ieee754(BFF8000000000000) = -1.5000000000000000e+00 , 10)
+ok 343 - convertToHexString    (ieee754(BFF8000000000000) = -1.5000000000000000e+00 , 13)
+ok 344 - convertToDecimalString(ieee754(BFF8000000000000) = -1.5000000000000000e+00 , 13)
+ok 345 - convertToHexString    (ieee754(3FFFFFFFFFFFFFFF) = +1.9999999999999998e+00 )
+ok 346 - convertToDecimalString(ieee754(3FFFFFFFFFFFFFFF) = +1.9999999999999998e+00 )
+ok 347 - convertToHexString    (ieee754(3FFFFFFFFFFFFFFF) = +1.9999999999999998e+00 , <undef>)
+#
+
+# __0428__	binary64_convertToHexString()
+# __0429__		nvsize           = 8
+# __0429__		ivsize           = 4
+# __0429__		doublesize       = 8
+# __0429__		intsize          = 4
+# __0429__		longsize         = 4
+# __0429__		ptrsize          = 4
+# __0437__	[msb][lsb] = 0x3fffffff ffffffff => digits=13
+# __0438__	... = + ? . fffffffffffff pwr 0
+# __0447__	... = + 1 . fffffffffffff pwr 0
+# __0452__	... = + 1 . fffffffffffff pwr 0
+# __0522__	+0x1.fffffffffffffp+0000
+# __0031__	/exited DEBUG:convertToHexString(ieee754(3FFFFFFFFFFFFFFF) = +1.9999999999999998e+00 , <undef>) = "+0x1.fffffffffffffp+0000"
+# 
+ok 348 - convertToDecimalString(ieee754(3FFFFFFFFFFFFFFF) = +1.9999999999999998e+00 , <undef>)
+ok 349 - convertToHexString    (ieee754(3FFFFFFFFFFFFFFF) = +1.9999999999999998e+00 , 0)
+#
+
+# __0428__	binary64_convertToHexString()
+# __0429__		nvsize           = 8
+# __0429__		ivsize           = 4
+# __0429__		doublesize       = 8
+# __0429__		intsize          = 4
+# __0429__		longsize         = 4
+# __0429__		ptrsize          = 4
+# __0437__	[msb][lsb] = 0x3fffffff ffffffff => digits=0
+# __0438__	... = + ? . fffffffffffff pwr 0
+# __0447__	... = + 1 . fffffffffffff pwr 0
+# __0452__	... = + 1 . fffffffffffff pwr 0
+# __0457__	... = + 1 . left(fffff_ffffffff, digits:0) pwr 0
+# __0498__	... = (m:0xfffff & eff:0xfffff = and:0xfffff) vs (haf:0x80000): >=
+# __0501__	... = + 1 . left(100000_00000000, digits:0) pwr 0
+# __0507__	... = + 1 . left(00000_00000000, digits:0) pwr 0
+# __0516__	... = + 2 . left(00000_00000000, digits:0) pwr 0
+# __0519__	+0x2p+0000
+# __0031__	/exited DEBUG:convertToHexString(ieee754(3FFFFFFFFFFFFFFF) = +1.9999999999999998e+00 , 0) = "+0x2p+0000"
+# 
+ok 350 - convertToDecimalString(ieee754(3FFFFFFFFFFFFFFF) = +1.9999999999999998e+00 , 0)
+ok 351 - convertToHexString    (ieee754(3FFFFFFFFFFFFFFF) = +1.9999999999999998e+00 , 1)
+#
+
+# __0428__	binary64_convertToHexString()
+# __0429__		nvsize           = 8
+# __0429__		ivsize           = 4
+# __0429__		doublesize       = 8
+# __0429__		intsize          = 4
+# __0429__		longsize         = 4
+# __0429__		ptrsize          = 4
+# __0437__	[msb][lsb] = 0x3fffffff ffffffff => digits=1
+# __0438__	... = + ? . fffffffffffff pwr 0
+# __0447__	... = + 1 . fffffffffffff pwr 0
+# __0452__	... = + 1 . fffffffffffff pwr 0
+# __0457__	... = + 1 . left(fffff_ffffffff, digits:1) pwr 0
+# __0498__	... = (m:0xfffff & eff:0x0ffff = and:0x0ffff) vs (haf:0x08000): >=
+# __0501__	... = + 1 . left(100000_00000000, digits:1) pwr 0
+# __0507__	... = + 1 . left(00000_00000000, digits:1) pwr 0
+# __0516__	... = + 2 . left(00000_00000000, digits:1) pwr 0
+# __0519__	+0x2.0p+0000
+# __0031__	/exited DEBUG:convertToHexString(ieee754(3FFFFFFFFFFFFFFF) = +1.9999999999999998e+00 , 1) = "+0x2.0p+0000"
+# 
+ok 352 - convertToDecimalString(ieee754(3FFFFFFFFFFFFFFF) = +1.9999999999999998e+00 , 1)
+ok 353 - convertToHexString    (ieee754(3FFFFFFFFFFFFFFF) = +1.9999999999999998e+00 , 2)
+#
+
+# __0428__	binary64_convertToHexString()
+# __0429__		nvsize           = 8
+# __0429__		ivsize           = 4
+# __0429__		doublesize       = 8
+# __0429__		intsize          = 4
+# __0429__		longsize         = 4
+# __0429__		ptrsize          = 4
+# __0437__	[msb][lsb] = 0x3fffffff ffffffff => digits=2
+# __0438__	... = + ? . fffffffffffff pwr 0
+# __0447__	... = + 1 . fffffffffffff pwr 0
+# __0452__	... = + 1 . fffffffffffff pwr 0
+# __0457__	... = + 1 . left(fffff_ffffffff, digits:2) pwr 0
+# __0498__	... = (m:0xfffff & eff:0x00fff = and:0x00fff) vs (haf:0x00800): >=
+# __0501__	... = + 1 . left(100000_00000000, digits:2) pwr 0
+# __0507__	... = + 1 . left(00000_00000000, digits:2) pwr 0
+# __0516__	... = + 2 . left(00000_00000000, digits:2) pwr 0
+# __0519__	+0x2.00p+0000
+# __0031__	/exited DEBUG:convertToHexString(ieee754(3FFFFFFFFFFFFFFF) = +1.9999999999999998e+00 , 2) = "+0x2.00p+0000"
+# 
+ok 354 - convertToDecimalString(ieee754(3FFFFFFFFFFFFFFF) = +1.9999999999999998e+00 , 2)
+ok 355 - convertToHexString    (ieee754(3FFFFFFFFFFFFFFF) = +1.9999999999999998e+00 , 3)
+#
+
+# __0428__	binary64_convertToHexString()
+# __0429__		nvsize           = 8
+# __0429__		ivsize           = 4
+# __0429__		doublesize       = 8
+# __0429__		intsize          = 4
+# __0429__		longsize         = 4
+# __0429__		ptrsize          = 4
+# __0437__	[msb][lsb] = 0x3fffffff ffffffff => digits=3
+# __0438__	... = + ? . fffffffffffff pwr 0
+# __0447__	... = + 1 . fffffffffffff pwr 0
+# __0452__	... = + 1 . fffffffffffff pwr 0
+# __0457__	... = + 1 . left(fffff_ffffffff, digits:3) pwr 0
+# __0498__	... = (m:0xfffff & eff:0x000ff = and:0x000ff) vs (haf:0x00080): >=
+# __0501__	... = + 1 . left(100000_00000000, digits:3) pwr 0
+# __0507__	... = + 1 . left(00000_00000000, digits:3) pwr 0
+# __0516__	... = + 2 . left(00000_00000000, digits:3) pwr 0
+# __0519__	+0x2.000p+0000
+# __0031__	/exited DEBUG:convertToHexString(ieee754(3FFFFFFFFFFFFFFF) = +1.9999999999999998e+00 , 3) = "+0x2.000p+0000"
+# 
+ok 356 - convertToDecimalString(ieee754(3FFFFFFFFFFFFFFF) = +1.9999999999999998e+00 , 3)
+ok 357 - convertToHexString    (ieee754(3FFFFFFFFFFFFFFF) = +1.9999999999999998e+00 , 4)
+#
+
+# __0428__	binary64_convertToHexString()
+# __0429__		nvsize           = 8
+# __0429__		ivsize           = 4
+# __0429__		doublesize       = 8
+# __0429__		intsize          = 4
+# __0429__		longsize         = 4
+# __0429__		ptrsize          = 4
+# __0437__	[msb][lsb] = 0x3fffffff ffffffff => digits=4
+# __0438__	... = + ? . fffffffffffff pwr 0
+# __0447__	... = + 1 . fffffffffffff pwr 0
+# __0452__	... = + 1 . fffffffffffff pwr 0
+# __0457__	... = + 1 . left(fffff_ffffffff, digits:4) pwr 0
+# __0498__	... = (m:0xfffff & eff:0x0000f = and:0x0000f) vs (haf:0x00008): >=
+# __0501__	... = + 1 . left(100000_00000000, digits:4) pwr 0
+# __0507__	... = + 1 . left(00000_00000000, digits:4) pwr 0
+# __0516__	... = + 2 . left(00000_00000000, digits:4) pwr 0
+# __0519__	+0x2.0000p+0000
+# __0031__	/exited DEBUG:convertToHexString(ieee754(3FFFFFFFFFFFFFFF) = +1.9999999999999998e+00 , 4) = "+0x2.0000p+0000"
+# 
+ok 358 - convertToDecimalString(ieee754(3FFFFFFFFFFFFFFF) = +1.9999999999999998e+00 , 4)
+ok 359 - convertToHexString    (ieee754(3FFFFFFFFFFFFFFF) = +1.9999999999999998e+00 , 5)
+#
+
+# __0428__	binary64_convertToHexString()
+# __0429__		nvsize           = 8
+# __0429__		ivsize           = 4
+# __0429__		doublesize       = 8
+# __0429__		intsize          = 4
+# __0429__		longsize         = 4
+# __0429__		ptrsize          = 4
+# __0437__	[msb][lsb] = 0x3fffffff ffffffff => digits=5
+# __0438__	... = + ? . fffffffffffff pwr 0
+# __0447__	... = + 1 . fffffffffffff pwr 0
+# __0452__	... = + 1 . fffffffffffff pwr 0
+# __0457__	... = + 1 . left(fffff_ffffffff, digits:5) pwr 0
+# __0422__	__0459__	Devel::Peek::Dump(l      = 0xffffffff	):
+# 		# Use of uninitialized value in subroutine entry at lib/Data/IEEE754/Tools.pm line 417.
+# 		# SV = PVNV(0x91d7088) at 0x911cfd0
+# 		#   REFCNT = 1
+# 		#   FLAGS = (PADBUSY,PADMY,IOK,pIOK,IsUV)
+# 		#   UV = 4294967295
+# 		#   NV = 4095
+# 		#   PV = 0
+# __0422__	__0461__	Devel::Peek::Dump(one    = 0xffffffff or 4.2949672960000000e+09	):
+# 		# Use of uninitialized value in subroutine entry at lib/Data/IEEE754/Tools.pm line 417.
+# 		# SV = PVNV(0x91d7088) at 0x911cfd0
+# 		#   REFCNT = 1
+# 		#   FLAGS = (PADBUSY,PADMY,NOK,pIOK,pNOK,IsUV)
+# 		#   UV = 4294967295
+# 		#   NV = 4294967296
+# 		#   PV = 0
+# __0422__	__0463__	Devel::Peek::Dump(haf    = 0x80000000 or 2.1474836480000000e+09	):
+# 		# Use of uninitialized value in subroutine entry at lib/Data/IEEE754/Tools.pm line 417.
+# 		# SV = PVNV(0x91d7088) at 0x911cfd0
+# 		#   REFCNT = 1
+# 		#   FLAGS = (PADBUSY,PADMY,IOK,NOK,pIOK,pNOK,IsUV)
+# 		#   UV = 2147483648
+# 		#   NV = 2147483648
+# 		#   PV = 0
+# __0422__	__0465__	Devel::Peek::Dump(eff    = 0xffffffff or 4.2949672950000000e+09	):
+# 		# Use of uninitialized value in subroutine entry at lib/Data/IEEE754/Tools.pm line 417.
+# 		# SV = PVNV(0x91d7088) at 0x911cfd0
+# 		#   REFCNT = 1
+# 		#   FLAGS = (PADBUSY,PADMY,IOK,NOK,pIOK,pNOK,IsUV)
+# 		#   UV = 4294967295
+# 		#   NV = 4294967295
+# 		#   PV = 0
+# __0467__	... = (l:0xffffffff & eff:0xffffffff = and:0xffffffff) vs (haf:0x80000000): >=
+# __0469__	... = (l:0xffffffff & msk:0x00000000):0x00000000 + one:0xffffffff = 0xffffffff
+# __0422__	__0471__	Devel::Peek::Dump(l      = 0xffffffff or 4.2949672960000000e+09	):
+# 		# Use of uninitialized value in subroutine entry at lib/Data/IEEE754/Tools.pm line 417.
+# 		# SV = PVNV(0x91d7088) at 0x911cfd0
+# 		#   REFCNT = 1
+# 		#   FLAGS = (PADBUSY,PADMY,NOK,pIOK,pNOK,IsUV)
+# 		#   UV = 4294967295
+# 		#   NV = 4294967296
+# 		#   PV = 0
+# __0472__	... = + 1 . left(fffff_ffffffff, digits:5) pwr 0
+# __0422__	__0474__	Devel::Peek::Dump(l32    = 0xffffffff or 4.2949672950000000e+09	):
+# 		# Use of uninitialized value in subroutine entry at lib/Data/IEEE754/Tools.pm line 417.
+# 		# SV = PVNV(0x91d7088) at 0x911cfd0
+# 		#   REFCNT = 1
+# 		#   FLAGS = (PADBUSY,PADMY,IOK,NOK,pIOK,pNOK,IsUV)
+# 		#   UV = 4294967295
+# 		#   NV = 4294967295
+# 		#   PV = 0
+# __0475__	... : l32 < one = 0xffffffff < 0xffffffff = 1
+# __0480__	... = + 1 . left(100000_00000000, digits:5) pwr 0
+# __0516__	... = + 2 . left(00000_00000000, digits:5) pwr 0
+# __0519__	+0x2.00000p+0000
+# __0031__	/exited DEBUG:convertToHexString(ieee754(3FFFFFFFFFFFFFFF) = +1.9999999999999998e+00 , 5) = "+0x2.00000p+0000"
+# 
+ok 360 - convertToDecimalString(ieee754(3FFFFFFFFFFFFFFF) = +1.9999999999999998e+00 , 5)
+not ok 361 - convertToHexString    (ieee754(3FFFFFFFFFFFFFFF) = +1.9999999999999998e+00 , 6)
+#   Failed test 'convertToHexString    (ieee754(3FFFFFFFFFFFFFFF) = +1.9999999999999998e+00 , 6)'
+#   at t/02-converttostr.t line 21.
+#                   '+0x1.ffffffp+0000'
+#     doesn't match '(?-xism:\+0x2\.000000p\+0000)'
+#
+
+# __0428__	binary64_convertToHexString()
+# __0429__		nvsize           = 8
+# __0429__		ivsize           = 4
+# __0429__		doublesize       = 8
+# __0429__		intsize          = 4
+# __0429__		longsize         = 4
+# __0429__		ptrsize          = 4
+# __0437__	[msb][lsb] = 0x3fffffff ffffffff => digits=6
+# __0438__	... = + ? . fffffffffffff pwr 0
+# __0447__	... = + 1 . fffffffffffff pwr 0
+# __0452__	... = + 1 . fffffffffffff pwr 0
+# __0457__	... = + 1 . left(fffff_ffffffff, digits:6) pwr 0
+# __0422__	__0459__	Devel::Peek::Dump(l      = 0xffffffff	):
+# 		# Use of uninitialized value in subroutine entry at lib/Data/IEEE754/Tools.pm line 417.
+# 		# SV = PVNV(0x91d7088) at 0x911cfd0
+# 		#   REFCNT = 1
+# 		#   FLAGS = (PADBUSY,PADMY,IOK,pIOK,IsUV)
+# 		#   UV = 4294967295
+# 		#   NV = 4294967295
+# 		#   PV = 0
+# __0422__	__0461__	Devel::Peek::Dump(one    = 0x10000000 or 2.6843545600000000e+08	):
+# 		# Use of uninitialized value in subroutine entry at lib/Data/IEEE754/Tools.pm line 417.
+# 		# SV = PVNV(0x91d7088) at 0x911cfd0
+# 		#   REFCNT = 1
+# 		#   FLAGS = (PADBUSY,PADMY,IOK,NOK,pIOK,pNOK)
+# 		#   IV = 268435456
+# 		#   NV = 268435456
+# 		#   PV = 0
+# __0422__	__0463__	Devel::Peek::Dump(haf    = 0x08000000 or 1.3421772800000000e+08	):
+# 		# Use of uninitialized value in subroutine entry at lib/Data/IEEE754/Tools.pm line 417.
+# 		# SV = PVNV(0x91d7088) at 0x911cfd0
+# 		#   REFCNT = 1
+# 		#   FLAGS = (PADBUSY,PADMY,IOK,NOK,pIOK,pNOK)
+# 		#   IV = 134217728
+# 		#   NV = 134217728
+# 		#   PV = 0
+# __0422__	__0465__	Devel::Peek::Dump(eff    = 0x0fffffff or 2.6843545500000000e+08	):
+# 		# Use of uninitialized value in subroutine entry at lib/Data/IEEE754/Tools.pm line 417.
+# 		# SV = PVNV(0x91d7088) at 0x911cfd0
+# 		#   REFCNT = 1
+# 		#   FLAGS = (PADBUSY,PADMY,IOK,NOK,pIOK,pNOK)
+# 		#   IV = 268435455
+# 		#   NV = 268435455
+# 		#   PV = 0
+# __0467__	... = (l:0xffffffff & eff:0x0fffffff = and:0x0fffffff) vs (haf:0x08000000): >=
+# __0469__	... = (l:0xffffffff & msk:0xf0000000):0xf0000000 + one:0x10000000 = 0xffffffff
+# __0422__	__0471__	Devel::Peek::Dump(l      = 0xffffffff or 4.2949672960000000e+09	):
+# 		# Use of uninitialized value in subroutine entry at lib/Data/IEEE754/Tools.pm line 417.
+# 		# SV = PVNV(0x91d7088) at 0x911cfd0
+# 		#   REFCNT = 1
+# 		#   FLAGS = (PADBUSY,PADMY,NOK,pIOK,pNOK,IsUV)
+# 		#   UV = 4294967295
+# 		#   NV = 4294967296
+# 		#   PV = 0
+# __0472__	... = + 1 . left(fffff_ffffffff, digits:6) pwr 0
+# __0422__	__0474__	Devel::Peek::Dump(l32    = 0xffffffff or 4.2949672950000000e+09	):
+# 		# Use of uninitialized value in subroutine entry at lib/Data/IEEE754/Tools.pm line 417.
+# 		# SV = PVNV(0x91d7088) at 0x911cfd0
+# 		#   REFCNT = 1
+# 		#   FLAGS = (PADBUSY,PADMY,IOK,NOK,pIOK,pNOK,IsUV)
+# 		#   UV = 4294967295
+# 		#   NV = 4294967295
+# 		#   PV = 0
+# __0475__	... : l32 < one = 0xffffffff < 0x10000000 = 0
+# __0480__	... = + 1 . left(fffff_ffffffff, digits:6) pwr 0
+# __0516__	... = + 1 . left(fffff_ffffffff, digits:6) pwr 0
+# __0519__	+0x1.ffffffp+0000
+# __0031__	/exited DEBUG:convertToHexString(ieee754(3FFFFFFFFFFFFFFF) = +1.9999999999999998e+00 , 6) = "+0x1.ffffffp+0000"
+# 
+ok 362 - convertToDecimalString(ieee754(3FFFFFFFFFFFFFFF) = +1.9999999999999998e+00 , 6)
+# Looks like you failed 5 tests of 362.
+
+
+
+........................
+So, I really need to come up with a way to _not_ be working at the left edge of a 32bit integer:
+try something like:
+
+	l = ffff_ffff
+	sh = shift l right to leave p-4 digits
+	p=5: sh=f		p=6: sh=ff
+	if substr( l , p-5 , 1 ) > 7 then ">=" else "<"
+	if ">=", 
+		if sh eq 'ffffffff'
+			known overflow
+			set l = 0x00000000, and set overflow bit
+		else
+			sh += 1
+			if len(sh) > p-4,
+				set overflow bit
+			else
+				no overflow...
+
