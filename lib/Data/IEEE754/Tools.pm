@@ -456,21 +456,22 @@ DBG_SPRINTF('... = %s %s . %s pwr %d', $sign, $implied, $mant, $exp);
         my $o = 0;
 DBG_SPRINTF('... = %s %s . left(%05x_%08x, digits:%d) pwr %d', $sign, $implied, $m, $l, $p, $exp);
         if($p>=5) {  # use all of MSB, and move into LSB
+DBG_PEEK(sprintf("%-6s = 0x%08x\t", 'l', $l), $l);
             my $one = 1 << 4*( 8 - ($p-5) );
+DBG_PEEK(sprintf("%-6s = 0x%08x\t", 'one', $one), $one);        # for p==5, on a 32bit ivsize=4, I think there is overflow in $one beyond IV, which may be part of the culprit; but why on the higher p, where $one fits within ivsize?  Besides, shouldn't it just promote to NV if it overflows IV?  That's why I want the Devel::Peek
             my $haf = $one >> 1;
+DBG_PEEK(sprintf("%-6s = 0x%08x\t", 'haf', $haf), $haf);
             my $eff = $one - 1;
+DBG_PEEK(sprintf("%-6s = 0x%08x\t", 'eff', $eff), $eff);
             my $msk = 0xFFFFFFFF ^ $eff;
 DBG_SPRINTF('... = (l:0x%08x & eff:0x%08x = and:0x%08x) vs (haf:0x%08x): %s', $l, $eff, $l & $eff, $haf, ((($l & $eff) >= $haf) ? '>=' : '<'));
-DBG_PEEK('l  ', $l);
-DBG_PEEK('eff', $eff);
-DBG_PEEK('haf', $haf);
             if( ($l & $eff) >= $haf) {
                 $l = ($l & $msk) + $one;
-DBG_PEEK('l  ', $l);
+DBG_PEEK(sprintf("%-6s = 0x%08x\t", 'l', $l), $l);              # maybe it was the (l&msk)+(one) ????
 DBG_SPRINTF('... = %s %s . left(%05x_%08x, digits:%d) pwr %d', $sign, $implied, $m, $l, $p, $exp);
                 my $l32 = $l & 0xFFFFFFFF;
-DBG_PEEK('l32', $l32);
-DBG_PEEK('one', $one);
+DBG_PEEK(sprintf("%-6s = 0x%08x\t", 'l32', $l32), $l32);
+DBG_SPRINTF('... : l32 < one = 0x%08x < 0x%08x = %x', $l32, $one, $l32 < $one);
                 if($l32 < $one) {
                     $l = 0;
                     $m++;
