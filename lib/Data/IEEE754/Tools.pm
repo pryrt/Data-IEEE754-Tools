@@ -425,10 +425,10 @@ sub binary64_convertToHexString {
     # thanks to BrowserUK @ http://perlmonks.org/?node_id=1167146 for slighly better decision factors
     # I tweaked it to use the two 32bit words instead of one 64bit word (which wouldn't work on some systems)
 print STDERR "#\n" if $Data::IEEE754::Tools::CPANTESTERS_DEBUG;
-DBG_SPRINTF('binary64_convertToHexString()');
-DBG_SPRINTF("\t%-16s = %d", $_ => $Config{$_}) foreach( qw/nvsize ivsize doublesize intsize longsize ptrsize/ );
     my $v = shift;
     my $p = defined $_[0] ? shift : 13;
+DBG_SPRINTF('binary64_convertToHexString(%+24.16e, digits:%d)', $v, $p);
+DBG_SPRINTF("\t%-16s = %d", $_ => $Config{$_}) foreach( qw/nvsize ivsize doublesize intsize longsize ptrsize/ );
     my ($msb,$lsb) = $_helper64_arr2x32b->($v);
     my $sbit = ($msb & 0x80000000) >> 31;
     my $sign = $sbit ? '-' : '+';
@@ -453,7 +453,7 @@ DBG_SPRINTF('... = %s %s . %s pwr %d', $sign, $implied, $mant, $exp);
     }
 DBG_SPRINTF('... = %s %s . %s pwr %d', $sign, $implied, $mant, $exp);
     if( $p>12 ) {
-DBG_SPRINTF('%s0x%1u.%13.13sp%+05d', $sign, $implied, $mant . '0'x($p-13), $exp);
+DBG_SPRINTF('ret(%+24.16e,%d)=%s0x%1u.%13.13sp%+05d', $v, $p, $sign, $implied, $mant . '0'x($p-13), $exp);
         return sprintf '%s0x%1u.%13.13sp%+05d', $sign, $implied, $mant . '0'x($p-13), $exp;
     } else {
         my $roundhex = substr $mant, 0, $p;
@@ -469,7 +469,7 @@ DBG_SPRINTF('%s0x%1u.%13.13sp%+05d', $sign, $implied, $mant . '0'x($p-13), $exp)
 DBG_SPRINTF('{%02d} %13.13s => [%13.13s] [%1.1s] <%01d>', $p, $mant, $roundhex, $nibble, $carry);
         $implied += $carry;
         my $ret = sprintf '%s0x%1u%s%*sp%+05d', $sign, $implied, $p?'.':'', $p, $roundhex, $exp;
-DBG_SPRINTF('ret=%s', $ret);
+DBG_SPRINTF('ret(%+24.16e,%d)=%s', $v, $p, $ret);
         return $ret;
     }
 }

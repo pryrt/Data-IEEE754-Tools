@@ -1,5 +1,10 @@
 Revision history for Perl module Data::IEEE754::Tools.
 
+v0.018003 2017-Sep-29
+    - Completely reworked the function, so it deals with one nibble at a time,
+      thus avoiding any overflow (easier to code than doing sub-32b groupings)
+    - possible bug in t/01*.t, but unverified and unstudied
+
 v0.018002 2017-Sep-25
     - Change from README.pod to README.md, because *.pod are built and put in
       the module documentation directory
