@@ -433,7 +433,9 @@ DBG_SPRINTF("\t%-16s = %d", $_ => $Config{$_}) foreach( qw/nvsize ivsize doubles
     my $sbit = ($msb & 0x80000000) >> 31;
     my $sign = $sbit ? '-' : '+';
     my $exp  = (($msb & 0x7FF00000) >> 20) - 1023;
-    my $mant = sprintf '%05x%08x', $msb & 0x000FFFFF, $lsb & 0xFFFFFFFF;
+    my $mhex = sprintf '%05x', $msb & 0x000FFFFF;
+    my $lhex = sprintf '%08x', $lsb & 0xFFFFFFFF;
+    my $mant = $mhex . $lhex;
 DBG_SPRINTF('[msb][lsb] = 0x%08x %08x => digits=%d', $msb, $lsb, $p);
 DBG_SPRINTF('... = %s %s . %s pwr %d', $sign, '?', $mant, $exp);
     if($exp == 1024) {
@@ -450,77 +452,25 @@ DBG_SPRINTF('... = %s %s . %s pwr %d', $sign, $implied, $mant, $exp);
         $exp = $mant eq '0000000000000' ? 0 : -1022;   # 0 for zero, -1022 for denormal
     }
 DBG_SPRINTF('... = %s %s . %s pwr %d', $sign, $implied, $mant, $exp);
-    if($p<13) {
-        my $m = $msb & 0xFFFFF;
-        my $l = $lsb;
-        my $o = 0;
-DBG_SPRINTF('... = %s %s . left(%05x_%08x, digits:%d) pwr %d', $sign, $implied, $m, $l, $p, $exp);
-        if($p>=5) {  # use all of MSB, and move into LSB
-DBG_PEEK(sprintf("%-6s = 0x%08x\t", 'l', $l), $l);
-            my $one = 1; $one *= 2 for 1 .. 4*( 8 - ($p-5) );  # was 1 << 4*(), but doesn't work on {ivsize}=4 (32bit)
-DBG_PEEK(sprintf("%-6s = 0x%08x or %.16e\t", 'one', $one, $one), $one);        # for p==5, on a 32bit ivsize=4, I think there is overflow in $one beyond IV, which may be part of the culprit; but why on the higher p, where $one fits within ivsize?  Besides, shouldn't it just promote to NV if it overflows IV?  That's why I want the Devel::Peek
-            my $haf = $one / 2.0;
-DBG_PEEK(sprintf("%-6s = 0x%08x or %.16e\t", 'haf', $haf, $haf), $haf);
-            my $eff = $one - 1;
-DBG_PEEK(sprintf("%-6s = 0x%08x or %.16e\t", 'eff', $eff, $eff), $eff);
-            my $msk = 0xFFFFFFFF ^ $eff;
-DBG_SPRINTF('... = (l:0x%08x & eff:0x%08x = and:0x%08x) vs (haf:0x%08x): %s', $l, $eff, $l & $eff, $haf, ((($l & $eff) >= $haf) ? '>=' : '<'));
-            if( ($l & $eff) >= $haf) {
-DBG_SPRINTF('... = (l:0x%08x & msk:0x%08x):0x%08x + one:0x%08x = 0x%08x', $l, $msk, $l & $msk, $one, ($l & $msk) + $one);
-                $l = ($l & $msk) + $one;
-DBG_PEEK(sprintf("%-6s = 0x%08x or %.16e\t", 'l', $l, $l), $l);              # maybe it was the (l&msk)+(one) ????
-DBG_SPRINTF('... = %s %s . left(%05x_%08x, digits:%d) pwr %d', $sign, $implied, $m, $l, $p, $exp);
-                my $l32 = $l & 0xFFFFFFFF;
-DBG_PEEK(sprintf("%-6s = 0x%08x or %.16e\t", 'l32', $l32, $l32), $l32);
-DBG_SPRINTF('... : l32 < one = 0x%08x < 0x%08x = %x', $l32, $one, $l32 < $one);
-                if($l32 < $one) {
-                    $l = 0;
-                    $m++;
-                }
-DBG_SPRINTF('... = %s %s . left(%05x_%08x, digits:%d) pwr %d', $sign, $implied, $m, $l, $p, $exp);
-            } else {
-                $l = ($l & $msk);
-DBG_SPRINTF('... = %s %s . left(%05x_%08x, digits:%d) pwr %d', $sign, $implied, $m, $l, $p, $exp);
-            }
-            if($m >= 0x1_0_0000) {
-                $o = 1;
-                $m -= 0x1_0_0000;
-            }
-            if($o) {
-                $implied++;
-            }
-        } else { # thus p<5
-            $l = 0;     # don't need the lowest 8 nibbles...
-            my $one = 1 << 4*( 5 - $p );
-            my $haf = $one >> 1;
-            my $eff = $one - 1;
-            my $msk = 0xFFFFF ^ $eff;
-DBG_SPRINTF('... = (m:0x%05x & eff:0x%05x = and:0x%05x) vs (haf:0x%05x): %s', $m, $eff, $m & $eff, $haf, ((($m & $eff) >= $haf) ? '>=' : '<'));
-            if( ($m & $eff) >= $haf) {
-                $m = ($m & $msk) + $one;
-DBG_SPRINTF('... = %s %s . left(%05x_%08x, digits:%d) pwr %d', $sign, $implied, $m, $l, $p, $exp);
-                my $m20 = $m & 0xFFFFF;
-                if($m20 < $one) {
-                    $m = 0;
-                    $o++;
-                }
-DBG_SPRINTF('... = %s %s . left(%05x_%08x, digits:%d) pwr %d', $sign, $implied, $m, $l, $p, $exp);
-            } else {
-                $m = ($m & $msk);
-DBG_SPRINTF('... = %s %s . left(%05x_%08x, digits:%d) pwr %d', $sign, $implied, $m, $l, $p, $exp);
-            }
-            if($o) {
-                $implied++;
-            }
-        }
-DBG_SPRINTF('... = %s %s . left(%05x_%08x, digits:%d) pwr %d', $sign, $implied, $m, $l, $p, $exp);
-
-        my $f = substr( sprintf('%05x%08x', $m, $l), 0, $p);
-DBG_SPRINTF('%s0x%1u%s%*sp%+05d', $sign, $implied, $p?'.':'', $p, $f, $exp);
-        return sprintf '%s0x%1u%s%*sp%+05d', $sign, $implied, $p?'.':'', $p, $f, $exp;
-    } else {    # thus, p>=13:
+    if( $p>12 ) {
 DBG_SPRINTF('%s0x%1u.%13.13sp%+05d', $sign, $implied, $mant . '0'x($p-13), $exp);
         return sprintf '%s0x%1u.%13.13sp%+05d', $sign, $implied, $mant . '0'x($p-13), $exp;
+    } else {
+        my $roundhex = substr $mant, 0, $p;
+        my $nibble = substr $mant, $p, 1;
+        my $carry = hex($nibble)>7 ? 1 : 0;
+        foreach my $cp ( 1 .. $p ) {
+            $nibble = substr $roundhex, -$cp, 1;
+            my $v = hex($nibble)+$carry;
+            ($carry, $v) = (16==$v) ? (1,0) : (0, $v);
+            $nibble = sprintf '%01x', $v;
+            substr($roundhex, -$cp, 1) = $nibble;
+        }
+DBG_SPRINTF('{%02d} %13.13s => [%13.13s] [%1.1s] <%01d>', $p, $mant, $roundhex, $nibble, $carry);
+        $implied += $carry;
+        my $ret = sprintf '%s0x%1u%s%*sp%+05d', $sign, $implied, $p?'.':'', $p, $roundhex, $exp;
+DBG_SPRINTF('ret=%s', $ret);
+        return $ret;
     }
 }
 *convertToHexString = \&binary64_convertToHexString;
