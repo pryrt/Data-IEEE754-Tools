@@ -1,5 +1,26 @@
 Revision history for Perl module Data::IEEE754::Tools.
 
+v0.018003 2017-Oct-01
+    - binary64_convertToHexString(): bugfix verified; now works on ivsize=4;
+      remove debug code
+
+v0.018003 2017-Sep-29
+    - Completely reworked the function, so it deals with one nibble at a time,
+      thus avoiding any overflow (easier to code than doing sub-32b groupings)
+    - possible bug in t/01*.t, but unverified and unstudied
+
+v0.018002 2017-Sep-25
+    - Change from README.pod to README.md, because *.pod are built and put in
+      the module documentation directory
+    - Debugging roundoff on certain systems (not sure yet what the common
+      aspect of the systems are, because bsd or mswin for the same perl version
+      will both pass and fail -- my guess is 32bit vs 64bit machines, maybe
+      in the integer processing, but I need data that will show me what's
+      different, so I'm doing another "official" release that turns on debug
+      printing during the test suite for known-buggy values.  (I would do alpha,
+      but the smoke testers didn't run when I tried v0.017_xxx alpha versions,
+      so sorry.  This release should be no more broken than v0.018 or v0.018001)
+
 v0.018001 2017-Sep-24
     - for some reason, `make test` was invoking `make README.pod`: trying to fix
 

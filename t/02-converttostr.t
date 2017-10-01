@@ -245,34 +245,34 @@ push @tests, { src => 'BFF8000000000000', exp_hex => '-0x1.8000000000000p+0000',
 
 push @tests, { src => '3FFFFFFFFFFFFFFF', exp_hex => '+0x1.fffffffffffffp+0000', exp_dec => '+0d1.9999999999999998p+0000' };
 push @tests, { src => '3FFFFFFFFFFFFFFF', exp_hex => '+0x1.fffffffffffffp+0000', exp_dec => '+0d1.9999999999999998p+0000'   , convSpec => undef };
-push @tests, { src => '3FFFFFFFFFFFFFFF', exp_hex => '+0x2p+0000'              , exp_dec => '+0d2p+0000'                    , convSpec => 0     };  # extra: coverage for low p
-push @tests, { src => '3FFFFFFFFFFFFFFF', exp_hex => '+0x2.0p+0000'            , exp_dec => '+0d2.0p+0000'                  , convSpec => 1     };  # extra: coverage for low p
-push @tests, { src => '3FFFFFFFFFFFFFFF', exp_hex => '+0x2.00p+0000'           , exp_dec => '+0d2.00p+0000'                 , convSpec => 2     };  # extra: coverage for low p
-push @tests, { src => '3FFFFFFFFFFFFFFF', exp_hex => '+0x2.000p+0000'          , exp_dec => '+0d2.000p+0000'                , convSpec => 3     };  # extra: coverage for low p
-push @tests, { src => '3FFFFFFFFFFFFFFF', exp_hex => '+0x2.0000p+0000'         , exp_dec => '+0d2.0000p+0000'               , convSpec => 4     };  # extra: coverage for low p
-push @tests, { src => '3FFFFFFFFFFFFFFF', exp_hex => '+0x2.00000p+0000'        , exp_dec => '+0d2.00000p+0000'              , convSpec => 5     };  # extra: coverage for low p
-push @tests, { src => '3FFFFFFFFFFFFFFF', exp_hex => '+0x2.000000p+0000'       , exp_dec => '+0d2.000000p+0000'             , convSpec => 6     };  # extra: coverage for low p
-push @tests, { src => '3FFFFFFFFFFFFFFF', exp_hex => '+0x2.0000000p+0000'      , exp_dec => '+0d2.0000000p+0000'            , convSpec => 7     };  # extra: coverage for low p
-push @tests, { src => '3FFFFFFFFFFFFFFF', exp_hex => '+0x2.00000000p+0000'     , exp_dec => '+0d2.00000000p+0000'           , convSpec => 8     };  # extra: coverage for low p
-push @tests, { src => '3FFFFFFFFFFFFFFF', exp_hex => '+0x2.000000000p+0000'    , exp_dec => '+0d2.000000000p+0000'          , convSpec => 9     };  # extra: coverage for low p
+push @tests, { src => '3FFFFFFFFFFFFFFF', exp_hex => '+0x2p+0000'              , exp_dec => '+0d2p+0000'                    , convSpec => 0     };  # extra: coverage for low number of digits
+push @tests, { src => '3FFFFFFFFFFFFFFF', exp_hex => '+0x2.0p+0000'            , exp_dec => '+0d2.0p+0000'                  , convSpec => 1     };  # extra: coverage for low number of digits
+push @tests, { src => '3FFFFFFFFFFFFFFF', exp_hex => '+0x2.00p+0000'           , exp_dec => '+0d2.00p+0000'                 , convSpec => 2     };  # extra: coverage for low number of digits
+push @tests, { src => '3FFFFFFFFFFFFFFF', exp_hex => '+0x2.000p+0000'          , exp_dec => '+0d2.000p+0000'                , convSpec => 3     };  # extra: coverage for low number of digits
+push @tests, { src => '3FFFFFFFFFFFFFFF', exp_hex => '+0x2.0000p+0000'         , exp_dec => '+0d2.0000p+0000'               , convSpec => 4     };  # extra: coverage for low number of digits
+push @tests, { src => '3FFFFFFFFFFFFFFF', exp_hex => '+0x2.00000p+0000'        , exp_dec => '+0d2.00000p+0000'              , convSpec => 5     };  # extra: coverage for low number of digits
+push @tests, { src => '3FFFFFFFFFFFFFFF', exp_hex => '+0x2.000000p+0000'       , exp_dec => '+0d2.000000p+0000'             , convSpec => 6     };  # extra: coverage for low number of digits
+push @tests, { src => '3FFFFFFFFFFFFFFF', exp_hex => '+0x2.0000000p+0000'      , exp_dec => '+0d2.0000000p+0000'            , convSpec => 7     };  # extra: coverage for low number of digits
+push @tests, { src => '3FFFFFFFFFFFFFFF', exp_hex => '+0x2.00000000p+0000'     , exp_dec => '+0d2.00000000p+0000'           , convSpec => 8     };  # extra: coverage for low number of digits
+push @tests, { src => '3FFFFFFFFFFFFFFF', exp_hex => '+0x2.000000000p+0000'    , exp_dec => '+0d2.000000000p+0000'          , convSpec => 9     };  # extra: coverage for low number of digits
 push @tests, { src => '3FFFFFFFFFFFFFFF', exp_hex => '+0x2.0000000000p+0000'   , exp_dec => '+0d2.0000000000p+0000'         , convSpec => 10    };
-push @tests, { src => '3FFFFFFFFFFFFFFF', exp_hex => '+0x2.00000000000p+0000'  , exp_dec => '+0d2.00000000000p+0000'        , convSpec => 11    };  # extra: coverage for low p
-push @tests, { src => '3FFFFFFFFFFFFFFF', exp_hex => '+0x2.000000000000p+0000' , exp_dec => '+0d2.000000000000p+0000'       , convSpec => 12    };  # extra: coverage for low p
+push @tests, { src => '3FFFFFFFFFFFFFFF', exp_hex => '+0x2.00000000000p+0000'  , exp_dec => '+0d2.00000000000p+0000'        , convSpec => 11    };  # extra: coverage for low number of digits
+push @tests, { src => '3FFFFFFFFFFFFFFF', exp_hex => '+0x2.000000000000p+0000' , exp_dec => '+0d2.000000000000p+0000'       , convSpec => 12    };  # extra: coverage for low number of digits
 push @tests, { src => '3FFFFFFFFFFFFFFF', exp_hex => '+0x1.fffffffffffffp+0000', exp_dec => '+0d2.0000000000000p+0000'      , convSpec => 13    };
 push @tests, { src => 'BFFFFFFFFFFFFFFF', exp_hex => '-0x1.fffffffffffffp+0000', exp_dec => '-0d1.9999999999999998p+0000' };
 push @tests, { src => 'BFFFFFFFFFFFFFFF', exp_hex => '-0x1.fffffffffffffp+0000', exp_dec => '-0d1.9999999999999998p+0000'   , convSpec => undef };
-push @tests, { src => 'BFFFFFFFFFFFFFFF', exp_hex => '-0x2.0p+0000'            , exp_dec => '-0d2.0p+0000'                  , convSpec => 1     };  # extra: coverage for low p
-push @tests, { src => 'BFFFFFFFFFFFFFFF', exp_hex => '-0x2.00p+0000'           , exp_dec => '-0d2.00p+0000'                 , convSpec => 2     };  # extra: coverage for low p
-push @tests, { src => 'BFFFFFFFFFFFFFFF', exp_hex => '-0x2.000p+0000'          , exp_dec => '-0d2.000p+0000'                , convSpec => 3     };  # extra: coverage for low p
-push @tests, { src => 'BFFFFFFFFFFFFFFF', exp_hex => '-0x2.0000p+0000'         , exp_dec => '-0d2.0000p+0000'               , convSpec => 4     };  # extra: coverage for low p
-push @tests, { src => 'BFFFFFFFFFFFFFFF', exp_hex => '-0x2.00000p+0000'        , exp_dec => '-0d2.00000p+0000'              , convSpec => 5     };  # extra: coverage for low p
-push @tests, { src => 'BFFFFFFFFFFFFFFF', exp_hex => '-0x2.000000p+0000'       , exp_dec => '-0d2.000000p+0000'             , convSpec => 6     };  # extra: coverage for low p
-push @tests, { src => 'BFFFFFFFFFFFFFFF', exp_hex => '-0x2.0000000p+0000'      , exp_dec => '-0d2.0000000p+0000'            , convSpec => 7     };  # extra: coverage for low p
-push @tests, { src => 'BFFFFFFFFFFFFFFF', exp_hex => '-0x2.00000000p+0000'     , exp_dec => '-0d2.00000000p+0000'           , convSpec => 8     };  # extra: coverage for low p
-push @tests, { src => 'BFFFFFFFFFFFFFFF', exp_hex => '-0x2.000000000p+0000'    , exp_dec => '-0d2.000000000p+0000'          , convSpec => 9     };  # extra: coverage for low p
+push @tests, { src => 'BFFFFFFFFFFFFFFF', exp_hex => '-0x2.0p+0000'            , exp_dec => '-0d2.0p+0000'                  , convSpec => 1     };  # extra: coverage for low number of digits
+push @tests, { src => 'BFFFFFFFFFFFFFFF', exp_hex => '-0x2.00p+0000'           , exp_dec => '-0d2.00p+0000'                 , convSpec => 2     };  # extra: coverage for low number of digits
+push @tests, { src => 'BFFFFFFFFFFFFFFF', exp_hex => '-0x2.000p+0000'          , exp_dec => '-0d2.000p+0000'                , convSpec => 3     };  # extra: coverage for low number of digits
+push @tests, { src => 'BFFFFFFFFFFFFFFF', exp_hex => '-0x2.0000p+0000'         , exp_dec => '-0d2.0000p+0000'               , convSpec => 4     };  # extra: coverage for low number of digits
+push @tests, { src => 'BFFFFFFFFFFFFFFF', exp_hex => '-0x2.00000p+0000'        , exp_dec => '-0d2.00000p+0000'              , convSpec => 5     };  # extra: coverage for low number of digits
+push @tests, { src => 'BFFFFFFFFFFFFFFF', exp_hex => '-0x2.000000p+0000'       , exp_dec => '-0d2.000000p+0000'             , convSpec => 6     };  # extra: coverage for low number of digits
+push @tests, { src => 'BFFFFFFFFFFFFFFF', exp_hex => '-0x2.0000000p+0000'      , exp_dec => '-0d2.0000000p+0000'            , convSpec => 7     };  # extra: coverage for low number of digits
+push @tests, { src => 'BFFFFFFFFFFFFFFF', exp_hex => '-0x2.00000000p+0000'     , exp_dec => '-0d2.00000000p+0000'           , convSpec => 8     };  # extra: coverage for low number of digits
+push @tests, { src => 'BFFFFFFFFFFFFFFF', exp_hex => '-0x2.000000000p+0000'    , exp_dec => '-0d2.000000000p+0000'          , convSpec => 9     };  # extra: coverage for low number of digits
 push @tests, { src => 'BFFFFFFFFFFFFFFF', exp_hex => '-0x2.0000000000p+0000'   , exp_dec => '-0d2.0000000000p+0000'         , convSpec => 10    };
-push @tests, { src => 'BFFFFFFFFFFFFFFF', exp_hex => '-0x2.00000000000p+0000'  , exp_dec => '-0d2.00000000000p+0000'        , convSpec => 11    };  # extra: coverage for low p
-push @tests, { src => 'BFFFFFFFFFFFFFFF', exp_hex => '-0x2.000000000000p+0000' , exp_dec => '-0d2.000000000000p+0000'       , convSpec => 12    };  # extra: coverage for low p
+push @tests, { src => 'BFFFFFFFFFFFFFFF', exp_hex => '-0x2.00000000000p+0000'  , exp_dec => '-0d2.00000000000p+0000'        , convSpec => 11    };  # extra: coverage for low number of digits
+push @tests, { src => 'BFFFFFFFFFFFFFFF', exp_hex => '-0x2.000000000000p+0000' , exp_dec => '-0d2.000000000000p+0000'       , convSpec => 12    };  # extra: coverage for low number of digits
 push @tests, { src => 'BFFFFFFFFFFFFFFF', exp_hex => '-0x1.fffffffffffffp+0000', exp_dec => '-0d2.0000000000000p+0000'      , convSpec => 13    };
 
 push @tests, { src => '3FF0FFFFFFFFFFFF', exp_hex => '+0x1.1p+0000'            , exp_dec => '+0d1.1p+0000'                  , convSpec => 1     };  # extra: coverage for msb rounding
@@ -291,36 +291,52 @@ push @tests, { src => '3FFCFFFFFFFFFFFF', exp_hex => '+0x1.dp+0000'            ,
 push @tests, { src => '3FFDFFFFFFFFFFFF', exp_hex => '+0x1.ep+0000'            , exp_dec => '+0d1.9p+0000'                  , convSpec => 1     };  # extra: coverage for msb rounding
 push @tests, { src => '3FFEFFFFFFFFFFFF', exp_hex => '+0x1.fp+0000'            , exp_dec => '+0d1.9p+0000'                  , convSpec => 1     };  # extra: coverage for msb rounding
 
+push @tests, { src => '3FF000000FFFFFFF', exp_hex => '+0x1.00000p+0000'        , exp_dec => '+0d1.00000p+0000'              , convSpec => 5     };  # extra: coverage for lsb rounding
+push @tests, { src => '3FF000001FFFFFFF', exp_hex => '+0x1.00000p+0000'        , exp_dec => '+0d1.00000p+0000'              , convSpec => 5     };  # extra: coverage for lsb rounding
+push @tests, { src => '3FF000002FFFFFFF', exp_hex => '+0x1.00000p+0000'        , exp_dec => '+0d1.00000p+0000'              , convSpec => 5     };  # extra: coverage for lsb rounding
+push @tests, { src => '3FF000003FFFFFFF', exp_hex => '+0x1.00000p+0000'        , exp_dec => '+0d1.00000p+0000'              , convSpec => 5     };  # extra: coverage for lsb rounding
+push @tests, { src => '3FF000004FFFFFFF', exp_hex => '+0x1.00000p+0000'        , exp_dec => '+0d1.00000p+0000'              , convSpec => 5     };  # extra: coverage for lsb rounding
+push @tests, { src => '3FF000005FFFFFFF', exp_hex => '+0x1.00000p+0000'        , exp_dec => '+0d1.00000p+0000'              , convSpec => 5     };  # extra: coverage for lsb rounding
+push @tests, { src => '3FF000006FFFFFFF', exp_hex => '+0x1.00000p+0000'        , exp_dec => '+0d1.00000p+0000'              , convSpec => 5     };  # extra: coverage for lsb rounding
+push @tests, { src => '3FF000007FFFFFFF', exp_hex => '+0x1.00000p+0000'        , exp_dec => '+0d1.00000p+0000'              , convSpec => 5     };  # extra: coverage for lsb rounding
+push @tests, { src => '3FF000008FFFFFFF', exp_hex => '+0x1.00001p+0000'        , exp_dec => '+0d1.00000p+0000'              , convSpec => 5     };  # extra: coverage for lsb rounding
+push @tests, { src => '3FF000009FFFFFFF', exp_hex => '+0x1.00001p+0000'        , exp_dec => '+0d1.00000p+0000'              , convSpec => 5     };  # extra: coverage for lsb rounding
+push @tests, { src => '3FF00000AFFFFFFF', exp_hex => '+0x1.00001p+0000'        , exp_dec => '+0d1.00000p+0000'              , convSpec => 5     };  # extra: coverage for lsb rounding
+push @tests, { src => '3FF00000BFFFFFFF', exp_hex => '+0x1.00001p+0000'        , exp_dec => '+0d1.00000p+0000'              , convSpec => 5     };  # extra: coverage for lsb rounding
+push @tests, { src => '3FF00000CFFFFFFF', exp_hex => '+0x1.00001p+0000'        , exp_dec => '+0d1.00000p+0000'              , convSpec => 5     };  # extra: coverage for lsb rounding
+push @tests, { src => '3FF00000DFFFFFFF', exp_hex => '+0x1.00001p+0000'        , exp_dec => '+0d1.00000p+0000'              , convSpec => 5     };  # extra: coverage for lsb rounding
+push @tests, { src => '3FF00000EFFFFFFF', exp_hex => '+0x1.00001p+0000'        , exp_dec => '+0d1.00000p+0000'              , convSpec => 5     };  # extra: coverage for lsb rounding
+
 
 push @tests, { src => '4000000000000000', exp_hex => '+0x1.0000000000000p+0001', exp_dec => '+0d1.0000000000000000p+0001' };
 push @tests, { src => '4000000000000000', exp_hex => '+0x1.0000000000000p+0001', exp_dec => '+0d1.0000000000000000p+0001'   , convSpec => undef };
-push @tests, { src => '4000000000000000', exp_hex => '+0x1.0p+0001'            , exp_dec => '+0d1.0p+0001'                  , convSpec => 1     };  # extra: coverage for low p
-push @tests, { src => '4000000000000000', exp_hex => '+0x1.00p+0001'           , exp_dec => '+0d1.00p+0001'                 , convSpec => 2     };  # extra: coverage for low p
-push @tests, { src => '4000000000000000', exp_hex => '+0x1.000p+0001'          , exp_dec => '+0d1.000p+0001'                , convSpec => 3     };  # extra: coverage for low p
-push @tests, { src => '4000000000000000', exp_hex => '+0x1.0000p+0001'         , exp_dec => '+0d1.0000p+0001'               , convSpec => 4     };  # extra: coverage for low p
-push @tests, { src => '4000000000000000', exp_hex => '+0x1.00000p+0001'        , exp_dec => '+0d1.00000p+0001'              , convSpec => 5     };  # extra: coverage for low p
-push @tests, { src => '4000000000000000', exp_hex => '+0x1.000000p+0001'       , exp_dec => '+0d1.000000p+0001'             , convSpec => 6     };  # extra: coverage for low p
-push @tests, { src => '4000000000000000', exp_hex => '+0x1.0000000p+0001'      , exp_dec => '+0d1.0000000p+0001'            , convSpec => 7     };  # extra: coverage for low p
-push @tests, { src => '4000000000000000', exp_hex => '+0x1.00000000p+0001'     , exp_dec => '+0d1.00000000p+0001'           , convSpec => 8     };  # extra: coverage for low p
-push @tests, { src => '4000000000000000', exp_hex => '+0x1.000000000p+0001'    , exp_dec => '+0d1.000000000p+0001'          , convSpec => 9     };  # extra: coverage for low p
+push @tests, { src => '4000000000000000', exp_hex => '+0x1.0p+0001'            , exp_dec => '+0d1.0p+0001'                  , convSpec => 1     };  # extra: coverage for low number of digits
+push @tests, { src => '4000000000000000', exp_hex => '+0x1.00p+0001'           , exp_dec => '+0d1.00p+0001'                 , convSpec => 2     };  # extra: coverage for low number of digits
+push @tests, { src => '4000000000000000', exp_hex => '+0x1.000p+0001'          , exp_dec => '+0d1.000p+0001'                , convSpec => 3     };  # extra: coverage for low number of digits
+push @tests, { src => '4000000000000000', exp_hex => '+0x1.0000p+0001'         , exp_dec => '+0d1.0000p+0001'               , convSpec => 4     };  # extra: coverage for low number of digits
+push @tests, { src => '4000000000000000', exp_hex => '+0x1.00000p+0001'        , exp_dec => '+0d1.00000p+0001'              , convSpec => 5     };  # extra: coverage for low number of digits
+push @tests, { src => '4000000000000000', exp_hex => '+0x1.000000p+0001'       , exp_dec => '+0d1.000000p+0001'             , convSpec => 6     };  # extra: coverage for low number of digits
+push @tests, { src => '4000000000000000', exp_hex => '+0x1.0000000p+0001'      , exp_dec => '+0d1.0000000p+0001'            , convSpec => 7     };  # extra: coverage for low number of digits
+push @tests, { src => '4000000000000000', exp_hex => '+0x1.00000000p+0001'     , exp_dec => '+0d1.00000000p+0001'           , convSpec => 8     };  # extra: coverage for low number of digits
+push @tests, { src => '4000000000000000', exp_hex => '+0x1.000000000p+0001'    , exp_dec => '+0d1.000000000p+0001'          , convSpec => 9     };  # extra: coverage for low number of digits
 push @tests, { src => '4000000000000000', exp_hex => '+0x1.0000000000p+0001'   , exp_dec => '+0d1.0000000000p+0001'         , convSpec => 10    };
-push @tests, { src => '4000000000000000', exp_hex => '+0x1.00000000000p+0001'  , exp_dec => '+0d1.00000000000p+0001'        , convSpec => 11    };  # extra: coverage for low p
-push @tests, { src => '4000000000000000', exp_hex => '+0x1.000000000000p+0001' , exp_dec => '+0d1.000000000000p+0001'       , convSpec => 12    };  # extra: coverage for low p
+push @tests, { src => '4000000000000000', exp_hex => '+0x1.00000000000p+0001'  , exp_dec => '+0d1.00000000000p+0001'        , convSpec => 11    };  # extra: coverage for low number of digits
+push @tests, { src => '4000000000000000', exp_hex => '+0x1.000000000000p+0001' , exp_dec => '+0d1.000000000000p+0001'       , convSpec => 12    };  # extra: coverage for low number of digits
 push @tests, { src => '4000000000000000', exp_hex => '+0x1.0000000000000p+0001', exp_dec => '+0d1.0000000000000p+0001'      , convSpec => 13    };
 push @tests, { src => 'C000000000000000', exp_hex => '-0x1.0000000000000p+0001', exp_dec => '-0d1.0000000000000000p+0001' };
 push @tests, { src => 'C000000000000000', exp_hex => '-0x1.0000000000000p+0001', exp_dec => '-0d1.0000000000000000p+0001'   , convSpec => undef };
-push @tests, { src => 'C000000000000000', exp_hex => '-0x1.0p+0001'            , exp_dec => '-0d1.0p+0001'                  , convSpec => 1     };  # extra: coverage for low p
-push @tests, { src => 'C000000000000000', exp_hex => '-0x1.00p+0001'           , exp_dec => '-0d1.00p+0001'                 , convSpec => 2     };  # extra: coverage for low p
-push @tests, { src => 'C000000000000000', exp_hex => '-0x1.000p+0001'          , exp_dec => '-0d1.000p+0001'                , convSpec => 3     };  # extra: coverage for low p
-push @tests, { src => 'C000000000000000', exp_hex => '-0x1.0000p+0001'         , exp_dec => '-0d1.0000p+0001'               , convSpec => 4     };  # extra: coverage for low p
-push @tests, { src => 'C000000000000000', exp_hex => '-0x1.00000p+0001'        , exp_dec => '-0d1.00000p+0001'              , convSpec => 5     };  # extra: coverage for low p
-push @tests, { src => 'C000000000000000', exp_hex => '-0x1.000000p+0001'       , exp_dec => '-0d1.000000p+0001'             , convSpec => 6     };  # extra: coverage for low p
-push @tests, { src => 'C000000000000000', exp_hex => '-0x1.0000000p+0001'      , exp_dec => '-0d1.0000000p+0001'            , convSpec => 7     };  # extra: coverage for low p
-push @tests, { src => 'C000000000000000', exp_hex => '-0x1.00000000p+0001'     , exp_dec => '-0d1.00000000p+0001'           , convSpec => 8     };  # extra: coverage for low p
-push @tests, { src => 'C000000000000000', exp_hex => '-0x1.000000000p+0001'    , exp_dec => '-0d1.000000000p+0001'          , convSpec => 9     };  # extra: coverage for low p
+push @tests, { src => 'C000000000000000', exp_hex => '-0x1.0p+0001'            , exp_dec => '-0d1.0p+0001'                  , convSpec => 1     };  # extra: coverage for low number of digits
+push @tests, { src => 'C000000000000000', exp_hex => '-0x1.00p+0001'           , exp_dec => '-0d1.00p+0001'                 , convSpec => 2     };  # extra: coverage for low number of digits
+push @tests, { src => 'C000000000000000', exp_hex => '-0x1.000p+0001'          , exp_dec => '-0d1.000p+0001'                , convSpec => 3     };  # extra: coverage for low number of digits
+push @tests, { src => 'C000000000000000', exp_hex => '-0x1.0000p+0001'         , exp_dec => '-0d1.0000p+0001'               , convSpec => 4     };  # extra: coverage for low number of digits
+push @tests, { src => 'C000000000000000', exp_hex => '-0x1.00000p+0001'        , exp_dec => '-0d1.00000p+0001'              , convSpec => 5     };  # extra: coverage for low number of digits
+push @tests, { src => 'C000000000000000', exp_hex => '-0x1.000000p+0001'       , exp_dec => '-0d1.000000p+0001'             , convSpec => 6     };  # extra: coverage for low number of digits
+push @tests, { src => 'C000000000000000', exp_hex => '-0x1.0000000p+0001'      , exp_dec => '-0d1.0000000p+0001'            , convSpec => 7     };  # extra: coverage for low number of digits
+push @tests, { src => 'C000000000000000', exp_hex => '-0x1.00000000p+0001'     , exp_dec => '-0d1.00000000p+0001'           , convSpec => 8     };  # extra: coverage for low number of digits
+push @tests, { src => 'C000000000000000', exp_hex => '-0x1.000000000p+0001'    , exp_dec => '-0d1.000000000p+0001'          , convSpec => 9     };  # extra: coverage for low number of digits
 push @tests, { src => 'C000000000000000', exp_hex => '-0x1.0000000000p+0001'   , exp_dec => '-0d1.0000000000p+0001'         , convSpec => 10    };
-push @tests, { src => 'C000000000000000', exp_hex => '-0x1.00000000000p+0001'  , exp_dec => '-0d1.00000000000p+0001'        , convSpec => 11    };  # extra: coverage for low p
-push @tests, { src => 'C000000000000000', exp_hex => '-0x1.000000000000p+0001' , exp_dec => '-0d1.000000000000p+0001'       , convSpec => 12    };  # extra: coverage for low p
+push @tests, { src => 'C000000000000000', exp_hex => '-0x1.00000000000p+0001'  , exp_dec => '-0d1.00000000000p+0001'        , convSpec => 11    };  # extra: coverage for low number of digits
+push @tests, { src => 'C000000000000000', exp_hex => '-0x1.000000000000p+0001' , exp_dec => '-0d1.000000000000p+0001'       , convSpec => 12    };  # extra: coverage for low number of digits
 push @tests, { src => 'C000000000000000', exp_hex => '-0x1.0000000000000p+0001', exp_dec => '-0d1.0000000000000p+0001'      , convSpec => 13    };
 
 push @tests, { src => '4000000000000001', exp_hex => '+0x1.0000000000001p+0001', exp_dec => '+0d1.0000000000000002p+0001' };

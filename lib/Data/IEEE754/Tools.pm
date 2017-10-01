@@ -6,7 +6,7 @@ use Carp;
 use Exporter 'import';  # just use the import() function, without the rest of the overhead of ISA
 use Config;
 
-our $VERSION = '0.018001';
+our $VERSION = '0.018004';
     # use rrr.mmm_aaa, where rrr is major revision, mmm is ODD minor revision, and aaa is alpha sub-revision (for ALPHA code)
     # use rrr.mmmsss,  where rrr is major revision, mmm is EVEN minor revision, and sss is a sub-revision (usually sss=000) (for releases)
 
@@ -404,13 +404,16 @@ hex-digits or 16 decimal-digits).
 sub binary64_convertToHexString {
     # thanks to BrowserUK @ http://perlmonks.org/?node_id=1167146 for slighly better decision factors
     # I tweaked it to use the two 32bit words instead of one 64bit word (which wouldn't work on some systems)
+    # v0.018003: to fix integer overflow on ivsize=4, reworked to pure nibbles
     my $v = shift;
     my $p = defined $_[0] ? shift : 13;
     my ($msb,$lsb) = $_helper64_arr2x32b->($v);
     my $sbit = ($msb & 0x80000000) >> 31;
     my $sign = $sbit ? '-' : '+';
     my $exp  = (($msb & 0x7FF00000) >> 20) - 1023;
-    my $mant = sprintf '%05x%08x', $msb & 0x000FFFFF, $lsb & 0xFFFFFFFF;
+    my $mhex = sprintf '%05x', $msb & 0x000FFFFF;
+    my $lhex = sprintf '%08x', $lsb & 0xFFFFFFFF;
+    my $mant = $mhex . $lhex;
     if($exp == 1024) {
         my $z = "0"x (($p<5?4:$p)-4);
         return $sign . "0x1.#INF${z}p+0000"    if $mant eq '0000000000000';
@@ -423,57 +426,22 @@ sub binary64_convertToHexString {
         $implied = 0;
         $exp = $mant eq '0000000000000' ? 0 : -1022;   # 0 for zero, -1022 for denormal
     }
-    if($p<13) {
-        my $m = $msb & 0xFFFFF;
-        my $l = $lsb;
-        my $o = 0;
-        if($p>=5) {  # use all of MSB, and move into LSB
-            my $one = 1 << 4*( 8 - ($p-5) );
-            my $haf = $one >> 1;
-            my $eff = $one - 1;
-            my $msk = 0xFFFFFFFF ^ $eff;
-            if( ($l & $eff) >= $haf) {
-                $l = ($l & $msk) + $one;
-                my $l32 = $l & 0xFFFFFFFF;
-                if($l32 < $one) {
-                    $l = 0;
-                    $m++;
-                }
-            } else {
-                $l = ($l & $msk);
-            }
-            if($m >= 0x1_0_0000) {
-                $o = 1;
-                $m -= 0x1_0_0000;
-            }
-            if($o) {
-                $implied++;
-            }
-        } else { # thus p<5
-            $l = 0;     # don't need the lowest 8 nibbles...
-            my $one = 1 << 4*( 5 - $p );
-            my $haf = $one >> 1;
-            my $eff = $one - 1;
-            my $msk = 0xFFFFF ^ $eff;
-            if( ($m & $eff) >= $haf) {
-                $m = ($m & $msk) + $one;
-                my $m20 = $m & 0xFFFFF;
-                if($m20 < $one) {
-                    $m = 0;
-                    $o++;
-                }
-            } else {
-                $m = ($m & $msk);
-            }
-            if($o) {
-                $implied++;
-            }
-        }
-
-        my $f = substr( sprintf('%05x%08x', $m, $l), 0, $p);
-        return sprintf '%s0x%1u%s%*sp%+05d', $sign, $implied, $p?'.':'', $p, $f, $exp;
-    } else {    # thus, p>=13:
+    if( $p>12 ) {
         return sprintf '%s0x%1u.%13.13sp%+05d', $sign, $implied, $mant . '0'x($p-13), $exp;
+    } else {
+        my $roundhex = substr $mant, 0, $p;
+        my $nibble = substr $mant, $p, 1;
+        my $carry = hex($nibble)>7 ? 1 : 0;
+        foreach my $cp ( 1 .. $p ) {
+            $nibble = substr $roundhex, -$cp, 1;
+            my $v = hex($nibble)+$carry;
+            ($carry, $v) = (16==$v) ? (1,0) : (0, $v);
+            $nibble = sprintf '%01x', $v;
+            substr($roundhex, -$cp, 1) = $nibble;
+        }
+        $implied += $carry;
+        my $ret = sprintf '%s0x%1u%s%*sp%+05d', $sign, $implied, $p?'.':'', $p, $roundhex, $exp;
+        return $ret;
     }
 }
 *convertToHexString = \&binary64_convertToHexString;
