@@ -1,5 +1,9 @@
 Revision history for Perl module Data::IEEE754::Tools.
 
+v0.018003 2017-Oct-01
+    - binary64_convertToHexString(): bugfix verified; now works on ivsize=4;
+      remove debug code
+
 v0.018003 2017-Sep-29
     - Completely reworked the function, so it deals with one nibble at a time,
       thus avoiding any overflow (easier to code than doing sub-32b groupings)

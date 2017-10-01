@@ -6,7 +6,7 @@ use Carp;
 use Exporter 'import';  # just use the import() function, without the rest of the overhead of ISA
 use Config;
 
-our $VERSION = '0.018003';
+our $VERSION = '0.018004';
     # use rrr.mmm_aaa, where rrr is major revision, mmm is ODD minor revision, and aaa is alpha sub-revision (for ALPHA code)
     # use rrr.mmmsss,  where rrr is major revision, mmm is EVEN minor revision, and sss is a sub-revision (usually sss=000) (for releases)
 
@@ -401,34 +401,12 @@ hex-digits or 16 decimal-digits).
 
 =cut
 
-sub DBG_SPRINTF {
-    return unless $Data::IEEE754::Tools::CPANTESTERS_DEBUG;
-    my $fmt = shift;
-    warn sprintf("# __%04d__\t", (caller)[2]), sprintf( $fmt, @_ ), "\n";
-}
-use Devel::Peek ();
-sub DBG_PEEK {
-    return unless $Data::IEEE754::Tools::CPANTESTERS_DEBUG;
-    my ($name, $var) = @_;
-    open( my $ek , '>&STDERR') or die "dup STDERR: $!";
-    close(STDERR);
-    my $txt;
-    open(STDERR, '>', \$txt) or die "STDERR to var: $!";
-    Devel::Peek::Dump($var);
-    close(STDERR);
-    open(STDERR, ">&", $ek) or die "STDERR back to orig: $!";
-    $txt =~ s/^/# \t\t# /gims;
-    $txt =~ s/\s*$//gims;
-    DBG_SPRINTF("__%04d__\tDevel::Peek::Dump(%s):\n%s", (caller)[2], $name, $txt);
-}
 sub binary64_convertToHexString {
     # thanks to BrowserUK @ http://perlmonks.org/?node_id=1167146 for slighly better decision factors
     # I tweaked it to use the two 32bit words instead of one 64bit word (which wouldn't work on some systems)
-print STDERR "#\n" if $Data::IEEE754::Tools::CPANTESTERS_DEBUG;
+    # v0.018003: to fix integer overflow on ivsize=4, reworked to pure nibbles
     my $v = shift;
     my $p = defined $_[0] ? shift : 13;
-DBG_SPRINTF('binary64_convertToHexString(%+24.16e, digits:%d)', $v, $p);
-DBG_SPRINTF("\t%-16s = %d", $_ => $Config{$_}) foreach( qw/nvsize ivsize doublesize intsize longsize ptrsize/ );
     my ($msb,$lsb) = $_helper64_arr2x32b->($v);
     my $sbit = ($msb & 0x80000000) >> 31;
     my $sign = $sbit ? '-' : '+';
@@ -436,8 +414,6 @@ DBG_SPRINTF("\t%-16s = %d", $_ => $Config{$_}) foreach( qw/nvsize ivsize doubles
     my $mhex = sprintf '%05x', $msb & 0x000FFFFF;
     my $lhex = sprintf '%08x', $lsb & 0xFFFFFFFF;
     my $mant = $mhex . $lhex;
-DBG_SPRINTF('[msb][lsb] = 0x%08x %08x => digits=%d', $msb, $lsb, $p);
-DBG_SPRINTF('... = %s %s . %s pwr %d', $sign, '?', $mant, $exp);
     if($exp == 1024) {
         my $z = "0"x (($p<5?4:$p)-4);
         return $sign . "0x1.#INF${z}p+0000"    if $mant eq '0000000000000';
@@ -446,14 +422,11 @@ DBG_SPRINTF('... = %s %s . %s pwr %d', $sign, '?', $mant, $exp);
         return $sign . ( (($msb & 0x00080000) != 0x00080000) ? "0x1.#SNAN${z}p+0000" : "0x1.#QNAN${z}p+0000");  # v0.012 coverage note: '!=' condition only triggered on systems with SNAN; ignore Devel::Cover failures on this line on systems which quiet all SNAN to QNAN
     }
     my $implied = 1;
-DBG_SPRINTF('... = %s %s . %s pwr %d', $sign, $implied, $mant, $exp);
     if( $exp == -1023 ) { # zero or denormal
         $implied = 0;
         $exp = $mant eq '0000000000000' ? 0 : -1022;   # 0 for zero, -1022 for denormal
     }
-DBG_SPRINTF('... = %s %s . %s pwr %d', $sign, $implied, $mant, $exp);
     if( $p>12 ) {
-DBG_SPRINTF('ret(%+24.16e,%d)=%s0x%1u.%13.13sp%+05d', $v, $p, $sign, $implied, $mant . '0'x($p-13), $exp);
         return sprintf '%s0x%1u.%13.13sp%+05d', $sign, $implied, $mant . '0'x($p-13), $exp;
     } else {
         my $roundhex = substr $mant, 0, $p;
@@ -466,10 +439,8 @@ DBG_SPRINTF('ret(%+24.16e,%d)=%s0x%1u.%13.13sp%+05d', $v, $p, $sign, $implied, $
             $nibble = sprintf '%01x', $v;
             substr($roundhex, -$cp, 1) = $nibble;
         }
-DBG_SPRINTF('{%02d} %13.13s => [%13.13s] [%1.1s] <%01d>', $p, $mant, $roundhex, $nibble, $carry);
         $implied += $carry;
         my $ret = sprintf '%s0x%1u%s%*sp%+05d', $sign, $implied, $p?'.':'', $p, $roundhex, $exp;
-DBG_SPRINTF('ret(%+24.16e,%d)=%s', $v, $p, $ret);
         return $ret;
     }
 }
