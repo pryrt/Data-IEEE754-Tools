@@ -1,6 +1,11 @@
 Revision history for Perl module Data::IEEE754::Tools.
 
-v0.018003 2017-Oct-01
+v0.019001 2017-Oct-02
+    - working on BUG #15
+    - t/01*.t fix binstr754_from_double() `like` test naming
+    - t/01*.t switch to already-packed b64-strings, hopefully will fix it
+
+v0.018004 2017-Oct-01
     - binary64_convertToHexString(): bugfix verified; now works on ivsize=4;
       remove debug code
 

@@ -79,16 +79,43 @@ foreach (
     substr $cmpmap{$_}, 12, 1, '.';       # ignore signal-vs-quiet bit: see http://perlmonks.org/?node_id=1166429 for in depth discussion: the short of it is, something in perl and/or compiler puts the SNAN thru a FP register, which quiets a SNAN.
 }
 
+my %valmap; @valmap{ sort keys %cmpmap } = (
+    "\0\0\0\0\0\0\0\0",
+    "\1\0\0\0\0\0\0\0",
+    "\377\377\377\377\377\377\17\0",
+    "\0\0\0\0\0\0\20\0",
+    "\377\377\377\377\377\377\357\177",
+    "\0\0\0\0\0\0\360\177",
+    "\1\0\0\0\0\0\360\177",
+    "\377\377\377\377\377\377\367\177",
+    "\0\0\0\0\0\0\370\177",
+    "\1\0\0\0\0\0\370\177",
+    "\377\377\377\377\377\377\377\177",
+    "\0\0\0\0\0\0\0\200",
+    "\1\0\0\0\0\0\0\200",
+    "\377\377\377\377\377\377\17\200",
+    "\0\0\0\0\0\0\20\200",
+    "\377\377\377\377\377\377\357\377",
+    "\0\0\0\0\0\0\360\377",
+    "\1\0\0\0\0\0\360\377",
+    "\377\377\377\377\377\377\367\377",
+    "\0\0\0\0\0\0\370\377",
+    "\1\0\0\0\0\0\370\377",
+    "\377\377\377\377\377\377\377\377"
+);
+
 # these subs force a little-endian universe
-sub bitsToDouble{ unpack 'd',  pack 'b64', scalar reverse $_[0] }           # BrowserUK's conversion (http://perlmonks.org/?node_id=984255)
-sub bitsToInts{   reverse unpack 'VV', pack 'b64', scalar reverse $_[0] }   # BrowserUK's conversion (http://perlmonks.org/?node_id=984255)
 use constant DEBUG => 0;
 if(DEBUG) {
-    diag sprintf "%23.16g : %08x%08x\n", bitsToDouble( $_ ), bitsToInts( $_ ) for list;
+    sub bitsToDouble{ unpack 'd',  pack 'b64', scalar reverse $_[0] }           # BrowserUK's conversion (http://perlmonks.org/?node_id=984255)
+    sub bitsToInts{   reverse unpack 'VV', pack 'b64', scalar reverse $_[0] }   # BrowserUK's conversion (http://perlmonks.org/?node_id=984255)
+    use Data::Dumper; $Data::Dumper::Indent=0; $Data::Dumper::Useqq=1;
+    diag sprintf "%64.64sb => %23.16g : %08x%08x\n\t| %s\n\t| %s\n", $_ , bitsToDouble( $_ ), bitsToInts( $_ ), Dumper(pack b64 => scalar reverse $_), Dumper($valmap{$_}) for sort keys %cmpmap;
+    die;
 }
 
 foreach my $bits ( sort keys %cmpmap ) {
-    $expect_v   = bitsToDouble( $bits );    # use BrowserUK's conversion to generated expected values
+    $expect_v   = unpack 'd', $valmap{ $bits };     # replaced bitsToDouble with unpacking the hardcoded valmap strings (hopefully avoids problems with certain machines)
 
     $src        = $bits;
     $got        = binstr754_to_double($src);
@@ -97,7 +124,7 @@ foreach my $bits ( sort keys %cmpmap ) {
     $expect_b   = qr/$cmpmap{$bits}/;
     $src        = $expect_v;
     $got        = binstr754_from_double($src);
-    like( $got, $expect_b, "binstr754_to_double($bits)");
+    like( $got, $expect_b, sprintf("binstr754_from_double(%26.16g)", $src));
 }
 
 exit;
