@@ -1,18 +1,19 @@
 AUTHOR
+    Peter C. Jones "<petercj AT cpan DOT org>"
 
-Peter C. Jones <petercj AT cpan DOT org>
-
-Please report any bugs or feature requests emailing <bug-Data-IEEE754-Tools AT rt.cpan.org>
-or thru the web interface at <http://rt.cpan.org/NoAuth/ReportBug.html?Queue=Data-IEEE754-Tools>
+    Please report any bugs or feature requests emailing
+    "<bug-Data-IEEE754-Tools AT rt.cpan.org>" or thru the web interface at
+    <http://rt.cpan.org/NoAuth/ReportBug.html?Queue=Data-IEEE754-Tools>, or
+    thru the repository's interface at
+    <https://github.com/pryrt/Data-IEEE754-Tools/issues>.
 
 COPYRIGHT
+    Copyright (C) 2016-2018 Peter C. Jones
 
-Copyright (C) 2016 Peter C. Jones
+LICENSE
+    This program is free software; you can redistribute it and/or modify it
+    under the terms of either: the GNU General Public License as published
+    by the Free Software Foundation; or the Artistic License.
 
-LICENCE
+    See <http://dev.perl.org/licenses/> for more information.
 
-This program is free software; you can redistribute it and/or modify it
-under the terms of either: the GNU General Public License as published
-by the Free Software Foundation; or the Artistic License.
-
-See <http://dev.perl.org/licenses/> for more information.

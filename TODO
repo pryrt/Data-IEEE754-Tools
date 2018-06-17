@@ -1,8 +1,6 @@
 TODO
     - bugfix:
-      - fix the v0.018 t/02*.t roundoff bug: it was overflowing 32bit on {ivsize}=4 systems;
-        new method should not
-      - testing on my 32b linux box, found failures in t/01*.t suite; needs to be investigated
+      - testing on my 32b linux box, found failures in t/01*.t suite; needs to be investigated (#15)
     - long-term: implement more functions from IEEE754-2007, especially
       + IEEE754 5.4.2 => 5.12
         ☐ <format>-convertFormat

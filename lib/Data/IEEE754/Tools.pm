@@ -6,7 +6,7 @@ use Carp;
 use Exporter 'import';  # just use the import() function, without the rest of the overhead of ISA
 use Config;
 
-our $VERSION = '0.019001';
+our $VERSION = '0.019002';
     # use rrr.mmm_aaa, where rrr is major revision, mmm is ODD minor revision, and aaa is alpha sub-revision (for ALPHA code)
     # use rrr.mmmsss,  where rrr is major revision, mmm is EVEN minor revision, and sss is a sub-revision (usually sss=000) (for releases)
 
@@ -1171,14 +1171,15 @@ or thru the repository's interface at L<https://github.com/pryrt/Data-IEEE754-To
 <a href="http://matrix.cpantesters.org/?dist=Data-IEEE754-Tools"><img src="http://cpants.cpanauthors.org/dist/Data-IEEE754-Tools.png" alt="" title="cpan testers"></a>
 <a href="https://github.com/pryrt/Data-IEEE754-Tools/releases"><img src="https://img.shields.io/github/release/pryrt/Data-IEEE754-Tools.svg" alt="" title="github release"></a>
 <a href="https://github.com/pryrt/Data-IEEE754-Tools/issues"><img src="https://img.shields.io/github/issues/pryrt/Data-IEEE754-Tools.svg" alt="" title="issues"></a>
-<a href="https://travis-ci.org/pryrt/Data-IEEE754-Tools"><img src="https://travis-ci.org/pryrt/Data-IEEE754-Tools.svg?branch=master" alt="" title="build status"></a>
-<a href="https://coveralls.io/github/pryrt/Data-IEEE754-Tools?branch=master"><img src="https://coveralls.io/repos/github/pryrt/Data-IEEE754-Tools/badge.svg?branch=master" alt="" title="test coverage"></a>
+<a href="https://ci.appveyor.com/propjects/pryrt/data-ieee754-tools"><img src="" alt="" title="appveyor build status"></a>
+<a href="https://travis-ci.org/pryrt/Data-IEEE754-Tools"><img src="https://travis-ci.org/pryrt/Data-IEEE754-Tools.svg?branch=master" alt="" title="travis build status"></a>
+<a href="https://coveralls.io/github/pryrt/Data-IEEE754-Tools?branch=master"><img src="https://coveralls.io/repos/github/pryrt/Data-IEEE754-Tools/badge.svg?branch=master" alt="" title="coveralls test coverage"></a>
 
 =end html
 
 =head1 COPYRIGHT
 
-Copyright (C) 2016-2017 Peter C. Jones
+Copyright (C) 2016-2018 Peter C. Jones
 
 =head1 LICENSE
 

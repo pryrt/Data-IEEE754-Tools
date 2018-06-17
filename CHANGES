@@ -1,19 +1,22 @@
 Revision history for Perl module Data::IEEE754::Tools.
 
+v0.019002 2018-Jun-17
+    - META: add appveyor support and badges [uprev to disambiguate last fall's changes]
+
 v0.019001 2017-Oct-03
     - Odd versions are development versions.  Features to be released
-      in v0.020 were developed under the v0.017 revision
+      in v0.020 were developed under the v0.019 revision
     - working on BUG #15: improved test suite on byteorder='1234' machine
-    - t/01*.t fix binstr754_from_double() `like` test naming
-    - t/01*.t switch to already-packed b64-strings, but didn't fix it
-    - t/01*.t now uses the same as the module, if left(byteorder,4)='1234'
-      (call it "cheating", but really, the forced-little-endian is nearly
-      cheating as well; I have to assume that perl pack/unpack are 100%
-      test coverage no matter how I test this)
+        - t/01*.t fix binstr754_from_double() `like` test naming
+        - t/01*.t switch to already-packed b64-strings, but didn't fix it
+        - t/01*.t now uses the same as the module, if left(byteorder,4)='1234'
+          (call it "cheating", but really, the forced-little-endian is nearly
+          cheating as well; I have to assume that perl pack/unpack are 100%
+          test coverage no matter how I test this)
 
 v0.018004 2017-Oct-01
     - binary64_convertToHexString(): bugfix verified; now works on ivsize=4;
-      remove debug code
+      remove debug code (#14)
 
 v0.018003 2017-Sep-29
     - Completely reworked the function, so it deals with one nibble at a time,

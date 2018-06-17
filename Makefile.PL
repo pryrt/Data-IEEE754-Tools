@@ -37,18 +37,9 @@ use 5.006;
                 },
             },
             keywords => [ 'IEEE-754', 'floating point representation'],
-            # don't directly use 'provides', because it's an extra step to maintain, and
-            # can cause problems (getting a mismatch between the $VERSION string and the
-            # provides->{version} will really make it hard to release a next version into CPAN
         },
         # automatically determine the versions for 'provides'; MM->parse_version exists as of MM v6.31, so not a problem with >= 6.46
         #   => this comes out right when printed... but MYMETA.* shows values that look wrong
-            #my $vstr = MM->parse_version( $mm_args{VERSION_FROM} );
-            #print STDERR $vstr, $/;
-            #my $qstr = "'$vstr'";
-            #print STDERR $qstr, $/;
-            #(my $novstr = $qstr) =~ s/v//;
-            #print STDERR $novstr, $/;
         $mm_args{META_MERGE}{provides} = {
             $mm_args{NAME} => {
                 file => $mm_args{VERSION_FROM},
@@ -109,12 +100,21 @@ distauthtest :: disttest
 # addition to realclean: also delete coverage database, if testcover was run
 realclean ::
 	$(NOECHO) ( $(TEST_D) cover_db && $(RM_RF) cover_db ) || $(ECHO) realclean:: skip "rm -rf cover_db"
+	$(NOECHO) ( $(TEST_F) MYMETA.json.lock && $(RM_RF) MYMETA.json.lock ) || $(ECHO) realclean:: skip "rm -rf MYMETA.json.lock"
 
 # auto-generate the README from the lib/Data/IEEE754/Tools.pm
 README.md :: lib/Data/IEEE754/Tools.pm
 	podselect -section "NAME|SYNOPSIS|DESCRIPTION|COMPATIBILITY|INSTALLATION|AUTHOR|COPYRIGHT|LICENSE/!IEEE 754 Encoding" lib/Data/IEEE754/Tools.pm > README.pod
 	pod2markdown README.pod README.md
 	$(RM_F) README.pod
+
+# auto-generate the LICENSE file from the lib/Data/IEEE754/Tools.pm
+LICENSE :: lib/Data/IEEE754/Tools.pm
+	podselect -section "AUTHOR|COPYRIGHT|LICENSE" lib/Data/IEEE754/Tools.pm > LICENSE.pod
+	pod2text LICENSE.pod LICENSE
+	$(RM_F) LICENSE.pod
+
+docs :: README.md LICENSE
 
 POSTAMBLE
 }

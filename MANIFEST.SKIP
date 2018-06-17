@@ -10,4 +10,5 @@
 pod.css
 ^.svn/
 ^MYMETA
-.travis.yml$
+^.travis.yml$
+^appveyor.yml$
