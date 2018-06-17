@@ -1171,7 +1171,7 @@ or thru the repository's interface at L<https://github.com/pryrt/Data-IEEE754-To
 <a href="http://matrix.cpantesters.org/?dist=Data-IEEE754-Tools"><img src="http://cpants.cpanauthors.org/dist/Data-IEEE754-Tools.png" alt="" title="cpan testers"></a>
 <a href="https://github.com/pryrt/Data-IEEE754-Tools/releases"><img src="https://img.shields.io/github/release/pryrt/Data-IEEE754-Tools.svg" alt="" title="github release"></a>
 <a href="https://github.com/pryrt/Data-IEEE754-Tools/issues"><img src="https://img.shields.io/github/issues/pryrt/Data-IEEE754-Tools.svg" alt="" title="issues"></a>
-<a href="https://ci.appveyor.com/propjects/pryrt/data-ieee754-tools"><img src="" alt="" title="appveyor build status"></a>
+<a href="https://ci.appveyor.com/propjects/pryrt/data-ieee754-tools"><img src="https://ci.appveyor.com/api/projects/status/a9yylnhnufr2g9ug?svg=true" alt="" title="appveyor build status"></a>
 <a href="https://travis-ci.org/pryrt/Data-IEEE754-Tools"><img src="https://travis-ci.org/pryrt/Data-IEEE754-Tools.svg?branch=master" alt="" title="travis build status"></a>
 <a href="https://coveralls.io/github/pryrt/Data-IEEE754-Tools?branch=master"><img src="https://coveralls.io/repos/github/pryrt/Data-IEEE754-Tools/badge.svg?branch=master" alt="" title="coveralls test coverage"></a>
 

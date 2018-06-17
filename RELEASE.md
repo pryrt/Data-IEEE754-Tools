@@ -2,8 +2,9 @@
 [![](http://cpants.cpanauthors.org/dist/Data-IEEE754-Tools.png "cpan testers")](http://matrix.cpantesters.org/?dist=Data-IEEE754-Tools)
 [![](https://img.shields.io/github/release/pryrt/Data-IEEE754-Tools.svg "github release")](https://github.com/pryrt/Data-IEEE754-Tools/releases)
 [![](https://img.shields.io/github/issues/pryrt/Data-IEEE754-Tools.svg "issues")](https://github.com/pryrt/Data-IEEE754-Tools/issues)
-[![](https://travis-ci.org/pryrt/Data-IEEE754-Tools.svg?branch=master "build status")](https://travis-ci.org/pryrt/Data-IEEE754-Tools)
-[![](https://coveralls.io/repos/github/pryrt/Data-IEEE754-Tools/badge.svg?branch=master "test coverage")](https://coveralls.io/github/pryrt/Data-IEEE754-Tools?branch=master)
+[![](https://ci.appveyor.com/api/projects/status/a9yylnhnufr2g9ug?svg=true "appveyor build status")](https://ci.appveyor.com/project/pryrt/data-ieee754-tools)
+[![](https://travis-ci.org/pryrt/Data-IEEE754-Tools.svg?branch=master "travis build status")](https://travis-ci.org/pryrt/Data-IEEE754-Tools)
+[![](https://coveralls.io/repos/github/pryrt/Data-IEEE754-Tools/badge.svg?branch=master "coveralls test coverage")](https://coveralls.io/github/pryrt/Data-IEEE754-Tools?branch=master)
 
 # Releasing Data::IEEE754::Tools
 
